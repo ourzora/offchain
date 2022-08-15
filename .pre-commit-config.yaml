@@ -23,3 +23,8 @@ repos:
     rev: "v8.2.0"
     hooks:
       - id: eslint
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        name: isort (python)
