@@ -1,0 +1,39 @@
+name: Application CI/CD
+
+on:
+  push:
+    branches: [main, development]
+  pull_request:
+    branches: [main, development]
+
+jobs:
+  ci-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Get changed files
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          list-files: shell
+          filters: |
+            py_modified:
+              - added|modified: "./**/*.py"
+      - name: Setup python
+        if: ${{ steps.filter.outputs.py_modified == 'true' }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.10.0
+      - name: Setup poetry
+        if: ${{ steps.filter.outputs.py_modified == 'true' }}
+        uses: Gr1N/setup-poetry@v7
+      - name: Install dependencies
+        if: ${{ steps.filter.outputs.py_modified == 'true' }}
+        run: poetry install
+      - name: Run flake8
+        if: ${{ steps.filter.outputs.py_modified == 'true' }}
+        run: poetry run flake8 ${{ steps.filter.outputs.py_modified_files }}
+      - name: Run pytest
+        if: ${{ steps.filter.outputs.py_modified == 'true' }}
+        run: poetry run python -m pytest tests
