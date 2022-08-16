@@ -1,4 +1,4 @@
-from metazerse.parsers.base_parser import BaseParser
+from parsers.base_parser import BaseParser
 
 
 class CollectionParser(BaseParser):

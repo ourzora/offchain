@@ -1,6 +1,6 @@
 import pytest
 
-from metazerse.adapters.ipfs import IPFSAdapter
+from adapters.ipfs import IPFSAdapter
 
 
 class TestIPFSAdapter:

@@ -2,14 +2,26 @@
 
 ## Getting started
 
-This project should be run using Python 3.9 (3.10 still has missing package compatability) and a virtualenv for dependency isolation. Here's a recommended setup:
+This project should be run using Python 3.9. Here's a recommended setup:
+
+### Poetry
+
+This project uses `poetry` for dependency management and packaging. Install poetry:
 
 ```bash
-brew update && brew install pdm                     # install conda package manager
-pdm venv create --name metazerse 3.9                # create virtualenv named metazerse with py3.9
-eval $(pdm venv activate metazerse)                 # activates env
-pip install -r requirements.txt                     # install dependencies
-pip install -e .                                    # add metazerse package to python path for easy dev
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+```
+
+### Setup
+
+```bash
+poetry install
+```
+
+### Testing
+
+```bash
+poetry run python -m pytest tests/
 ```
 
 ### Pre-commit

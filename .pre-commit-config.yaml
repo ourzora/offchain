@@ -7,10 +7,10 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
   - repo: https://github.com/psf/black
-    rev: 22.3.0
+    rev: 22.6.0
     hooks:
       - id: black
-        args: ["--config=./pyproject.toml", "--line-length=100"]
+        args: ["--config=./pyproject.toml", "--line-length=120"]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.0.0
     hooks:
@@ -23,8 +23,3 @@ repos:
     rev: "v8.2.0"
     hooks:
       - id: eslint
-  - repo: https://github.com/pycqa/isort
-    rev: 5.10.1
-    hooks:
-      - id: isort
-        name: isort (python)

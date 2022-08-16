@@ -1,14 +1,7 @@
-from metazerse.fetchers.base_fetcher import BaseFetcher
-from metazerse.models.metadata import (
-    Attribute,
-    MediaDetails,
-    Metadata,
-    MetadataField,
-    MetadataFieldType,
-    MetadataStandard,
-)
-from metazerse.models.token import Token
-from metazerse.parsers.schema.schema_parser import SchemaParser
+from fetchers.base_fetcher import BaseFetcher
+from models.metadata import Attribute, MediaDetails, Metadata, MetadataField, MetadataFieldType, MetadataStandard
+from models.token import Token
+from parsers.schema.schema_parser import SchemaParser
 
 
 class OpenseaParser(SchemaParser):
@@ -69,9 +62,7 @@ class OpenseaParser(SchemaParser):
     def parse_metadata(self, token: Token) -> Metadata:
         mime, _ = self.fetcher.fetch_mime_type_and_size(token.uri)
         raw_data = self.fetcher.fetch_content(token.uri)
-        attributes = [
-            self.parse_attribute(attribute) for attribute in raw_data.get("attributes", [])
-        ]
+        attributes = [self.parse_attribute(attribute) for attribute in raw_data.get("attributes", [])]
         image_uri = raw_data.get("image") or raw_data.get("image_data")
         if image_uri:
             image_mime, image_size = self.fetcher.fetch_mime_type_and_size(image_uri)

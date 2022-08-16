@@ -4,7 +4,7 @@ from typing import Optional
 from requests import PreparedRequest, Response
 from urllib3.util import parse_url
 
-from metazerse.adapters.base_adapter import HTTPAdapter
+from adapters.base_adapter import HTTPAdapter
 
 
 class IPFSAdapter(HTTPAdapter):
@@ -19,9 +19,7 @@ class IPFSAdapter(HTTPAdapter):
         *args,
         **kwargs,
     ):
-        assert all(
-            [g.endswith("/") for g in host_prefixes]
-        ), "gateways should have trailing slashes"
+        assert all([g.endswith("/") for g in host_prefixes]), "gateways should have trailing slashes"
 
         self.host_prefixes = host_prefixes
         self.key = key
