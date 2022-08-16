@@ -3,9 +3,9 @@ from typing import Tuple, Union
 
 import requests
 
-from metazerse.adapters.base_adapter import Adapter
-from metazerse.fetchers.base_fetcher import BaseFetcher
-from metazerse.logger.logging import logger
+from adapters.base_adapter import Adapter
+from fetchers.base_fetcher import BaseFetcher
+from logger.logging import logger
 
 
 class MetadataFetcher(BaseFetcher):

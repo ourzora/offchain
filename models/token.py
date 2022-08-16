@@ -1,4 +1,4 @@
-from metazerse.models.base_model import BaseModel
+from models.base_model import BaseModel
 
 
 class Token(BaseModel):

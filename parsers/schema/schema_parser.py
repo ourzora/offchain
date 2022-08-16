@@ -1,5 +1,5 @@
-from metazerse.models.metadata import MetadataStandard
-from metazerse.parsers.base_parser import BaseParser
+from models.metadata import MetadataStandard
+from parsers.base_parser import BaseParser
 
 
 class SchemaParser(BaseParser):

@@ -1,7 +1,7 @@
 from typing import Any, Optional
 
-from metazerse.models.base_model import BaseModel
-from metazerse.types.base import StringEnum
+from base.types import StringEnum
+from models.base_model import BaseModel
 
 
 class MetadataStandard(StringEnum):

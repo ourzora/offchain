@@ -1,5 +1,5 @@
-from metazerse.adapters.ipfs import IPFSAdapter
-from metazerse.fetchers.metadata_fetcher import MetadataFetcher
+from adapters.ipfs import IPFSAdapter
+from fetchers.metadata_fetcher import MetadataFetcher
 
 
 class TestMetadataFetcher:

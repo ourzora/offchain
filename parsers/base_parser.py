@@ -1,7 +1,7 @@
 from typing import Protocol
 
-from metazerse.fetchers.base_fetcher import BaseFetcher
-from metazerse.models.metadata import Metadata
+from fetchers.base_fetcher import BaseFetcher
+from models.metadata import Metadata
 
 
 class BaseParser(Protocol):

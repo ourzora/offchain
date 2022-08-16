@@ -9,6 +9,6 @@ log_handler.setFormatter(
         fmt="%(name)s %(threadName) %(message)s '%(asctime)s %(levelname)",
     )
 )
-logger = logging.getLogger("METAZERSE")
+logger = logging.getLogger("offchain")
 logger.addHandler(log_handler)
 logger.setLevel(logging.INFO)

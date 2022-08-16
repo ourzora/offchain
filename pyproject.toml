@@ -1,25 +1,21 @@
-[project]
-name = "metazerse"
+[tool.poetry]
+name = "offchain"
 version = "0.1.0"
-description = ""
-authors = [
-    {name = "Zora", email = "steve@ourzora.com"},
-]
-dependencies = []
-requires-python = ">=3.9"
-readme = "README.md"
-license = {text = "MIT"}
+description = "Open source metadata processing framework"
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "^2.28.1"
+pydantic = "^1.9.2"
+python-json-logger = "^2.0.4"
+urllib3 = "^1.26.11"
+
+[tool.poetry.dev-dependencies]
+pre-commit = "^2.20.0"
+pytest = "^7.1.2"
+black = "^22.6.0"
 
 [build-system]
-requires = ["pdm-pep517>=1.0.0"]
-build-backend = "pdm.pep517.api"
-
-testpaths = [
-    "tests",
-]
-
-[tool.isort]
-profile = "black"
-
-[tool.black]
-line-length = 100
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

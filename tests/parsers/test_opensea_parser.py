@@ -2,18 +2,11 @@
 
 from unittest.mock import MagicMock
 
-from metazerse.adapters.ipfs import IPFSAdapter
-from metazerse.fetchers.metadata_fetcher import MetadataFetcher
-from metazerse.models.metadata import (
-    Attribute,
-    MediaDetails,
-    Metadata,
-    MetadataField,
-    MetadataFieldType,
-    MetadataStandard,
-)
-from metazerse.models.token import Token
-from metazerse.parsers.schema.opensea import OpenseaParser
+from adapters.ipfs import IPFSAdapter
+from fetchers.metadata_fetcher import MetadataFetcher
+from models.metadata import Attribute, MediaDetails, Metadata, MetadataField, MetadataFieldType, MetadataStandard
+from models.token import Token
+from parsers.schema.opensea import OpenseaParser
 
 
 class TestOpenseaParser:
