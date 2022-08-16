@@ -15,7 +15,7 @@ class OpenseaParser(SchemaParser):
     _METADATA_STANDARD: MetadataStandard = MetadataStandard.OPENSEA_STANDARD
 
     def __init__(self, fetcher: BaseFetcher) -> None:
-        super().__init__(fetcher)
+        self.fetcher = fetcher
 
     def parse_attribute(self, attribute_dict: dict) -> Attribute:
         return Attribute(
@@ -26,8 +26,7 @@ class OpenseaParser(SchemaParser):
 
     def parse_additional_fields(self, raw_data: dict) -> list[MetadataField]:
         additional_fields = []
-        external_url = raw_data.get("external_url")
-        if external_url is not None:
+        if (external_url := raw_data.get("external_url")) is not None:
             additional_fields.append(
                 MetadataField(
                     field_name="external_url",
@@ -37,8 +36,7 @@ class OpenseaParser(SchemaParser):
                     value=external_url,
                 )
             )
-        background_color = raw_data.get("background_color")
-        if background_color is not None:
+        if (background_color := raw_data.get("background_color")) is not None:
             additional_fields.append(
                 MetadataField(
                     field_name="background_color",
@@ -48,8 +46,7 @@ class OpenseaParser(SchemaParser):
                     value=background_color,
                 )
             )
-        animation_url = raw_data.get("animation_url")
-        if animation_url is not None:
+        if (animation_url := raw_data.get("animation_url")) is not None:
             additional_fields.append(
                 MetadataField(
                     field_name="animation_url",
@@ -58,8 +55,7 @@ class OpenseaParser(SchemaParser):
                     value=animation_url,
                 )
             )
-        youtube_url = raw_data.get("youtube_url")
-        if youtube_url is not None:
+        if (youtube_url := raw_data.get("youtube_url")) is not None:
             additional_fields.append(
                 MetadataField(
                     field_name="youtube_url",

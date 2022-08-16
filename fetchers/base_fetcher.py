@@ -1,9 +1,12 @@
-class BaseFetcher:
-    def register_adapter():
-        raise NotImplementedError
+from typing import Protocol
 
-    def fetch_mime_type_and_size():
-        raise NotImplementedError
 
-    def fetch_content():
-        raise NotImplementedError
+class BaseFetcher(Protocol):
+    def register_adapter(self):
+        pass
+
+    def fetch_mime_type_and_size(self):
+        pass
+
+    def fetch_content(self):
+        pass

@@ -1,15 +1,5 @@
 from typing import Union
 
-from requests.adapters import BaseAdapter as RequestsBaseAdapter
-from requests.adapters import HTTPAdapter as RequestsHTTPAdapter
-
-
-class BaseAdapter(RequestsBaseAdapter):
-    pass
-
-
-class HTTPAdapter(RequestsHTTPAdapter):
-    pass
-
+from requests.adapters import BaseAdapter, HTTPAdapter
 
 Adapter = Union[BaseAdapter, HTTPAdapter]
