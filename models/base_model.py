@@ -1,5 +1,1 @@
-from pydantic import BaseModel as PydanticModel
-
-
-class BaseModel(PydanticModel):
-    pass
+from pydantic import BaseModel  # noqa: F401

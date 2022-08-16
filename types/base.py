@@ -14,5 +14,3 @@ class StringEnum(str, Enum):
     @classmethod
     def values(cls) -> list[str]:
         return [str(item.value) for item in cls]
-
-    pass

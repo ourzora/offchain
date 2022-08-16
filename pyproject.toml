@@ -1,0 +1,25 @@
+[project]
+name = "metazerse"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Zora", email = "steve@ourzora.com"},
+]
+dependencies = []
+requires-python = ">=3.9"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
+
+testpaths = [
+    "tests",
+]
+
+[tool.isort]
+profile = "black"
+
+[tool.black]
+line-length = 100
