@@ -1,9 +1,20 @@
+from typing import Optional
+
 from fetchers.base_fetcher import BaseFetcher
-from models.metadata import Attribute, MediaDetails, Metadata, MetadataField, MetadataFieldType, MetadataStandard
+from models.metadata import (
+    Attribute,
+    MediaDetails,
+    Metadata,
+    MetadataField,
+    MetadataFieldType,
+    MetadataStandard,
+)
 from models.token import Token
 from parsers.schema.schema_parser import SchemaParser
+from registries.parser_registry import ParserRegistry
 
 
+@ParserRegistry.register
 class OpenseaParser(SchemaParser):
     _METADATA_STANDARD: MetadataStandard = MetadataStandard.OPENSEA_STANDARD
 
@@ -59,9 +70,9 @@ class OpenseaParser(SchemaParser):
             )
         return additional_fields
 
-    def parse_metadata(self, token: Token) -> Metadata:
+    def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:
         mime, _ = self.fetcher.fetch_mime_type_and_size(token.uri)
-        raw_data = self.fetcher.fetch_content(token.uri)
+
         attributes = [self.parse_attribute(attribute) for attribute in raw_data.get("attributes", [])]
         image_uri = raw_data.get("image") or raw_data.get("image_data")
         if image_uri:
@@ -69,6 +80,7 @@ class OpenseaParser(SchemaParser):
             image = MediaDetails(size=image_size, uri=image_uri, mime_type=image_mime)
 
         return Metadata(
+            chain_identifier=token.chain_identifier,
             collection_address=token.collection_address,
             token_id=token.token_id,
             token_uri=token.uri,
@@ -81,3 +93,6 @@ class OpenseaParser(SchemaParser):
             image=image,
             additional_fields=self.parse_additional_fields(raw_data),
         )
+
+    def should_parse_token(self, token: Token, raw_data: dict, *args, **kwargs) -> bool:
+        return isinstance(raw_data.get("attributes"), list) or isinstance(raw_data.get("animation_url"), str)

@@ -12,3 +12,6 @@ class BaseParser(Protocol):
 
     def parse_metadata(self) -> Metadata:
         pass
+
+    def should_parse_token(self) -> bool:
+        pass

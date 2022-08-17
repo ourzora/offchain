@@ -6,8 +6,10 @@ import requests
 from adapters.base_adapter import Adapter
 from fetchers.base_fetcher import BaseFetcher
 from logger.logging import logger
+from registries.fetcher_registry import FetcherRegistry
 
 
+@FetcherRegistry.register
 class MetadataFetcher(BaseFetcher):
     def __init__(
         self,
@@ -20,6 +22,12 @@ class MetadataFetcher(BaseFetcher):
 
     def register_adapter(self, adapter: Adapter, url_prefix: str):
         self.sess.mount(url_prefix, adapter)
+
+    def set_max_retries(self, max_retries: int):
+        self.max_retries = max_retries
+
+    def set_timeout(self, timeout: int):
+        self.timeout = timeout
 
     def _head(self, uri: str):
         return self.sess.head(uri, timeout=self.timeout, allow_redirects=True)

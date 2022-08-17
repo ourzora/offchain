@@ -1,6 +1,6 @@
 import pytest
 
-from adapters.ipfs import IPFSAdapter
+from adapters import IPFSAdapter
 
 
 class TestIPFSAdapter:
