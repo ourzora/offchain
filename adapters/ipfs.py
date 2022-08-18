@@ -5,23 +5,27 @@ from requests import PreparedRequest, Response
 from urllib3.util import parse_url
 
 from adapters.base_adapter import HTTPAdapter
+from registries.adapter_registry import AdapterRegistry
 
 
+@AdapterRegistry.register
 class IPFSAdapter(HTTPAdapter):
     """Requests adapter for making requests to IPFS"""
 
     def __init__(
         self,
-        host_prefixes: list[str] = ["https://gateway.pinata.cloud/ipfs/"],
+        host_prefixes: Optional[list[str]] = None,
         key: Optional[str] = None,
         secret: Optional[str] = None,
         timeout: int = 10,
         *args,
         **kwargs,
     ):
-        assert all([g.endswith("/") for g in host_prefixes]), "gateways should have trailing slashes"
 
-        self.host_prefixes = host_prefixes
+        self.host_prefixes = host_prefixes or ["https://gateway.pinata.cloud/ipfs/"]
+
+        assert all([g.endswith("/") for g in self.host_prefixes]), "gateways should have trailing slashes"
+
         self.key = key
         self.secret = secret
         self.timeout = timeout

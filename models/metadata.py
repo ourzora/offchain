@@ -41,6 +41,7 @@ class MetadataField(BaseModel):
 
 
 class Metadata(BaseModel):
+    chain_identifier: str
     collection_address: str
     token_id: int
 
