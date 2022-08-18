@@ -1,7 +1,7 @@
 from typing import Optional
 
-from fetchers.base_fetcher import BaseFetcher
-from models.metadata import (
+from offchain.fetchers.base_fetcher import BaseFetcher
+from offchain.models.metadata import (
     Attribute,
     MediaDetails,
     Metadata,
@@ -9,9 +9,9 @@ from models.metadata import (
     MetadataFieldType,
     MetadataStandard,
 )
-from models.token import Token
-from parsers.schema.schema_parser import SchemaParser
-from registries.parser_registry import ParserRegistry
+from offchain.models.token import Token
+from offchain.parsers.schema.schema_parser import SchemaParser
+from offchain.registries.parser_registry import ParserRegistry
 
 
 @ParserRegistry.register

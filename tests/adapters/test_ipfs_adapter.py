@@ -1,6 +1,6 @@
 import pytest
 
-from adapters import IPFSAdapter
+from offchain.adapters import IPFSAdapter
 
 
 class TestIPFSAdapter:

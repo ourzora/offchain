@@ -1,7 +1,7 @@
 from typing import Optional, Type
 
-from adapters.base_adapter import Adapter
-from registries.base_registry import BaseRegistry
+from offchain.adapters.base_adapter import Adapter
+from offchain.registries.base_registry import BaseRegistry
 
 
 class AdapterRegistry(BaseRegistry):
@@ -12,7 +12,7 @@ class AdapterRegistry(BaseRegistry):
         return list(AdapterRegistry.__adapter_registry.values())
 
     @staticmethod
-    def get_adapter_by_name(adapter_name: str) -> Optional[Adapter]:
+    def get_adapter_cls_by_name(adapter_name: str) -> Optional[Adapter]:
         return AdapterRegistry.__adapter_registry.get(adapter_name)
 
     @staticmethod

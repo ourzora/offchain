@@ -1,7 +1,7 @@
 import pytest
 
-from adapters.ipfs import IPFSAdapter
-from registries.adapter_registry import AdapterRegistry
+from offchain.adapters import ARWeaveAdapter, DataURIAdapter, HTTPAdapter, IPFSAdapter
+from offchain.registries.adapter_registry import AdapterRegistry
 
 
 class TestAdapterRegistry:
@@ -12,4 +12,9 @@ class TestAdapterRegistry:
 
     def test_adapter_registry_has_all_adapters(self):
         adapter_registry = AdapterRegistry()
-        assert adapter_registry.get_all() == [IPFSAdapter]
+        assert adapter_registry.get_all() == [
+            ARWeaveAdapter,
+            DataURIAdapter,
+            HTTPAdapter,
+            IPFSAdapter,
+        ]

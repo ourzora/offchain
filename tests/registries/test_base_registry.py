@@ -1,4 +1,4 @@
-from registries.base_registry import BaseRegistry
+from offchain.registries.base_registry import BaseRegistry
 
 
 class TestBaseRegistry:

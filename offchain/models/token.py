@@ -1,4 +1,4 @@
-from models.base_model import BaseModel
+from offchain.models.base_model import BaseModel
 
 
 class Token(BaseModel):

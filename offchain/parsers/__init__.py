@@ -1,4 +1,4 @@
-from base.types import StringEnum
+from offchain.base.types import StringEnum
 
 from .base_parser import BaseParser
 from .collection.collection_parser import CollectionParser

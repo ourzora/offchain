@@ -1,7 +1,7 @@
 from typing import Type
 
-from fetchers.base_fetcher import BaseFetcher
-from registries.base_registry import BaseRegistry
+from offchain.fetchers.base_fetcher import BaseFetcher
+from offchain.registries.base_registry import BaseRegistry
 
 
 class FetcherRegistry(BaseRegistry):

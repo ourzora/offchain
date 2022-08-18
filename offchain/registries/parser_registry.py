@@ -1,9 +1,9 @@
-from typing import Type
+from typing import Optional, Type
 
-from parsers.base_parser import BaseParser
-from parsers.collection.collection_parser import CollectionParser
-from parsers.schema.schema_parser import SchemaParser
-from registries.base_registry import BaseRegistry
+from offchain.parsers.base_parser import BaseParser
+from offchain.parsers.collection.collection_parser import CollectionParser
+from offchain.parsers.schema.schema_parser import SchemaParser
+from offchain.registries.base_registry import BaseRegistry
 
 
 class ParserRegistry(BaseRegistry):
@@ -20,6 +20,10 @@ class ParserRegistry(BaseRegistry):
     @staticmethod
     def get_all_schema_parsers() -> list[SchemaParser]:
         return [parser for parser in ParserRegistry.__parser_registry.values() if isinstance(parser, SchemaParser)]
+
+    @staticmethod
+    def get_parser_cls_by_name(cls_name: str) -> Optional[BaseParser]:
+        return ParserRegistry.__parser_registry.get(cls_name)
 
     @staticmethod
     def validate(parser_cls: Type[BaseParser]):
