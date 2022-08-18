@@ -1,7 +1,7 @@
 import pytest
 
-from fetchers.metadata_fetcher import MetadataFetcher
-from registries.fetcher_registry import FetcherRegistry
+from offchain.fetchers.metadata_fetcher import MetadataFetcher
+from offchain.registries.fetcher_registry import FetcherRegistry
 
 
 class TestFetcherRegistry:

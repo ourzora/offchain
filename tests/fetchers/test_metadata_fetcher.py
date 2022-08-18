@@ -1,5 +1,5 @@
-from adapters.ipfs import IPFSAdapter
-from fetchers.metadata_fetcher import MetadataFetcher
+from offchain.adapters.ipfs import IPFSAdapter
+from offchain.fetchers.metadata_fetcher import MetadataFetcher
 
 
 class TestMetadataFetcher:

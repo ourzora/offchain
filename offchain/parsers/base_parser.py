@@ -1,7 +1,7 @@
 from typing import Protocol
 
-from fetchers.base_fetcher import BaseFetcher
-from models.metadata import Metadata
+from offchain.fetchers.base_fetcher import BaseFetcher
+from offchain.models.metadata import Metadata
 
 
 class BaseParser(Protocol):

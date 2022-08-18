@@ -1,9 +1,9 @@
 import pytest
 
-from parsers.schema.schema_parser import SchemaParser
-from parsers.collection.collection_parser import CollectionParser
-from parsers.schema.opensea import OpenseaParser
-from registries.parser_registry import ParserRegistry
+from offchain.parsers.schema.schema_parser import SchemaParser
+from offchain.parsers.collection.collection_parser import CollectionParser
+from offchain.parsers.schema.opensea import OpenseaParser
+from offchain.registries.parser_registry import ParserRegistry
 
 
 class TestParserRegistry:

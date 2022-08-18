@@ -3,10 +3,10 @@ from typing import Tuple, Union
 
 import requests
 
-from adapters.base_adapter import Adapter
-from fetchers.base_fetcher import BaseFetcher
-from logger.logging import logger
-from registries.fetcher_registry import FetcherRegistry
+from offchain.adapters.base_adapter import Adapter
+from offchain.fetchers.base_fetcher import BaseFetcher
+from offchain.logger.logging import logger
+from offchain.registries.fetcher_registry import FetcherRegistry
 
 
 @FetcherRegistry.register

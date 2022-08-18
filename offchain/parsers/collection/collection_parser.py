@@ -1,5 +1,5 @@
-from parsers.base_parser import BaseParser
-from models.token import Token
+from offchain.parsers.base_parser import BaseParser
+from offchain.models.token import Token
 
 
 class CollectionParser(BaseParser):

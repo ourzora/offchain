@@ -1,11 +1,10 @@
 import random
-from typing import Optional
-
 from requests import PreparedRequest, Response
+from typing import Optional
 from urllib3.util import parse_url
 
-from adapters.base_adapter import HTTPAdapter
-from registries.adapter_registry import AdapterRegistry
+from offchain.adapters.base_adapter import HTTPAdapter
+from offchain.registries.adapter_registry import AdapterRegistry
 
 
 @AdapterRegistry.register
