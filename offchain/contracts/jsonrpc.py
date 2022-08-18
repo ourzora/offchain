@@ -69,7 +69,8 @@ class EthereumJSONRPC:
             return result
         except Exception as e:
             logger.error(
-                f"Caught exception while making batch rpc call. Method: {method}. Params: {params}. Retrying. Error: {e}"
+                f"Caught exception while making batch rpc call. "
+                f"Method: {method}. Params: {params}. Retrying. Error: {e}"
                 # noqa
             )
             raise
