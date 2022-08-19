@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from offchain.contracts.base_contract_caller import BaseContractCaller
-from offchain.contracts.jsonrpc import EthereumJSONRPC
+from offchain.web3.batching import BatchContactViewCaller
+from offchain.web3.jsonrpc import EthereumJSONRPC
 
 
 @dataclass
@@ -14,12 +14,13 @@ class RawSeeds:
     glasses: int
 
 
-class NounsContractCaller(BaseContractCaller):
+class NounsContractCaller:
     def __init__(
         self, contract_address: str, rpc: Optional[EthereumJSONRPC] = None
     ) -> None:
         self.contract_address = contract_address
-        super().__init__(rpc)
+        self.rpc = rpc or EthereumJSONRPC()
+        self.caller = BatchContactViewCaller(rpc)
 
     def seeds(self, token_id: int) -> RawSeeds:
         return self.batch_seeds([token_id])[0]
@@ -27,7 +28,7 @@ class NounsContractCaller(BaseContractCaller):
     def batch_seeds(self, token_ids: list[int]) -> list[RawSeeds]:
         seeds = []
 
-        results = self.single_address_single_fn_many_args(
+        results = self.caller.single_address_single_fn_many_args(
             self.contract_address,
             function_sig="seeds(uint256)",
             return_type=["uint48", "uint48", "uint48", "uint48", "uint48"],
