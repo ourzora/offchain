@@ -4,15 +4,13 @@ from eth_abi import encode_abi, decode_abi
 from eth_utils import to_hex
 
 from offchain.concurrency import parmap
-from offchain.contracts.contract_utils import function_signature_to_sighash
-from offchain.contracts.jsonrpc import EthereumJSONRPC
+from offchain.web3.contract_utils import function_signature_to_sighash
+from offchain.web3.jsonrpc import EthereumJSONRPC
 
 CHUNK_SIZE = 500
 
 
-class BaseContractCaller:
-    rpc: EthereumJSONRPC
-
+class BatchContactViewCaller:
     def __init__(self, rpc: Optional[EthereumJSONRPC] = None) -> None:
         self.rpc = rpc or EthereumJSONRPC()
 
