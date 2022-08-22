@@ -16,6 +16,7 @@ from offchain.metadata.models.metadata_processing_error import MetadataProcessin
 from offchain.metadata.models.token import Token
 from offchain.metadata.parsers import OpenseaParser
 from offchain.metadata.parsers.base_parser import BaseParser
+from offchain.metadata.parsers.schema.unknown import UnknownParser
 from offchain.metadata.pipelines.base_pipeline import BasePipeline
 
 
@@ -45,7 +46,7 @@ DEFAULT_ADAPTER_CONFIGS: list[AdapterConfig] = [
     ),
 ]
 
-DEFAULT_PARSER_CLASSES = [OpenseaParser]
+DEFAULT_PARSER_CLASSES = [OpenseaParser, UnknownParser]
 
 
 class MetadataPipeline(BasePipeline):
