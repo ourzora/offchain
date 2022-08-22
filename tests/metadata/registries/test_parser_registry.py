@@ -1,8 +1,8 @@
 import pytest
 
+from offchain.metadata.parsers import OpenseaParser, UnknownParser
 from offchain.metadata.parsers.schema.schema_parser import SchemaParser
 from offchain.metadata.parsers.collection.collection_parser import CollectionParser
-from offchain.metadata.parsers.schema.opensea import OpenseaParser
 from offchain.metadata.registries.parser_registry import ParserRegistry
 
 
@@ -30,4 +30,4 @@ class TestParserRegistry:
 
     def test_parser_registry_has_all_parsers(self):
         parser_registry = ParserRegistry()
-        assert parser_registry.get_all() == [OpenseaParser]
+        assert parser_registry.get_all() == [OpenseaParser, UnknownParser]
