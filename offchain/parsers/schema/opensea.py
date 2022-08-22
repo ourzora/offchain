@@ -74,6 +74,7 @@ class OpenseaParser(SchemaParser):
         mime, _ = self.fetcher.fetch_mime_type_and_size(token.uri)
 
         attributes = [self.parse_attribute(attribute) for attribute in raw_data.get("attributes", [])]
+        image = None
         image_uri = raw_data.get("image") or raw_data.get("image_data")
         if image_uri:
             image_mime, image_size = self.fetcher.fetch_mime_type_and_size(image_uri)
