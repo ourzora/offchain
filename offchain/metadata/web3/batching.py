@@ -44,6 +44,40 @@ class BatchContractViewCaller:
         res = self._call_batch_chunked(req_params, chunk_size)
         return list(map(lambda r: self.decode_response(r, return_type), res))
 
+    def single_address_many_fns_many_args(
+        self,
+        address: str,
+        function_sigs: list[str],
+        return_types: list[list[str]],
+        args: list[list[Any]],
+        block_tag: Optional[str] = "latest",
+        chunk_size: int = CHUNK_SIZE,
+    ) -> dict[str, Optional[Any]]:
+        """Call many functions on a single addresses with differnt arguments per function
+
+        Args:
+            address (str): address to call function on
+            function_sigs (list[str]): list of fn signature (ex: ["totalSupply()", "symbol()"])
+            return_types (list[list[str]]): list of return function signature (ex: [["uint256"]])
+            args (list[list[Any]]): list of arguments passed in each fn call (ex: [[1], [2], [3]])
+            chunk_size (int, optional): [description]. Defaults to 500.
+
+        Returns:
+            dict[str, Optional[Any]]: dicts with fn names as keys (ex: {"totalSupply()": 1234})
+        """
+        assert len(function_sigs) == len(args) and len(args) == len(
+            return_types
+        ), "function names, return types, args must all be the same length"
+        req_params = [
+            self.request_builder(address, function_sigs[i], args[i], block_tag)
+            for i in range(len(args))
+        ]
+        res = self._call_batch_chunked(req_params, chunk_size)
+        cleaned = list(
+            map(lambda i: self.decode_response(res[i], return_types[i]), range(len(res)))
+        )
+        return {k: v for k, v in zip(function_sigs, cleaned)}
+
     def _call_batch_chunked(
         self, request_params: list[list[Any]], chunk_size: int = CHUNK_SIZE
     ) -> list[Any]:
