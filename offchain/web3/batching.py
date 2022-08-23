@@ -10,7 +10,7 @@ from offchain.web3.jsonrpc import EthereumJSONRPC
 CHUNK_SIZE = 500
 
 
-class BatchContactViewCaller:
+class BatchContractViewCaller:
     def __init__(self, rpc: Optional[EthereumJSONRPC] = None) -> None:
         self.rpc = rpc or EthereumJSONRPC()
 
