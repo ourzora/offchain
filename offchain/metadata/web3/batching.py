@@ -4,8 +4,8 @@ from eth_abi import encode_abi, decode_abi
 from eth_utils import to_hex
 
 from offchain.concurrency import parmap
-from offchain.web3.contract_utils import function_signature_to_sighash
-from offchain.web3.jsonrpc import EthereumJSONRPC
+from offchain.metadata.web3.contract_utils import function_signature_to_sighash
+from offchain.metadata.web3.jsonrpc import EthereumJSONRPC
 
 CHUNK_SIZE = 500
 
