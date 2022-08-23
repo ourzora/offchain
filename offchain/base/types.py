@@ -7,6 +7,9 @@ class StringEnum(str, Enum):
     def __repr__(self) -> str:
         return str(self.value)
 
+    def __str__(self):
+        return str(self.value)
+
     @classmethod
     def contains_value(cls, value: str) -> bool:
         return value in set(str(item.value) for item in cls)
