@@ -124,10 +124,7 @@ class UnknownParser(SchemaParser):
         mime, _ = self.fetcher.fetch_mime_type_and_size(token.uri)
 
         return Metadata(
-            chain_identifier=token.chain_identifier,
-            collection_address=token.collection_address,
-            token_id=token.token_id,
-            token_uri=token.uri,
+            token=token,
             raw_data=raw_data,
             standard=self._METADATA_STANDARD,
             attributes=self.get_attributes(raw_data=raw_data),

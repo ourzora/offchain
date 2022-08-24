@@ -81,10 +81,7 @@ class OpenseaParser(SchemaParser):
             image = MediaDetails(size=image_size, uri=image_uri, mime_type=image_mime)
 
         return Metadata(
-            chain_identifier=token.chain_identifier,
-            collection_address=token.collection_address,
-            token_id=token.token_id,
-            token_uri=token.uri,
+            token=token,
             raw_data=raw_data,
             standard=OpenseaParser._METADATA_STANDARD,
             attributes=attributes,

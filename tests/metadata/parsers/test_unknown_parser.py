@@ -62,9 +62,7 @@ class TestUnknownParser:
         parser = UnknownParser(fetcher=fetcher)
         metadata = parser.parse_metadata(token=self.token, raw_data=self.raw_data)
         assert metadata == Metadata(
-            chain_identifier="ETHEREUM-MAINNET",
-            collection_address="0x74cb086a1611cc9ca672f458b7742dd4159ac9db",
-            token_id=80071,
+            token=self.token,
             raw_data={
                 "status": 10000,
                 "result": {
@@ -102,7 +100,6 @@ class TestUnknownParser:
             name=None,
             description=None,
             mime_type=None,
-            token_uri="https://api.dego.finance/gego-token-v2/80071",
             image=None,
             content=None,
             additional_fields=[],
