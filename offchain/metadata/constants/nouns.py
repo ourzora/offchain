@@ -445,13 +445,19 @@ class Seeds:
     head: str
     glasses: str
 
-    # this is an example of how we can deserialize from the contract later
-    # @classmethod
-    # def from_raw_seeds(cls, raw: RawSeeds):
-    #     background = BACKGROUND[raw.background]
-    #     body = BODY[raw.body]
-    #     accessory = ACCESSORY[raw.accessory]
-    #     head = HEAD[raw.head]
-    #     glasses = GLASSES[raw.glasses]
-    #
-    #     return Seeds(background, body, accessory, head, glasses)
+    @classmethod
+    def from_raw(
+        cls,
+        background_index: int,
+        body_index: int,
+        accessory_index: int,
+        head_index: int,
+        glasses_index: int,
+    ):
+        background = BACKGROUND[background_index]
+        body = BODY[body_index]
+        accessory = ACCESSORY[accessory_index]
+        head = HEAD[head_index]
+        glasses = GLASSES[glasses_index]
+
+        return Seeds(background, body, accessory, head, glasses)
