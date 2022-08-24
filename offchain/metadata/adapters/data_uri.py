@@ -7,7 +7,7 @@ from offchain.metadata.registries.adapter_registry import AdapterRegistry
 
 @AdapterRegistry.register
 class DataURIAdapter(BaseAdapter):
-    """Requests adapter for decoding data-uris"""
+    """Provides an interface for Requests sessions to handle data uris."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

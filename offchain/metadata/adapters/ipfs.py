@@ -9,7 +9,7 @@ from offchain.metadata.registries.adapter_registry import AdapterRegistry
 
 @AdapterRegistry.register
 class IPFSAdapter(HTTPAdapter):
-    """Requests adapter for making requests to IPFS"""
+    """Provides an interface for Requests sessions to contact IPFS urls."""
 
     def __init__(
         self,
