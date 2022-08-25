@@ -18,6 +18,7 @@ from offchain.metadata.parsers import OpenseaParser
 from offchain.metadata.parsers.base_parser import BaseParser
 from offchain.metadata.parsers.schema.unknown import UnknownParser
 from offchain.metadata.pipelines.base_pipeline import BasePipeline
+from offchain.metadata.web3.batching import BatchContractViewCaller
 
 
 @dataclass
@@ -53,10 +54,12 @@ class MetadataPipeline(BasePipeline):
     def __init__(
         self,
         fetcher: Optional[BaseFetcher] = None,
+        contract_caller: Optional[BatchContractViewCaller] = None,
         parsers: Optional[list[BaseParser]] = None,
         adapter_configs: Optional[list[AdapterConfig]] = None,
     ) -> None:
         self.fetcher = fetcher or MetadataFetcher()
+        self.contract_caller = contract_caller or BatchContractViewCaller()
         if adapter_configs is None:
             adapter_configs = DEFAULT_ADAPTER_CONFIGS
         for adapter_config in adapter_configs:
