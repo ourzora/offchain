@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from offchain.metadata.models.metadata import Attribute
+
 BACKGROUND = ["cool", "warm"]
 
 BODY = [
@@ -461,3 +463,19 @@ class Seeds:
         glasses = GLASSES[glasses_index]
 
         return Seeds(background, body, accessory, head, glasses)
+
+    def to_attributes(self) -> list[Attribute]:
+        attributes = []
+
+        def normalize_value(value: str) -> str:
+            return value.replace("-", " ")
+
+        for trait, value in self.__dict__.values():
+            attribute = Attribute(
+                trait_type=trait,
+                value=normalize_value(value),
+                display_type=None,
+            )
+            attributes.append(attribute)
+
+        return attributes
