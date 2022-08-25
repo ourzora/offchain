@@ -2,6 +2,7 @@ from typing import Optional, Protocol
 
 from offchain.metadata.fetchers.base_fetcher import BaseFetcher
 from offchain.metadata.parsers.base_parser import BaseParser
+from offchain.metadata.web3.batching import BatchContractViewCaller
 
 
 class BasePipeline(Protocol):
@@ -16,11 +17,13 @@ class BasePipeline(Protocol):
     """
 
     fetcher: Optional[BaseFetcher]
+    contract_caller: Optional[BatchContractViewCaller]
     parsers: Optional[list[BaseParser]]
 
     def __init__(
         self,
         fetcher: Optional[BaseFetcher],
+        contract_caller: Optional[BatchContractViewCaller],
         parsers: Optional[list[BaseParser]],
     ) -> None:
         pass
