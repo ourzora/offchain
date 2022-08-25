@@ -1,7 +1,7 @@
 from offchain.constants.addresses import CollectionAddress
 from offchain.metadata.constants.nouns import Seeds
 from offchain.metadata.fetchers import BaseFetcher
-from offchain.metadata.models.metadata import Metadata, MediaDetails, MetadataStandard
+from offchain.metadata.models.metadata import Metadata, MediaDetails, MetadataStandard, Attribute
 from offchain.metadata.models.token import Token
 from offchain.metadata.parsers.collection.collection_parser import CollectionParser
 from offchain.metadata.registries.parser_registry import ParserRegistry
@@ -22,6 +22,22 @@ class NounsParser(CollectionParser):
     ) -> None:
         self.contract_caller = contract_caller
         super().__init__(fetcher)
+
+    def parse_attributes(self, seeds: Seeds) -> list[Attribute]:
+        attributes = []
+
+        def normalize_value(value: str) -> str:
+            return value.replace("-", " ")
+
+        for trait, value in seeds.__dict__.values():
+            attribute = Attribute(
+                trait_type=trait,
+                value=normalize_value(value),
+                display_type=None,
+            )
+            attributes.append(attribute)
+
+        return attributes
 
     def batch_seeds(self, token_ids: list[int]) -> list[Seeds]:
         seeds = []
@@ -57,6 +73,8 @@ class NounsParser(CollectionParser):
         def seeds(token_id: int) -> Seeds:
             return self.batch_seeds([token_id])[0]
 
+        attributes = self.parse_attributes(seeds(token.token_id))
+
         return Metadata(
             chain_identifier=token.chain_identifier,
             collection_address=token.collection_address,
@@ -64,7 +82,7 @@ class NounsParser(CollectionParser):
             token_uri=token.uri,
             raw_data=raw_data,
             standard=STANDARD,
-            attributes=seeds(token.token_id).to_attributes(),
+            attributes=attributes,
             name=raw_data.get("name"),
             description=raw_data.get("description"),
             mime_type=mime,
