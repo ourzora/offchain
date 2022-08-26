@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-from offchain.metadata.web3.jsonrpc import EthereumJSONRPC
+from offchain.web3.jsonrpc import EthereumJSONRPC
 
 
 def test_chunking_batch_calls():

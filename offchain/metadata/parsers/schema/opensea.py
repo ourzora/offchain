@@ -1,6 +1,5 @@
 from typing import Optional
 
-from offchain.metadata.fetchers.base_fetcher import BaseFetcher
 from offchain.metadata.models.metadata import (
     Attribute,
     MediaDetails,
@@ -22,9 +21,6 @@ class OpenseaParser(SchemaParser):
     """
 
     _METADATA_STANDARD: MetadataStandard = MetadataStandard.OPENSEA_STANDARD
-
-    def __init__(self, fetcher: BaseFetcher) -> None:
-        self.fetcher = fetcher
 
     def parse_attribute(self, attribute_dict: dict) -> Attribute:
         return Attribute(

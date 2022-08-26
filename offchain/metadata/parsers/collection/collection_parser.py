@@ -1,5 +1,7 @@
+from offchain.metadata.fetchers.base_fetcher import BaseFetcher
 from offchain.metadata.parsers.base_parser import BaseParser
 from offchain.metadata.models.token import Token
+from offchain.web3.contract_caller import ContractCaller
 
 
 class CollectionParser(BaseParser):
@@ -13,6 +15,10 @@ class CollectionParser(BaseParser):
     """
 
     _COLLECTION_ADDRESSES: list[str]
+
+    def __init__(self, fetcher: BaseFetcher, contract_caller: ContractCaller, *args, **kwargs) -> None:
+        self.contract_caller = contract_caller
+        self.fetcher = fetcher
 
     def should_parse_token(self, token: Token, *args, **kwargs) -> bool:
         """Return whether or not a collection parser should parse a given token.

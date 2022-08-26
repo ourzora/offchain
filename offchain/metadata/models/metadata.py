@@ -98,8 +98,8 @@ class Metadata(BaseModel):
     token: Token
 
     raw_data: dict
-    standard: MetadataStandard
     attributes: list[Attribute]
+    standard: Optional[MetadataStandard] = None
     name: Optional[str] = None
     description: Optional[str] = None
     mime_type: Optional[str] = None
