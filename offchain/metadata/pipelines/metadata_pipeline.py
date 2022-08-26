@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable, Optional, Union
 
+from offchain.concurrency import batched_parmap
 from offchain.metadata.adapters import (
     ARWeaveAdapter,
     DataURIAdapter,
@@ -8,7 +9,6 @@ from offchain.metadata.adapters import (
     IPFSAdapter,
 )
 from offchain.metadata.adapters.base_adapter import Adapter
-from offchain.concurrency import batched_parmap
 from offchain.metadata.fetchers.base_fetcher import BaseFetcher
 from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 from offchain.metadata.models.metadata import Metadata
@@ -18,7 +18,6 @@ from offchain.metadata.parsers import OpenseaParser
 from offchain.metadata.parsers.base_parser import BaseParser
 from offchain.metadata.parsers.schema.unknown import UnknownParser
 from offchain.metadata.pipelines.base_pipeline import BasePipeline
-from offchain.metadata.web3.batching import BatchContractViewCaller
 
 
 @dataclass
@@ -54,12 +53,10 @@ class MetadataPipeline(BasePipeline):
     def __init__(
         self,
         fetcher: Optional[BaseFetcher] = None,
-        contract_caller: Optional[BatchContractViewCaller] = None,
         parsers: Optional[list[BaseParser]] = None,
         adapter_configs: Optional[list[AdapterConfig]] = None,
     ) -> None:
         self.fetcher = fetcher or MetadataFetcher()
-        self.contract_caller = contract_caller or BatchContractViewCaller()
         if adapter_configs is None:
             adapter_configs = DEFAULT_ADAPTER_CONFIGS
         for adapter_config in adapter_configs:
