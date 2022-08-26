@@ -16,6 +16,11 @@ from offchain.metadata.registries.parser_registry import ParserRegistry
 
 @ParserRegistry.register
 class OpenseaParser(SchemaParser):
+    """Parser class for the OpenSea metadata standard.
+
+    https://docs.opensea.io/docs/metadata-standards
+    """
+
     _METADATA_STANDARD: MetadataStandard = MetadataStandard.OPENSEA_STANDARD
 
     def __init__(self, fetcher: BaseFetcher) -> None:
@@ -71,6 +76,15 @@ class OpenseaParser(SchemaParser):
         return additional_fields
 
     def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:
+        """Given a token and raw data returned from the token uri, return a normalized Metadata object.
+
+        Args:
+            token (Token): token to process metadata for.
+            raw_data (dict): raw data returned from token uri.
+
+        Returns:
+            Optional[Metadata]: normalized metadata object, if successfully parsed.
+        """
         mime, _ = self.fetcher.fetch_mime_type_and_size(token.uri)
 
         attributes = [self.parse_attribute(attribute) for attribute in raw_data.get("attributes", [])]
@@ -81,10 +95,7 @@ class OpenseaParser(SchemaParser):
             image = MediaDetails(size=image_size, uri=image_uri, mime_type=image_mime)
 
         return Metadata(
-            chain_identifier=token.chain_identifier,
-            collection_address=token.collection_address,
-            token_id=token.token_id,
-            token_uri=token.uri,
+            token=token,
             raw_data=raw_data,
             standard=OpenseaParser._METADATA_STANDARD,
             attributes=attributes,
@@ -96,4 +107,13 @@ class OpenseaParser(SchemaParser):
         )
 
     def should_parse_token(self, token: Token, raw_data: dict, *args, **kwargs) -> bool:
+        """Return whether or not a collection parser should parse a given token.
+
+        Args:
+            token (Token): the token whose metadata needs to be parsed.
+            raw_data (dict): raw data returned from token uri.
+
+        Returns:
+            bool: whether or not the collection parser handles this token.
+        """
         return isinstance(raw_data.get("attributes"), list) or isinstance(raw_data.get("animation_url"), str)

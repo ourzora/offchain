@@ -50,6 +50,18 @@ DEFAULT_PARSER_CLASSES = [OpenseaParser, UnknownParser]
 
 
 class MetadataPipeline(BasePipeline):
+    """Base protocol for Pipeline classes
+
+    By default, the parsers are run in order and we will early return when of them returns a valid metadata object.
+
+    Attributes:
+        fetcher (BaseFetcher, optional): a fetcher instance responsible for fetching content,
+            mime type, and size by making requests.
+        parsers (list[BaseParser], optional): a list of parser instances to use to parse token metadata.
+        adapter_configs: (list[AdapterConfig], optional): a list of adapter configs used to register adapters
+            to specified url prefixes.
+    """
+
     def __init__(
         self,
         fetcher: Optional[BaseFetcher] = None,
@@ -73,6 +85,14 @@ class MetadataPipeline(BasePipeline):
         adapter: Adapter,
         url_prefixes: list[str],
     ):
+        """Given an adapter and list of url prefixes, register the adapter to each of the prefixes.
+
+        Example Usage: mount_adapter(IPFSAdapter, ["ipfs://", "https://gateway.pinata.cloud/"])
+
+        Args:
+            adapter (Adapter): Adapter instance
+            url_prefixes (list[str]): list of url prefixes to which to mount the adapter.
+        """
         for prefix in url_prefixes:
             self.fetcher.register_adapter(adapter, prefix)
 
@@ -81,6 +101,18 @@ class MetadataPipeline(BasePipeline):
         token: Token,
         metadata_selector_fn: Optional[Callable] = None,
     ) -> Union[Metadata, MetadataProcessingError]:
+        """Fetch metadata for a single token
+
+        Args:
+            token (Token): token for which to fetch metadata.
+            metadata_selector_fn (Optional[Callable], optional):
+                optionally specify a function to select a metadata
+                object from a list of metadata. Defaults to None.
+
+        Returns:
+            Union[Metadata, MetadataProcessingError]: returns either a Metadata
+                or a MetadataProcessingError if unable to parse.
+        """
         raw_data = self.fetcher.fetch_content(token.uri)
         possible_metadatas = []
         for parser in self.parsers:
@@ -109,6 +141,19 @@ class MetadataPipeline(BasePipeline):
         *args,
         **kwargs,
     ) -> list[Union[Metadata, MetadataProcessingError]]:
+        """Run metadata pipeline on a list of tokens.
+
+        Args:
+            tokens (list[Token]): tokens for which to process metadata.
+            parallelize (bool, optional): whether or not metadata should be processed in parallel.
+                Defaults to True. Turn off parallelization to reduce risk of getting rate-limited.
+            select_metadata_fn (Optional[Callable], optional): optionally specify a function to
+                select a metadata object from a list of metadata. Defaults to None. Defaults to None.
+
+        Returns:
+            list[Union[Metadata, MetadataProcessingError]]: returns a list of Metadatas
+                or MetadataProcessingErrors that map 1:1 to the tokens passed in.
+        """
         if len(tokens) == 0:
             return []
 

@@ -9,7 +9,7 @@ from offchain.metadata.registries.adapter_registry import AdapterRegistry
 
 @AdapterRegistry.register
 class ARWeaveAdapter(HTTPAdapter):
-    """Requests adapter for making requests to Arweave"""
+    """Provides an interface for Requests sessions to contact ARWeave urls."""
 
     def __init__(
         self,

@@ -11,6 +11,14 @@ from offchain.metadata.registries.fetcher_registry import FetcherRegistry
 
 @FetcherRegistry.register
 class MetadataFetcher(BaseFetcher):
+    """Metadata fetcher class
+
+    Attributes:
+        timeout (int): request timeout in seconds.
+        max_retries (int): maximum number of request retries.
+        sess (requests.Session): a requests Session object.
+    """
+
     def __init__(
         self,
         timeout: int = 30,
@@ -21,12 +29,28 @@ class MetadataFetcher(BaseFetcher):
         self.sess = requests.Session()
 
     def register_adapter(self, adapter: Adapter, url_prefix: str):
+        """Register an adapter to a url prefix.
+
+        Args:
+            adapter (Adapter): an Adapter instance to register.
+            url_prefix (str): the url prefix to which the adapter should be registered.
+        """
         self.sess.mount(url_prefix, adapter)
 
     def set_max_retries(self, max_retries: int):
+        """Setter function for max retries
+
+        Args:
+            new_max_retries (int): new maximum number of request retries.
+        """
         self.max_retries = max_retries
 
     def set_timeout(self, timeout: int):
+        """Setter function for timeout
+
+        Args:
+            new_timeout (int): new request timeout in seconds.
+        """
         self.timeout = timeout
 
     def _head(self, uri: str):
@@ -35,8 +59,15 @@ class MetadataFetcher(BaseFetcher):
     def _get(self, uri: str):
         return self.sess.get(uri, timeout=self.timeout, allow_redirects=True)
 
-    def fetch_mime_type_and_size(self, uri: str) -> Tuple[str, str]:
-        """Fetch mime type and size for uri"""
+    def fetch_mime_type_and_size(self, uri: str) -> Tuple[str, int]:
+        """Fetch the mime type and size of the content at a given uri.
+
+        Args:
+            uri (str): uri from which to fetch content mime type and size.
+
+        Returns:
+            tuple[str, int]: mime type and size
+        """
         try:
             res = self._head(uri)
             # For any error status, try a get
@@ -54,11 +85,18 @@ class MetadataFetcher(BaseFetcher):
             logger.error(f"Failed to fetch content-type and size from uri {uri}. Error: {e}")
             raise
 
-    def fetch_content(self, token_uri: str) -> Union[dict, str]:
-        """Fetch data at uri"""
+    def fetch_content(self, uri: str) -> Union[dict, str]:
+        """Fetch the content at a given uri
+
+        Args:
+            uri (str): uri from which to fetch content.
+
+        Returns:
+            Union[dict, str]: content fetched from uri
+        """
         try:
-            res = self._get(token_uri)
+            res = self._get(uri)
             res.raise_for_status()
             return res.json()
         except Exception as e:
-            raise Exception(f"Don't know how to fetch metadata for {token_uri=}. {str(e)}")
+            raise Exception(f"Don't know how to fetch metadata for {uri=}. {str(e)}")

@@ -57,9 +57,7 @@ class TestMetadataPipeline:
 
         pipeline = MetadataPipeline(fetcher=fetcher)
         pipeline.fetch_token_metadata(token=token) == Metadata(
-            chain_identifier="ETHEREUM-MAINNET",
-            collection_address="0x5180db8f5c931aae63c74266b211f580155ecac8",
-            token_id=1,
+            token=token,
             raw_data=raw_crypto_coven_metadata,
             standard=MetadataStandard.OPENSEA_STANDARD,
             attributes=[
@@ -102,7 +100,6 @@ class TestMetadataPipeline:
             name="nyx",
             description="You are a WITCH of the highest order. You are borne of chaos that gives the night shape. Your magic spawns from primordial darkness. You are called oracle by those wise enough to listen. ALL THEOLOGY STEMS FROM THE TERROR OF THE FIRMAMENT!",
             mime_type="application/json",
-            token_uri="ipfs://QmSr3vdMuP2fSxWD7S26KzzBWcAN1eNhm4hk1qaR3x3vmj/1.json",
             image=MediaDetails(
                 size=3095,
                 sha256=None,
@@ -141,9 +138,7 @@ class TestMetadataPipeline:
         pipeline = MetadataPipeline(fetcher=fetcher)
         assert pipeline.run(tokens=[token]) == [
             Metadata(
-                chain_identifier="ETHEREUM-MAINNET",
-                collection_address="0x5180db8f5c931aae63c74266b211f580155ecac8",
-                token_id=1,
+                token=token,
                 raw_data=raw_crypto_coven_metadata,
                 standard=MetadataStandard.OPENSEA_STANDARD,
                 attributes=[
@@ -186,7 +181,6 @@ class TestMetadataPipeline:
                 name="nyx",
                 description="You are a WITCH of the highest order. You are borne of chaos that gives the night shape. Your magic spawns from primordial darkness. You are called oracle by those wise enough to listen. ALL THEOLOGY STEMS FROM THE TERROR OF THE FIRMAMENT!",
                 mime_type="application/json",
-                token_uri="ipfs://QmSr3vdMuP2fSxWD7S26KzzBWcAN1eNhm4hk1qaR3x3vmj/1.json",
                 image=MediaDetails(
                     size=3095,
                     sha256=None,
