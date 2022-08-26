@@ -15,23 +15,6 @@ class NounsParser(CollectionParser):
         CollectionAddress.LIL_NOUNS,
     ]
 
-    def get_seed_attributes(self, token_id: int) -> list[Attribute]:
-        attributes = []
-
-        def normalize_value(value: str) -> str:
-            return value.replace("-", " ")
-
-        seeds = self.seeds(token_id)
-        for trait, value in seeds.__dict__.values():
-            attribute = Attribute(
-                trait_type=trait,
-                value=normalize_value(value),
-                display_type=None,
-            )
-            attributes.append(attribute)
-
-        return attributes
-
     def seeds(self, token_id: int) -> Optional[Seeds]:
         results = self.caller.single_address_single_fn_many_args(
             self.contract_address,
@@ -55,6 +38,23 @@ class NounsParser(CollectionParser):
 
         return seeds
 
+    def get_seed_attributes(self, token_id: int) -> list[Attribute]:
+        attributes = []
+
+        def normalize_value(value: str) -> str:
+            return value.replace("-", " ")
+
+        seeds = self.seeds(token_id)
+        for trait, value in seeds.__dict__.values():
+            attribute = Attribute(
+                trait_type=trait,
+                value=normalize_value(value),
+                display_type=None,
+            )
+            attributes.append(attribute)
+
+        return attributes
+
     def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Metadata:
         mime, _ = self.fetcher.fetch_mime_type_and_size(token.uri)
 
@@ -65,10 +65,7 @@ class NounsParser(CollectionParser):
             image = MediaDetails(size=image_size, uri=image_uri, mime_type=image_mime)
 
         return Metadata(
-            chain_identifier=token.chain_identifier,
-            collection_address=token.collection_address,
-            token_id=token.token_id,
-            token_uri=token.uri,
+            token=token,
             raw_data=raw_data,
             attributes=self.parse_attributes(token.token_id),
             name=raw_data.get("name"),
