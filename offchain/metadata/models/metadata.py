@@ -9,6 +9,7 @@ class MetadataStandard(StringEnum):
     """Standards for NFT metadata formats"""
 
     OPENSEA_STANDARD = "OPENSEA_STANDARD"
+    ZORA_STANDARD = "ZORA_STANDARD"
     UNKNOWN = "UNKNOWN"
 
 
@@ -98,8 +99,8 @@ class Metadata(BaseModel):
     token: Token
 
     raw_data: dict
-    standard: MetadataStandard
     attributes: list[Attribute]
+    standard: Optional[MetadataStandard] = None
     name: Optional[str] = None
     description: Optional[str] = None
     mime_type: Optional[str] = None
