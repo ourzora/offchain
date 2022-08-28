@@ -30,7 +30,7 @@ class BaseParser(Protocol):
         """
         pass
 
-    def should_parse_token(self, token: Token, raw_data: dict, *args, **kwargs) -> bool:
+    def should_parse_token(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> bool:
         """Return whether or not a collection parser should parse a given token.
 
         Args:
