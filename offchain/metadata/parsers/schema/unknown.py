@@ -1,6 +1,5 @@
 from typing import Optional
 
-from offchain.metadata.fetchers.base_fetcher import BaseFetcher
 from offchain.metadata.models.metadata import (
     Attribute,
     MediaDetails,
@@ -19,9 +18,6 @@ class UnknownParser(SchemaParser):
     """
 
     _METADATA_STANDARD: MetadataStandard = MetadataStandard.UNKNOWN
-
-    def __init__(self, fetcher: BaseFetcher) -> None:
-        self.fetcher = fetcher
 
     def get_name(self, raw_data: dict):
         if isinstance(raw_data.get("name"), str):
@@ -145,7 +141,7 @@ class UnknownParser(SchemaParser):
             additional_fields=[],
         )
 
-    def should_parse_token(self, token: Token, raw_data: dict, *args, **kwargs) -> bool:
+    def should_parse_token(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> bool:
         """Return whether or not a collection parser should parse a given token.
 
         Args:
@@ -155,4 +151,4 @@ class UnknownParser(SchemaParser):
         Returns:
             bool: whether or not the collection parser handles this token.
         """
-        return True
+        return token.uri is not None and raw_data is not None

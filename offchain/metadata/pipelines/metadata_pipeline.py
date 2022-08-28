@@ -14,10 +14,10 @@ from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 from offchain.metadata.models.metadata import Metadata
 from offchain.metadata.models.metadata_processing_error import MetadataProcessingError
 from offchain.metadata.models.token import Token
-from offchain.metadata.parsers import OpenseaParser
-from offchain.metadata.parsers.base_parser import BaseParser
+from offchain.metadata.parsers import BaseParser, ENSParser, OpenseaParser
 from offchain.metadata.parsers.schema.unknown import UnknownParser
 from offchain.metadata.pipelines.base_pipeline import BasePipeline
+from offchain.web3.contract_caller import ContractCaller
 
 
 @dataclass
@@ -46,7 +46,7 @@ DEFAULT_ADAPTER_CONFIGS: list[AdapterConfig] = [
     ),
 ]
 
-DEFAULT_PARSER_CLASSES = [OpenseaParser, UnknownParser]
+DEFAULT_PARSER_CLASSES = [ENSParser, OpenseaParser, UnknownParser]
 
 
 class MetadataPipeline(BasePipeline):
@@ -64,10 +64,12 @@ class MetadataPipeline(BasePipeline):
 
     def __init__(
         self,
+        contract_caller: Optional[ContractCaller] = None,
         fetcher: Optional[BaseFetcher] = None,
         parsers: Optional[list[BaseParser]] = None,
         adapter_configs: Optional[list[AdapterConfig]] = None,
     ) -> None:
+        self.contract_caller = contract_caller or ContractCaller()
         self.fetcher = fetcher or MetadataFetcher()
         if adapter_configs is None:
             adapter_configs = DEFAULT_ADAPTER_CONFIGS
@@ -77,7 +79,10 @@ class MetadataPipeline(BasePipeline):
                 url_prefixes=adapter_config.mount_prefixes,
             )
         if parsers is None:
-            parsers = [parser_cls(fetcher=self.fetcher) for parser_cls in DEFAULT_PARSER_CLASSES]
+            parsers = [
+                parser_cls(fetcher=self.fetcher, contract_caller=self.contract_caller)
+                for parser_cls in DEFAULT_PARSER_CLASSES
+            ]
         self.parsers = parsers
 
     def mount_adapter(
@@ -113,7 +118,7 @@ class MetadataPipeline(BasePipeline):
             Union[Metadata, MetadataProcessingError]: returns either a Metadata
                 or a MetadataProcessingError if unable to parse.
         """
-        raw_data = self.fetcher.fetch_content(token.uri)
+        raw_data = self.fetcher.fetch_content(token.uri) if token.uri else None
         possible_metadatas = []
         for parser in self.parsers:
             if parser.should_parse_token(token=token, raw_data=raw_data):

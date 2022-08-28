@@ -1,3 +1,4 @@
+from offchain.metadata.fetchers.base_fetcher import BaseFetcher
 from offchain.metadata.models.metadata import MetadataStandard
 from offchain.metadata.parsers.base_parser import BaseParser
 
@@ -12,3 +13,6 @@ class SchemaParser(BaseParser):
     """
 
     _METADATA_STANDARD: MetadataStandard
+
+    def __init__(self, fetcher: BaseFetcher, *args, **kwargs) -> None:
+        self.fetcher = fetcher
