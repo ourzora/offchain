@@ -21,6 +21,7 @@ from offchain.metadata.parsers import (
     OpenseaParser,
     SuperRareParser,
 )
+from offchain.metadata.parsers.collection.punks import PunksParser
 from offchain.metadata.parsers.schema.unknown import UnknownParser
 from offchain.metadata.pipelines.base_pipeline import BasePipeline
 from offchain.web3.contract_caller import ContractCaller
@@ -52,7 +53,7 @@ DEFAULT_ADAPTER_CONFIGS: list[AdapterConfig] = [
     ),
 ]
 
-COLLECTION_PARSERS = [ENSParser, FoundationParser, SuperRareParser]
+COLLECTION_PARSERS = [ENSParser, FoundationParser, SuperRareParser, PunksParser]
 SCHEMA_PARSERS = [OpenseaParser, UnknownParser]
 
 
