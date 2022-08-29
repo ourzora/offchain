@@ -14,8 +14,13 @@ from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 from offchain.metadata.models.metadata import Metadata
 from offchain.metadata.models.metadata_processing_error import MetadataProcessingError
 from offchain.metadata.models.token import Token
-from offchain.metadata.parsers import BaseParser, ENSParser, OpenseaParser
-from offchain.metadata.parsers.collection.foundation import FoundationParser
+from offchain.metadata.parsers import (
+    BaseParser,
+    ENSParser,
+    FoundationParser,
+    OpenseaParser,
+    SuperRareParser,
+)
 from offchain.metadata.parsers.schema.unknown import UnknownParser
 from offchain.metadata.pipelines.base_pipeline import BasePipeline
 from offchain.web3.contract_caller import ContractCaller
@@ -47,7 +52,7 @@ DEFAULT_ADAPTER_CONFIGS: list[AdapterConfig] = [
     ),
 ]
 
-COLLECTION_PARSERS = [ENSParser, FoundationParser]
+COLLECTION_PARSERS = [ENSParser, FoundationParser, SuperRareParser]
 SCHEMA_PARSERS = [OpenseaParser, UnknownParser]
 
 

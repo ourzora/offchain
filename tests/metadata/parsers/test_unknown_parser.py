@@ -54,7 +54,7 @@ class TestUnknownParser:
     def test_unknown_parser_should_parse_token(self):
         fetcher = MetadataFetcher()
         parser = UnknownParser(fetcher=fetcher)
-        assert parser.should_parse_token(token=self.token, raw_data={}) == True
+        assert parser.should_parse_token(token=self.token, raw_data=self.raw_data) == True
 
     def test_unknown_parser_parses_metadata(self):
         fetcher = MetadataFetcher()

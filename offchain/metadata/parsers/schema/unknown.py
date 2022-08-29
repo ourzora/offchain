@@ -78,7 +78,7 @@ class UnknownParser(SchemaParser):
         image_uri = self.get_image_uri(raw_data=raw_data)
         if not image_uri:
             return None
-        details = MediaDetails(uri=image_uri, size=None, sha256=None, mime=None)
+        details = MediaDetails(uri=image_uri, size=None, sha256=None, mime_type=None)
         if isinstance(raw_data.get("image_details"), dict):
             details.size = raw_data["image_details"].get("size")
             details.sha256 = raw_data["image_details"].get("sha256")
@@ -102,7 +102,7 @@ class UnknownParser(SchemaParser):
         content_uri = self.get_content_uri(raw_data)
         if not content_uri:
             return None
-        details = MediaDetails(uri=content_uri, size=None, sha256=None, mime=None)
+        details = MediaDetails(uri=content_uri, size=None, sha256=None, mime_type=None)
         if isinstance(raw_data.get("animation_details"), dict):
             details.size = raw_data["animation_details"].get("size")
             details.sha256 = raw_data["animation_details"].get("sha256")
@@ -151,4 +151,4 @@ class UnknownParser(SchemaParser):
         Returns:
             bool: whether or not the collection parser handles this token.
         """
-        return token.uri is not None and raw_data is not None
+        return bool(token.uri and raw_data)
