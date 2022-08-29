@@ -29,4 +29,4 @@ class CollectionParser(BaseParser):
         Returns:
             bool: whether or not the collection parser handles this token.
         """
-        return token.collection_address in self._COLLECTION_ADDRESSES
+        return token.collection_address in [address.lower() for address in self._COLLECTION_ADDRESSES]

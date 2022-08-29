@@ -15,7 +15,7 @@ from offchain.metadata.registries.parser_registry import ParserRegistry
 
 @ParserRegistry.register
 class ENSParser(CollectionParser):
-    _COLLECTION_ADDRESSES: list[str] = [CollectionAddress.ENS.lower()]
+    _COLLECTION_ADDRESSES: list[str] = [CollectionAddress.ENS]
 
     @staticmethod
     def make_ens_chain_name(chain_identifier: str):
