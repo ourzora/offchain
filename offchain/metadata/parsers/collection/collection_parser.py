@@ -1,7 +1,7 @@
-from offchain.metadata.fetchers import BaseFetcher
+from offchain.metadata.fetchers.base_fetcher import BaseFetcher
 from offchain.metadata.parsers.base_parser import BaseParser
 from offchain.metadata.models.token import Token
-from offchain.metadata.web3.batching import BatchContractViewCaller
+from offchain.web3.contract_caller import ContractCaller
 
 
 class CollectionParser(BaseParser):
@@ -16,7 +16,7 @@ class CollectionParser(BaseParser):
 
     _COLLECTION_ADDRESSES: list[str]
 
-    def __init__(self, fetcher: BaseFetcher, contract_caller: BatchContractViewCaller, *args, **kwargs) -> None:
+    def __init__(self, fetcher: BaseFetcher, contract_caller: ContractCaller, *args, **kwargs) -> None:
         self.contract_caller = contract_caller
         self.fetcher = fetcher
 
@@ -29,4 +29,4 @@ class CollectionParser(BaseParser):
         Returns:
             bool: whether or not the collection parser handles this token.
         """
-        return token.collection_address in self._COLLECTION_ADDRESSES
+        return token.collection_address in [address.lower() for address in self._COLLECTION_ADDRESSES]

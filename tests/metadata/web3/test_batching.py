@@ -1,10 +1,10 @@
-from offchain.metadata.web3.batching import BatchContractViewCaller
+from offchain.web3.contract_caller import ContractCaller
 
 ADDRESS = "0x335eeef8e93a7a757d9e7912044d9cd264e2b2d8"
 
 
 class TestBatchContractViewCaller:
-    batcher = BatchContractViewCaller()
+    batcher = ContractCaller()
 
     def test__single_address_single_fn_many_args(self):
         ids = self.batcher.single_address_single_fn_many_args(
