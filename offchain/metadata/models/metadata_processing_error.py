@@ -1,3 +1,5 @@
+from typing import Optional
+
 from offchain.base.base_model import BaseModel
 from offchain.metadata.models.token import Token
 
@@ -17,7 +19,7 @@ class MetadataProcessingError(BaseModel):
     chain_identifier: str
     collection_address: str
     token_id: int
-    uri: str
+    uri: Optional[str]
 
     error_type: str
     error_message: str
