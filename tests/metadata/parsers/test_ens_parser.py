@@ -59,7 +59,7 @@ class TestENSParser:
         "image_url": "https://metadata.ens.domains/mainnet/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/0x165a16ce2915e51295772b6a67bfc8ceee2c1c7caa85591fba107af4ee24f704/image",
     }
 
-    def test_ens_parser_should_parse_token(self, raw_crypto_coven_metadata):
+    def test_ens_parser_should_parse_token(self):
         fetcher = MetadataFetcher()
         contract_caller = ContractCaller()
         parser = ENSParser(fetcher=fetcher, contract_caller=contract_caller)

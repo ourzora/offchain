@@ -15,6 +15,7 @@ from offchain.metadata.models.metadata import Metadata
 from offchain.metadata.models.metadata_processing_error import MetadataProcessingError
 from offchain.metadata.models.token import Token
 from offchain.metadata.parsers import BaseParser, ENSParser, OpenseaParser
+from offchain.metadata.parsers.collection.foundation import FoundationParser
 from offchain.metadata.parsers.schema.unknown import UnknownParser
 from offchain.metadata.pipelines.base_pipeline import BasePipeline
 from offchain.web3.contract_caller import ContractCaller
@@ -46,7 +47,8 @@ DEFAULT_ADAPTER_CONFIGS: list[AdapterConfig] = [
     ),
 ]
 
-DEFAULT_PARSER_CLASSES = [ENSParser, OpenseaParser, UnknownParser]
+COLLECTION_PARSERS = [ENSParser, FoundationParser]
+SCHEMA_PARSERS = [OpenseaParser, UnknownParser]
 
 
 class MetadataPipeline(BasePipeline):
@@ -81,7 +83,7 @@ class MetadataPipeline(BasePipeline):
         if parsers is None:
             parsers = [
                 parser_cls(fetcher=self.fetcher, contract_caller=self.contract_caller)
-                for parser_cls in DEFAULT_PARSER_CLASSES
+                for parser_cls in COLLECTION_PARSERS + SCHEMA_PARSERS
             ]
         self.parsers = parsers
 
