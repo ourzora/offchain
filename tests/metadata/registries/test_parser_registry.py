@@ -4,6 +4,7 @@ from offchain.metadata.parsers import (
     ENSParser,
     FoundationParser,
     OpenseaParser,
+    SuperRareParser,
     UnknownParser,
 )
 from offchain.metadata.parsers.schema.schema_parser import SchemaParser
@@ -40,6 +41,7 @@ class TestParserRegistry:
                 ENSParser,
                 FoundationParser,
                 OpenseaParser,
+                SuperRareParser,
                 UnknownParser,
             ]
         )

@@ -69,7 +69,7 @@ class ENSParser(CollectionParser):
     def get_image(self, raw_data: dict) -> Optional[MediaDetails]:
         image_uri = raw_data.get("image_url") or raw_data.get("image")
         if image_uri:
-            image = MediaDetails(uri=image_uri, size=None, sha256=None, mime=None)
+            image = MediaDetails(uri=image_uri, size=None, sha256=None, mime_type=None)
             try:
                 content_type, size = self.fetcher.fetch_mime_type_and_size(image_uri)
                 image.mime_type = content_type
@@ -81,7 +81,7 @@ class ENSParser(CollectionParser):
     def get_background_image(self, raw_data: dict) -> Optional[MediaDetails]:
         bg_image_uri = raw_data.get("background_image")
         if bg_image_uri:
-            image = MediaDetails(uri=bg_image_uri, size=None, sha256=None, mime=None)
+            image = MediaDetails(uri=bg_image_uri, size=None, sha256=None, mime_type=None)
             try:
                 content_type, size = self.fetcher.fetch_mime_type_and_size(bg_image_uri)
                 image.mime_type = content_type
