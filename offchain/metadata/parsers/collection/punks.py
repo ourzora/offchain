@@ -39,9 +39,7 @@ class PunksParser(CollectionParser):
     def get_image(self, index: int) -> Optional[MediaDetails]:
         raw_uri = self.make_call(index, "punkImageSvg(uint16)")
         image_uri = self.encode_uri_data(raw_uri)
-        return MediaDetails(
-            uri=image_uri, size=None, sha256=None, mime_type="image/svg+xml"
-        )
+        return MediaDetails(uri=image_uri, size=None, sha256=None, mime_type="image/svg+xml")
 
     def parse_additional_fields(self, raw_data: dict) -> list[MetadataField]:
         additional_fields = []
@@ -51,8 +49,17 @@ class PunksParser(CollectionParser):
                     field_name="external_url",
                     type=MetadataFieldType.TEXT,
                     description="This property defines an optional external URL that can reference a webpage or "
-                                "external asset for the NFT",
+                    "external asset for the NFT",
                     value=external_url,
+                )
+            )
+        if (title := raw_data.get("title")) is not None:
+            additional_fields.append(
+                MetadataField(
+                    field_name="title",
+                    type=MetadataFieldType.TEXT,
+                    description="This property defines an the title for the NFT asset",
+                    value=title,
                 )
             )
         return additional_fields
@@ -81,9 +88,7 @@ class PunksParser(CollectionParser):
 
     def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Metadata:
         if token.uri is None or raw_data is None:
-            token.uri = (
-                f"https://api.wrappedpunks.com/api/punks/metadata/{token.token_id}"
-            )
+            token.uri = f"https://api.wrappedpunks.com/api/punks/metadata/{token.token_id}"
             raw_data = self.fetcher.fetch_content(token.uri)
 
         mime, _ = self.fetcher.fetch_mime_type_and_size(token.uri)
