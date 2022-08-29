@@ -7,6 +7,7 @@ from offchain.metadata.parsers import (
     SuperRareParser,
     UnknownParser,
 )
+from offchain.metadata.parsers.collection.punks import PunksParser
 from offchain.metadata.parsers.schema.schema_parser import SchemaParser
 from offchain.metadata.parsers.collection.collection_parser import CollectionParser
 from offchain.metadata.registries.parser_registry import ParserRegistry
@@ -42,6 +43,7 @@ class TestParserRegistry:
                 FoundationParser,
                 OpenseaParser,
                 SuperRareParser,
+                PunksParser,
                 UnknownParser,
             ]
         )
