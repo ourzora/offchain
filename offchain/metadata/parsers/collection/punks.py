@@ -50,7 +50,8 @@ class PunksParser(CollectionParser):
                 MetadataField(
                     field_name="external_url",
                     type=MetadataFieldType.TEXT,
-                    description="This property defines an optional external URL that can reference a webpage or external asset for the NFT",
+                    description="This property defines an optional external URL that can reference a webpage or "
+                                "external asset for the NFT",
                     value=external_url,
                 )
             )
