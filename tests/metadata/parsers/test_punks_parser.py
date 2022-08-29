@@ -39,9 +39,7 @@ class TestPunksParser:
     def test_punks_parser_parses_metadata(self):
         fetcher = MetadataFetcher()
         contract_caller = ContractCaller()
-        fetcher.fetch_mime_type_and_size = MagicMock(
-            return_value=("application/json", 0)
-        )
+        fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", 0))
         fetcher.fetch_content = MagicMock(return_value=self.raw_data)
         parser = PunksParser(fetcher=fetcher, contract_caller=contract_caller)
         metadata = parser.parse_metadata(token=self.token, raw_data=self.raw_data)
@@ -61,9 +59,7 @@ class TestPunksParser:
             },
             attributes=[
                 Attribute(trait_type="Type", value="Female 1", display_type=None),
-                Attribute(
-                    trait_type="Accessory", value="Wild White Hair", display_type=None
-                ),
+                Attribute(trait_type="Accessory", value="Wild White Hair", display_type=None),
             ],
             standard=None,
             name="W#25",
@@ -82,6 +78,12 @@ class TestPunksParser:
                     type=MetadataFieldType.TEXT,
                     description="This property defines an optional external URL that can reference a webpage or external asset for the NFT",
                     value="https://wrappedpunks.com",
+                ),
+                MetadataField(
+                    field_name="title",
+                    type=MetadataFieldType.TEXT,
+                    description="This property defines an the title for the NFT asset",
+                    value="W#25",
                 ),
             ],
         )
