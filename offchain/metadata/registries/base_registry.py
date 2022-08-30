@@ -36,6 +36,18 @@ class BaseRegistry:
         raise NotImplementedError
 
     @staticmethod
+    def remove(model_cls: Type[T], *args, **kwargs):
+        """Remove a class from the registry
+
+        Args:
+            model_cls (Type[T]): class to be unregistered.
+
+        Raises:
+            NotImplementedError
+        """
+        raise NotImplementedError
+
+    @staticmethod
     def validate(model_cls: Type[T], *args, **kwargs):
         """Validate a class before it is added to the registry.
 

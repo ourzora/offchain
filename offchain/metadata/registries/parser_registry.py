@@ -66,3 +66,8 @@ class ParserRegistry(BaseRegistry):
     @staticmethod
     def add(parser_cls: Type[BaseParser]):
         ParserRegistry.__parser_registry[parser_cls.__name__] = parser_cls
+
+    @staticmethod
+    def remove(parser_cls: Type[BaseParser]):
+        if parser_cls.__name__ in ParserRegistry.__parser_registry:
+            del ParserRegistry.__parser_registry[parser_cls.__name__]
