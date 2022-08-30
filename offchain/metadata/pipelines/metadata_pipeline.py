@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable, Optional, Union
 
+from offchain.concurrency import batched_parmap
 from offchain.metadata.adapters import (
     ARWeaveAdapter,
     DataURIAdapter,
@@ -8,23 +9,14 @@ from offchain.metadata.adapters import (
     IPFSAdapter,
 )
 from offchain.metadata.adapters.base_adapter import Adapter
-from offchain.concurrency import batched_parmap
 from offchain.metadata.fetchers.base_fetcher import BaseFetcher
 from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 from offchain.metadata.models.metadata import Metadata
 from offchain.metadata.models.metadata_processing_error import MetadataProcessingError
 from offchain.metadata.models.token import Token
-from offchain.metadata.parsers import (
-    BaseParser,
-    ENSParser,
-    FoundationParser,
-    OpenseaParser,
-    SuperRareParser,
-    AutoglyphsParser,
-)
-from offchain.metadata.parsers.collection.punks import PunksParser
-from offchain.metadata.parsers.schema.unknown import UnknownParser
+from offchain.metadata.parsers import BaseParser
 from offchain.metadata.pipelines.base_pipeline import BasePipeline
+from offchain.metadata.registries.parser_registry import ParserRegistry
 from offchain.web3.contract_caller import ContractCaller
 
 
@@ -54,8 +46,8 @@ DEFAULT_ADAPTER_CONFIGS: list[AdapterConfig] = [
     ),
 ]
 
-COLLECTION_PARSERS = [ENSParser, FoundationParser, SuperRareParser, PunksParser, AutoglyphsParser]
-SCHEMA_PARSERS = [OpenseaParser, UnknownParser]
+COLLECTION_PARSERS = ParserRegistry.get_all_collection_parsers()
+SCHEMA_PARSERS = ParserRegistry.get_all_schema_parsers()
 
 
 class MetadataPipeline(BasePipeline):
