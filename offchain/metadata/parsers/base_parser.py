@@ -3,6 +3,7 @@ from typing import Optional, Protocol
 from offchain.metadata.fetchers.base_fetcher import BaseFetcher
 from offchain.metadata.models.metadata import Metadata
 from offchain.metadata.models.token import Token
+from offchain.metadata.registries.base_registry import Priority
 
 
 class BaseParser(Protocol):
@@ -13,6 +14,7 @@ class BaseParser(Protocol):
             mime type, and size by making requests.
     """
 
+    _PARSER_PRIORITY: Priority
     fetcher: BaseFetcher
 
     def __init__(self, fetcher: BaseFetcher) -> None:

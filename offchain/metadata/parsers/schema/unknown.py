@@ -8,6 +8,7 @@ from offchain.metadata.models.metadata import (
 )
 from offchain.metadata.models.token import Token
 from offchain.metadata.parsers.schema.schema_parser import SchemaParser
+from offchain.metadata.registries.base_registry import Priority
 from offchain.metadata.registries.parser_registry import ParserRegistry
 
 
@@ -18,6 +19,9 @@ class UnknownParser(SchemaParser):
     """
 
     _METADATA_STANDARD: MetadataStandard = MetadataStandard.UNKNOWN
+
+    # setting to lowest priority to offer other parsers a stab first
+    _PARSER_PRIORITY: Priority = Priority.LOWEST
 
     def get_name(self, raw_data: dict):
         if isinstance(raw_data.get("name"), str):
