@@ -7,8 +7,8 @@ from offchain.metadata.models.metadata import (
     MetadataStandard,
 )
 from offchain.metadata.models.token import Token
+from offchain.metadata.parsers.priority import Priority
 from offchain.metadata.parsers.schema.schema_parser import SchemaParser
-from offchain.metadata.registries.base_registry import Priority
 from offchain.metadata.registries.parser_registry import ParserRegistry
 
 
