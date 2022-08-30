@@ -9,8 +9,9 @@ from offchain.metadata.parsers import (
     AutoglyphsParser,
     UnknownParser,
 )
-from offchain.metadata.parsers.schema.schema_parser import SchemaParser
 from offchain.metadata.parsers.collection.collection_parser import CollectionParser
+from offchain.metadata.parsers.schema.schema_parser import SchemaParser
+from offchain.metadata.registries.base_registry import Priority
 from offchain.metadata.registries.parser_registry import ParserRegistry
 
 
@@ -35,6 +36,39 @@ class TestParserRegistry:
         parser_registry = ParserRegistry()
         with pytest.raises(AssertionError):
             parser_registry.register(BadSchemaParser)
+
+    def test_parser_priority(self):
+        class LowPriorityCollectionParser(CollectionParser):
+            _COLLECTION_ADDRESSES = ["test"]
+            _PARSER_PRIORITY = Priority.LOW
+            pass
+
+        class HighPriorityCollectionParser(CollectionParser):
+            _COLLECTION_ADDRESSES = ["test"]
+            _PARSER_PRIORITY = Priority.HIGH
+            pass
+
+        parser_registry = ParserRegistry()
+
+        parser_registry.register(LowPriorityCollectionParser)
+        parser_registry.register(HighPriorityCollectionParser)
+
+        low_priority = 0
+        high_priority = 0
+
+        parsers = parser_registry.get_all()
+
+        for i, parser in enumerate(parsers):
+            if issubclass(parser, HighPriorityCollectionParser):
+                high_priority = i
+            elif issubclass(parser, LowPriorityCollectionParser):
+                low_priority = i
+
+        parser_registry.remove(LowPriorityCollectionParser)
+        parser_registry.remove(HighPriorityCollectionParser)
+
+        # low priority should be a higher number, meaning it comes later in the iteration
+        assert high_priority < low_priority
 
     def test_parser_registry_has_all_parsers(self):
         parser_registry = ParserRegistry()
