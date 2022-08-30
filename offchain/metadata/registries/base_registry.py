@@ -1,6 +1,15 @@
+from enum import IntEnum
 from typing import Type, TypeVar
 
 T = TypeVar("T")
+
+
+class Priority(IntEnum):
+    HIGHEST = 1
+    HIGH = 2
+    NORMAL = 3
+    LOW = 4
+    LOWEST = 5
 
 
 class BaseRegistry:
