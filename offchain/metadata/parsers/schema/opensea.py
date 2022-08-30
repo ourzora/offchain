@@ -1,6 +1,5 @@
 from typing import Optional
 
-from offchain.metadata.fetchers.base_fetcher import BaseFetcher
 from offchain.metadata.models.metadata import (
     Attribute,
     MediaDetails,
@@ -22,9 +21,6 @@ class OpenseaParser(SchemaParser):
     """
 
     _METADATA_STANDARD: MetadataStandard = MetadataStandard.OPENSEA_STANDARD
-
-    def __init__(self, fetcher: BaseFetcher) -> None:
-        self.fetcher = fetcher
 
     def parse_attribute(self, attribute_dict: dict) -> Attribute:
         return Attribute(
@@ -106,7 +102,7 @@ class OpenseaParser(SchemaParser):
             additional_fields=self.parse_additional_fields(raw_data),
         )
 
-    def should_parse_token(self, token: Token, raw_data: dict, *args, **kwargs) -> bool:
+    def should_parse_token(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> bool:
         """Return whether or not a collection parser should parse a given token.
 
         Args:
@@ -116,4 +112,6 @@ class OpenseaParser(SchemaParser):
         Returns:
             bool: whether or not the collection parser handles this token.
         """
-        return isinstance(raw_data.get("attributes"), list) or isinstance(raw_data.get("animation_url"), str)
+        return raw_data is not None and (
+            isinstance(raw_data.get("attributes"), list) or isinstance(raw_data.get("animation_url"), str)
+        )

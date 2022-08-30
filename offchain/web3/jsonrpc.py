@@ -24,9 +24,7 @@ class EthereumJSONRPC:
         self,
         provider_url: Optional[str] = None,
     ) -> None:
-        adapter = requests.adapters.HTTPAdapter(
-            pool_connections=100, pool_maxsize=1000, max_retries=10
-        )
+        adapter = requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=1000, max_retries=10)
         self.sess = requests.Session()
         self.sess.mount("https://", adapter)
         self.sess.mount("http://", adapter)
@@ -59,10 +57,7 @@ class EthereumJSONRPC:
     )
     def call_batch(self, method: str, params: list[list[Any]]) -> list[dict]:
         try:
-            payload = [
-                self.__payload_factory(method, param, i)
-                for i, param in enumerate(params)
-            ]
+            payload = [self.__payload_factory(method, param, i) for i, param in enumerate(params)]
             resp = self.sess.post(self.url, json=payload)
             resp.raise_for_status()
             result = resp.json()

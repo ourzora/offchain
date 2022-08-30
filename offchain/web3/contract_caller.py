@@ -4,13 +4,13 @@ from eth_abi import encode_abi, decode_abi
 from eth_utils import to_hex
 
 from offchain.concurrency import parmap
-from offchain.metadata.web3.contract_utils import function_signature_to_sighash
-from offchain.metadata.web3.jsonrpc import EthereumJSONRPC
+from offchain.web3.contract_utils import function_signature_to_sighash
+from offchain.web3.jsonrpc import EthereumJSONRPC
 
 CHUNK_SIZE = 500
 
 
-class BatchContractViewCaller:
+class ContractCaller:
     def __init__(self, rpc: Optional[EthereumJSONRPC] = None) -> None:
         self.rpc = rpc or EthereumJSONRPC()
 
@@ -38,8 +38,7 @@ class BatchContractViewCaller:
         """
 
         req_params = [
-            self.request_builder(address, function_sig, args[i], block_tag, **kwargs)
-            for i in range(len(args))
+            self.request_builder(address, function_sig, args[i], block_tag, **kwargs) for i in range(len(args))
         ]
         res = self._call_batch_chunked(req_params, chunk_size)
         return list(map(lambda r: self.decode_response(r, return_type), res))
@@ -68,19 +67,12 @@ class BatchContractViewCaller:
         assert len(function_sigs) == len(args) and len(args) == len(
             return_types
         ), "function names, return types, args must all be the same length"
-        req_params = [
-            self.request_builder(address, function_sigs[i], args[i], block_tag)
-            for i in range(len(args))
-        ]
+        req_params = [self.request_builder(address, function_sigs[i], args[i], block_tag) for i in range(len(args))]
         res = self._call_batch_chunked(req_params, chunk_size)
-        cleaned = list(
-            map(lambda i: self.decode_response(res[i], return_types[i]), range(len(res)))
-        )
+        cleaned = list(map(lambda i: self.decode_response(res[i], return_types[i]), range(len(res))))
         return {k: v for k, v in zip(function_sigs, cleaned)}
 
-    def _call_batch_chunked(
-        self, request_params: list[list[Any]], chunk_size: int = CHUNK_SIZE
-    ) -> list[Any]:
+    def _call_batch_chunked(self, request_params: list[list[Any]], chunk_size: int = CHUNK_SIZE) -> list[Any]:
         """Perform concurrent batched requests by splitting a large batch into smaller chunks
 
         Args:
