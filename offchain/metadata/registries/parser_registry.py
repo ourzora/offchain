@@ -3,7 +3,7 @@ from typing import Optional, Type
 from offchain.metadata.parsers.base_parser import BaseParser
 from offchain.metadata.parsers.collection.collection_parser import CollectionParser
 from offchain.metadata.parsers.schema.schema_parser import SchemaParser
-from offchain.metadata.registries.base_registry import BaseRegistry
+from offchain.metadata.registries.base_registry import BaseRegistry, Priority
 
 
 class ParserRegistry(BaseRegistry):
@@ -11,15 +11,33 @@ class ParserRegistry(BaseRegistry):
 
     @staticmethod
     def get_all() -> list[BaseParser]:
-        return list(ParserRegistry.__parser_registry.values())
+        return sorted(ParserRegistry.__parser_registry.values(), key=ParserRegistry.get_priority_by_cls)
 
     @staticmethod
     def get_all_collection_parsers() -> list[CollectionParser]:
-        return [parser for parser in ParserRegistry.__parser_registry.values() if isinstance(parser, CollectionParser)]
+        return sorted(
+            [parser for parser in ParserRegistry.__parser_registry.values() if issubclass(parser, CollectionParser)],
+            key=ParserRegistry.get_priority_by_cls,
+        )
 
     @staticmethod
     def get_all_schema_parsers() -> list[SchemaParser]:
-        return [parser for parser in ParserRegistry.__parser_registry.values() if isinstance(parser, SchemaParser)]
+        return sorted(
+            [parser for parser in ParserRegistry.__parser_registry.values() if issubclass(parser, SchemaParser)],
+            key=ParserRegistry.get_priority_by_cls,
+        )
+
+    @staticmethod
+    def get_priority_by_cls(parser_cls: Type[BaseParser]) -> Priority:
+        if (
+            hasattr(parser_cls, "_PARSER_PRIORITY")
+            and parser_cls._PARSER_PRIORITY is not None
+            and isinstance(parser_cls._PARSER_PRIORITY, Priority)
+        ):
+            return parser_cls._PARSER_PRIORITY
+
+        # normal is default sort
+        return Priority.NORMAL
 
     @staticmethod
     def get_parser_cls_by_name(cls_name: str) -> Optional[BaseParser]:
