@@ -6,6 +6,7 @@ from .collection.ens import ENSParser
 from .collection.foundation import FoundationParser
 from .collection.superrare import SuperRareParser
 from .collection.punks import PunksParser
+from .collection.autoglyphs import AutoglyphsParser
 from .schema.opensea import OpenseaParser
 from .schema.unknown import UnknownParser
 from .schema.schema_parser import SchemaParser
