@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 
-from offchain.metadata.models.metadata import Attribute
-
 BACKGROUND = ["cool", "warm"]
 
 BODY = [
