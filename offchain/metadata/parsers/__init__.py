@@ -8,5 +8,5 @@ from .collection.superrare import SuperRareParser
 from .collection.punks import PunksParser
 from .collection.autoglyphs import AutoglyphsParser
 from .schema.opensea import OpenseaParser
-from .schema.unknown import UnknownParser
+from .catchall.default_catchall import DefaultCatchallParser
 from .schema.schema_parser import SchemaParser

@@ -1,5 +1,5 @@
-from dataclasses import dataclass
-from typing import Callable, Optional, Union
+from dataclasses import dataclass, field
+from typing import Callable, Optional, Type, Union
 
 from offchain.concurrency import batched_parmap
 from offchain.logger.logging import logger
@@ -15,54 +15,48 @@ from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 from offchain.metadata.models.metadata import Metadata
 from offchain.metadata.models.metadata_processing_error import MetadataProcessingError
 from offchain.metadata.models.token import Token
-from offchain.metadata.parsers import (
-    BaseParser,
-    ENSParser,
-    FoundationParser,
-    OpenseaParser,
-    SuperRareParser,
-    AutoglyphsParser,
-)
-from offchain.metadata.parsers.collection.punks import PunksParser
-from offchain.metadata.parsers.schema.unknown import UnknownParser
+from offchain.metadata.parsers import BaseParser, DefaultCatchallParser
 from offchain.metadata.pipelines.base_pipeline import BasePipeline
+from offchain.metadata.registries.parser_registry import ParserRegistry
 from offchain.web3.contract_caller import ContractCaller
 
 
 @dataclass
 class AdapterConfig:
-    adapter: Adapter
+    adapter_cls: Type[Adapter]
     mount_prefixes: list[str]
+    host_prefixes: Optional[list[str]] = None
+    kwargs: dict = field(default_factory=dict)
 
 
 DEFAULT_ADAPTER_CONFIGS: list[AdapterConfig] = [
     AdapterConfig(
-        adapter=ARWeaveAdapter(pool_connections=100, pool_maxsize=1000, max_retries=0),
+        adapter_cls=ARWeaveAdapter,
         mount_prefixes=["ar://"],
+        host_prefixes=["https://arweave.net/"],
+        kwargs={"pool_connections": 100, "pool_maxsize": 1000, "max_retries": 0},
     ),
-    AdapterConfig(adapter=DataURIAdapter(), mount_prefixes=["data:"]),
+    AdapterConfig(adapter_cls=DataURIAdapter, mount_prefixes=["data:"]),
     AdapterConfig(
-        adapter=HTTPAdapter(pool_connections=100, pool_maxsize=1000, max_retries=0),
+        adapter_cls=HTTPAdapter,
         mount_prefixes=["https://", "http://"],
+        kwargs={"pool_connections": 100, "pool_maxsize": 1000, "max_retries": 0},
     ),
     AdapterConfig(
-        adapter=IPFSAdapter(pool_connections=100, pool_maxsize=1000, max_retries=0),
+        adapter_cls=IPFSAdapter,
         mount_prefixes=[
             "ipfs://",
             "https://gateway.pinata.cloud/",
             "https://ipfs.io/",
         ],
+        host_prefixes=["https://gateway.pinata.cloud/ipfs/"],
+        kwargs={"pool_connections": 100, "pool_maxsize": 1000, "max_retries": 0},
     ),
 ]
 
-COLLECTION_PARSERS = [
-    ENSParser,
-    FoundationParser,
-    SuperRareParser,
-    PunksParser,
-    AutoglyphsParser,
-]
-SCHEMA_PARSERS = [OpenseaParser, UnknownParser]
+DEFAULT_PARSERS = (
+    ParserRegistry.get_all_collection_parsers() + ParserRegistry.get_all_schema_parsers() + [DefaultCatchallParser]
+)
 
 
 class MetadataPipeline(BasePipeline):
@@ -91,13 +85,12 @@ class MetadataPipeline(BasePipeline):
             adapter_configs = DEFAULT_ADAPTER_CONFIGS
         for adapter_config in adapter_configs:
             self.mount_adapter(
-                adapter=adapter_config.adapter,
+                adapter=adapter_config.adapter_cls(host_prefixes=adapter_config.host_prefixes, **adapter_config.kwargs),
                 url_prefixes=adapter_config.mount_prefixes,
             )
         if parsers is None:
             parsers = [
-                parser_cls(fetcher=self.fetcher, contract_caller=self.contract_caller)
-                for parser_cls in COLLECTION_PARSERS + SCHEMA_PARSERS
+                parser_cls(fetcher=self.fetcher, contract_caller=self.contract_caller) for parser_cls in DEFAULT_PARSERS
             ]
         self.parsers = parsers
 
@@ -149,7 +142,7 @@ class MetadataPipeline(BasePipeline):
             if parser.should_parse_token(token=token, raw_data=raw_data):
                 try:
                     metadata_or_error = parser.parse_metadata(token=token, raw_data=raw_data)
-                    if metadata_selector_fn is None:
+                    if metadata_selector_fn is None and isinstance(metadata_or_error, Metadata):
                         return metadata_or_error
                 except Exception as e:
                     metadata_or_error = MetadataProcessingError.from_token_and_error(token=token, e=e)
