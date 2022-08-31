@@ -15,17 +15,9 @@ from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 from offchain.metadata.models.metadata import Metadata
 from offchain.metadata.models.metadata_processing_error import MetadataProcessingError
 from offchain.metadata.models.token import Token
-from offchain.metadata.parsers import (
-    BaseParser,
-    ENSParser,
-    FoundationParser,
-    OpenseaParser,
-    SuperRareParser,
-    AutoglyphsParser,
-)
-from offchain.metadata.parsers.collection.punks import PunksParser
-from offchain.metadata.parsers.schema.unknown import UnknownParser
+from offchain.metadata.parsers import BaseParser, DefaultCatchallParser
 from offchain.metadata.pipelines.base_pipeline import BasePipeline
+from offchain.metadata.registries.parser_registry import ParserRegistry
 from offchain.web3.contract_caller import ContractCaller
 
 
@@ -55,14 +47,9 @@ DEFAULT_ADAPTER_CONFIGS: list[AdapterConfig] = [
     ),
 ]
 
-COLLECTION_PARSERS = [
-    ENSParser,
-    FoundationParser,
-    SuperRareParser,
-    PunksParser,
-    AutoglyphsParser,
-]
-SCHEMA_PARSERS = [OpenseaParser, UnknownParser]
+DEFAULT_PARSERS = (
+    ParserRegistry.get_all_collection_parsers() + ParserRegistry.get_all_schema_parsers() + [DefaultCatchallParser]
+)
 
 
 class MetadataPipeline(BasePipeline):
@@ -96,8 +83,7 @@ class MetadataPipeline(BasePipeline):
             )
         if parsers is None:
             parsers = [
-                parser_cls(fetcher=self.fetcher, contract_caller=self.contract_caller)
-                for parser_cls in COLLECTION_PARSERS + SCHEMA_PARSERS
+                parser_cls(fetcher=self.fetcher, contract_caller=self.contract_caller) for parser_cls in DEFAULT_PARSERS
             ]
         self.parsers = parsers
 
@@ -149,7 +135,7 @@ class MetadataPipeline(BasePipeline):
             if parser.should_parse_token(token=token, raw_data=raw_data):
                 try:
                     metadata_or_error = parser.parse_metadata(token=token, raw_data=raw_data)
-                    if metadata_selector_fn is None:
+                    if metadata_selector_fn is None and isinstance(metadata_or_error, Metadata):
                         return metadata_or_error
                 except Exception as e:
                     metadata_or_error = MetadataProcessingError.from_token_and_error(token=token, e=e)
