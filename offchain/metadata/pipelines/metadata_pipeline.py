@@ -134,17 +134,17 @@ class MetadataPipeline(BasePipeline):
             Union[Metadata, MetadataProcessingError]: returns either a Metadata
                 or a MetadataProcessingError if unable to parse.
         """
+        possible_metadatas_or_errors = []
         try:
             raw_data = self.fetcher.fetch_content(token.uri)
         except Exception as e:
-            if token.uri is not None and token.uri != "":
-                logger.error(
-                    f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) "
-                    f"Failed to parse token uri: {token.uri}. {str(e)}"
-                )
+            error_message = f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) Failed to parse token uri: {token.uri}. {str(e)}"  # noqa: E501
+            logger.error(error_message)
+            possible_metadatas_or_errors.append(
+                MetadataProcessingError.from_token_and_error(token=token, e=Exception(error_message))
+            )
             raw_data = None
 
-        possible_metadatas = []
         for parser in self.parsers:
             if parser.should_parse_token(token=token, raw_data=raw_data):
                 try:
@@ -153,15 +153,15 @@ class MetadataPipeline(BasePipeline):
                         return metadata_or_error
                 except Exception as e:
                     metadata_or_error = MetadataProcessingError.from_token_and_error(token=token, e=e)
-                possible_metadatas.append(metadata_or_error)
-        if len(possible_metadatas) == 0:
-            possible_metadatas.append(
+                possible_metadatas_or_errors.append(metadata_or_error)
+        if len(possible_metadatas_or_errors) == 0:
+            possible_metadatas_or_errors.append(
                 MetadataProcessingError.from_token_and_error(token=token, e=Exception("No parsers found."))
             )
 
         if metadata_selector_fn:
-            return metadata_selector_fn(possible_metadatas)
-        return possible_metadatas[0]
+            return metadata_selector_fn(possible_metadatas_or_errors)
+        return possible_metadatas_or_errors[0]
 
     def run(
         self,
