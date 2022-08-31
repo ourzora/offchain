@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Callable, Optional, Union
 
+from offchain.concurrency import batched_parmap
+from offchain.logger.logging import logger
 from offchain.metadata.adapters import (
     ARWeaveAdapter,
     DataURIAdapter,
@@ -8,7 +10,6 @@ from offchain.metadata.adapters import (
     IPFSAdapter,
 )
 from offchain.metadata.adapters.base_adapter import Adapter
-from offchain.concurrency import batched_parmap
 from offchain.metadata.fetchers.base_fetcher import BaseFetcher
 from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 from offchain.metadata.models.metadata import Metadata
@@ -54,7 +55,13 @@ DEFAULT_ADAPTER_CONFIGS: list[AdapterConfig] = [
     ),
 ]
 
-COLLECTION_PARSERS = [ENSParser, FoundationParser, SuperRareParser, PunksParser, AutoglyphsParser]
+COLLECTION_PARSERS = [
+    ENSParser,
+    FoundationParser,
+    SuperRareParser,
+    PunksParser,
+    AutoglyphsParser,
+]
 SCHEMA_PARSERS = [OpenseaParser, UnknownParser]
 
 
@@ -127,7 +134,16 @@ class MetadataPipeline(BasePipeline):
             Union[Metadata, MetadataProcessingError]: returns either a Metadata
                 or a MetadataProcessingError if unable to parse.
         """
-        raw_data = self.fetcher.fetch_content(token.uri) if token.uri else None
+        try:
+            raw_data = self.fetcher.fetch_content(token.uri)
+        except Exception as e:
+            if token.uri is not None and token.uri != "":
+                logger.error(
+                    f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) "
+                    f"Failed to parse token uri: {token.uri}. {str(e)}"
+                )
+            raw_data = None
+
         possible_metadatas = []
         for parser in self.parsers:
             if parser.should_parse_token(token=token, raw_data=raw_data):

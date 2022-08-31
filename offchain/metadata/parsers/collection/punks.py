@@ -86,12 +86,11 @@ class PunksParser(CollectionParser):
 
         return attributes
 
-    def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Metadata:
-        if token.uri is None or raw_data is None:
-            token.uri = f"https://api.wrappedpunks.com/api/punks/metadata/{token.token_id}"
-            raw_data = self.fetcher.fetch_content(token.uri)
-
+    def parse_metadata(self, token: Token, *args, **kwargs) -> Metadata:
+        token.uri = f"https://api.wrappedpunks.com/api/punks/metadata/{token.token_id}"
+        raw_data = self.fetcher.fetch_content(token.uri)
         mime, _ = self.fetcher.fetch_mime_type_and_size(token.uri)
+
         image = self.get_image(token.token_id)
 
         return Metadata(
