@@ -1,4 +1,7 @@
+import base64
+import json
 from typing import Optional
+from urllib.parse import quote
 
 from offchain.constants.addresses import CollectionAddress
 from offchain.metadata.constants.nouns import Seeds
@@ -15,12 +18,22 @@ class NounsParser(CollectionParser):
         CollectionAddress.LIL_NOUNS,
     ]
 
-    def seeds(self, token_id: int) -> Optional[Seeds]:
-        results = self.caller.single_address_single_fn_many_args(
-            self.contract_address,
+    @staticmethod
+    def decode_base64(uri: str) -> str:
+        start = uri.index(",") + 1
+        return base64.b64decode(uri[start:]).decode("utf-8").strip()
+
+    def get_image(self, raw_data: dict) -> Optional[MediaDetails]:
+        raw_image_uri = raw_data.get("image")
+        image_uri = quote(self.decode_base64(raw_image_uri))
+        return MediaDetails(uri=image_uri, size=None, sha256=None, mime_type="image/svg+xml")
+
+    def seeds(self, token: Token) -> Optional[Seeds]:
+        results = self.contract_caller.single_address_single_fn_many_args(
+            address=token.collection_address,
             function_sig="seeds(uint256)",
             return_type=["uint48", "uint48", "uint48", "uint48", "uint48"],
-            args=[[token_id]],
+            args=[[token.token_id]],
         )
 
         if len(results) < 1:
@@ -38,14 +51,30 @@ class NounsParser(CollectionParser):
 
         return seeds
 
-    def get_seed_attributes(self, token_id: int) -> list[Attribute]:
+    def get_raw_data(self, token: Token) -> Optional[str]:
+        results = self.contract_caller.single_address_single_fn_many_args(
+            token.collection_address,
+            function_sig="tokenURI(uint256)",
+            return_type=["string"],
+            args=[[token.token_id]],
+        )
+
+        if len(results) < 1:
+            return None
+
+        return results[0]
+
+    def parse_raw_data(self, raw_data: str) -> dict:
+        return json.loads(self.decode_base64(raw_data))
+
+    def get_seed_attributes(self, token: Token) -> list[Attribute]:
         attributes = []
 
         def normalize_value(value: str) -> str:
             return value.replace("-", " ")
 
-        seeds = self.seeds(token_id)
-        for trait, value in seeds.__dict__.values():
+        seeds = self.seeds(token)
+        for trait, value in seeds.__dict__.items():
             attribute = Attribute(
                 trait_type=trait,
                 value=normalize_value(value),
@@ -56,20 +85,14 @@ class NounsParser(CollectionParser):
         return attributes
 
     def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Metadata:
-        mime, _ = self.fetcher.fetch_mime_type_and_size(token.uri)
-
-        image = None
-        image_uri = raw_data.get("image") or raw_data.get("image_data")
-        if image_uri:
-            image_mime, image_size = self.fetcher.fetch_mime_type_and_size(image_uri)
-            image = MediaDetails(size=image_size, uri=image_uri, mime_type=image_mime)
+        raw_data = self.parse_raw_data(self.get_raw_data(token))
 
         return Metadata(
             token=token,
             raw_data=raw_data,
-            attributes=self.parse_attributes(token.token_id),
             name=raw_data.get("name"),
             description=raw_data.get("description"),
-            mime_type=mime,
-            image=image,
+            mime_type="application/json",
+            image=self.get_image(raw_data),
+            attributes=self.get_seed_attributes(token),
         )
