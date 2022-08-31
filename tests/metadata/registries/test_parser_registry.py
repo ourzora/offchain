@@ -7,6 +7,7 @@ from offchain.metadata.parsers import (
     SuperRareParser,
     PunksParser,
     AutoglyphsParser,
+    NounsParser,
     UnknownParser,
 )
 from offchain.metadata.parsers.schema.schema_parser import SchemaParser
@@ -41,6 +42,7 @@ class TestParserRegistry:
         assert set(parser_registry.get_all()) == set(
             [
                 ENSParser,
+                NounsParser,
                 FoundationParser,
                 OpenseaParser,
                 SuperRareParser,
