@@ -21,6 +21,7 @@ from offchain.metadata.parsers import (
     OpenseaParser,
     SuperRareParser,
     AutoglyphsParser,
+    HashmasksParser,
 )
 from offchain.metadata.parsers.collection.punks import PunksParser
 from offchain.metadata.parsers.schema.unknown import UnknownParser
@@ -54,7 +55,14 @@ DEFAULT_ADAPTER_CONFIGS: list[AdapterConfig] = [
     ),
 ]
 
-COLLECTION_PARSERS = [ENSParser, FoundationParser, SuperRareParser, PunksParser, AutoglyphsParser]
+COLLECTION_PARSERS = [
+    ENSParser,
+    FoundationParser,
+    SuperRareParser,
+    PunksParser,
+    AutoglyphsParser,
+    HashmasksParser,
+]
 SCHEMA_PARSERS = [OpenseaParser, UnknownParser]
 
 
