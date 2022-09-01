@@ -9,6 +9,7 @@ from .collection.punks import PunksParser
 from .collection.hashmasks import HashmasksParser
 from .collection.autoglyphs import AutoglyphsParser
 from .collection.loot import LootParser
+from .collection.nouns import NounsParser
 from .collection.chainrunners import ChainRunnersParser
 from .schema.opensea import OpenseaParser
 from .catchall.default_catchall import DefaultCatchallParser
