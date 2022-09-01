@@ -7,11 +7,16 @@ on:
     branches: [main, development]
 
 jobs:
-  ci-pipeline:
+  changes:
     runs-on: ubuntu-latest
+    outputs:
+      py_modified: ${{ steps.filter.outputs.py_modified }}
+      py_modified_files: ${{ steps.filter.outputs.py_modified_files }}
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
       - name: Get changed files
         uses: dorny/paths-filter@v2
         id: filter
@@ -20,20 +25,59 @@ jobs:
           filters: |
             py_modified:
               - added|modified: "./**/*.py"
+
+  pytest:
+    needs: changes
+    if: ${{ needs.changes.outputs.py_modified == 'true' }}
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Setup python
-        if: ${{ steps.filter.outputs.py_modified == 'true' }}
         uses: actions/setup-python@v2
         with:
-          python-version: 3.10.0
+          python-version: 3.9
+
       - name: Setup poetry
-        if: ${{ steps.filter.outputs.py_modified == 'true' }}
         uses: Gr1N/setup-poetry@v7
+
       - name: Install dependencies
-        if: ${{ steps.filter.outputs.py_modified == 'true' }}
         run: poetry install
-      - name: Run flake8
-        if: ${{ steps.filter.outputs.py_modified == 'true' }}
-        run: poetry run flake8 ${{ steps.filter.outputs.py_modified_files }}
-      - name: Run pytest
-        if: ${{ steps.filter.outputs.py_modified == 'true' }}
-        run: poetry run python -m pytest tests
+
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+          architecture: "x64"
+
+      - name: run
+        run: |
+          poetry run python -m pytest tests
+
+  flake8:
+    needs: changes
+    if: ${{ needs.changes.outputs.py_modified == 'true' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Setup poetry
+        uses: Gr1N/setup-poetry@v7
+
+      - name: Install dependencies
+        run: poetry install
+
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+          architecture: "x64"
+
+      - name: run
+        run: |
+          poetry run flake8 ${{ needs.changes.outputs.py_modified_files }}
