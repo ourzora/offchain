@@ -1,5 +1,28 @@
 from typing import Union
 
-from requests.adapters import BaseAdapter, HTTPAdapter
+from requests.adapters import (
+    BaseAdapter as RequestsBaseAdapter,
+    HTTPAdapter as RequestsHTTPAdapter,
+)
+from urllib3.util.retry import Retry
+
+
+class BaseAdapter(RequestsBaseAdapter):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+
+
+class HTTPAdapter(RequestsHTTPAdapter):
+    def __init__(
+        self,
+        pool_connections: int = ...,
+        pool_maxsize: int = ...,
+        max_retries: Retry | int | None = ...,
+        pool_block: bool = ...,
+        *args,
+        **kwargs
+    ) -> None:
+        super().__init__(pool_connections, pool_maxsize, max_retries, pool_block)
+
 
 Adapter = Union[BaseAdapter, HTTPAdapter]

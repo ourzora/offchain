@@ -4,20 +4,17 @@ from offchain.metadata.models.metadata import (
     Attribute,
     MediaDetails,
     Metadata,
-    MetadataStandard,
 )
 from offchain.metadata.models.token import Token
-from offchain.metadata.parsers.schema.schema_parser import SchemaParser
+from offchain.metadata.parsers.catchall.catchall_parser import CatchallParser
 from offchain.metadata.registries.parser_registry import ParserRegistry
 
 
 @ParserRegistry.register
-class UnknownParser(SchemaParser):
+class DefaultCatchallParser(CatchallParser):
     """A catch-all metadata parser that does a best effort pass at parsing metadata of any format.
     This parser should always be run last in the pipeline.
     """
-
-    _METADATA_STANDARD: MetadataStandard = MetadataStandard.UNKNOWN
 
     def get_name(self, raw_data: dict):
         if isinstance(raw_data.get("name"), str):
@@ -131,7 +128,6 @@ class UnknownParser(SchemaParser):
         return Metadata(
             token=token,
             raw_data=raw_data,
-            standard=self._METADATA_STANDARD,
             attributes=self.get_attributes(raw_data=raw_data),
             name=self.get_name(raw_data=raw_data),
             description=self.get_description(raw_data=raw_data),

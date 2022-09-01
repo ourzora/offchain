@@ -9,7 +9,6 @@ class MetadataStandard(StringEnum):
     """Standards for NFT metadata formats"""
 
     OPENSEA_STANDARD = "OPENSEA_STANDARD"
-    UNKNOWN = "UNKNOWN"
 
 
 class MetadataFieldType(StringEnum):

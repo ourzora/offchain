@@ -1,6 +1,7 @@
 from typing import Optional, Type
 
 from offchain.metadata.parsers.base_parser import BaseParser
+from offchain.metadata.parsers.catchall.catchall_parser import CatchallParser
 from offchain.metadata.parsers.collection.collection_parser import CollectionParser
 from offchain.metadata.parsers.schema.schema_parser import SchemaParser
 from offchain.metadata.registries.base_registry import BaseRegistry
@@ -10,19 +11,23 @@ class ParserRegistry(BaseRegistry):
     __parser_registry: dict[str, BaseParser] = {}
 
     @staticmethod
-    def get_all() -> list[BaseParser]:
+    def get_all() -> list[Type[BaseParser]]:
         return list(ParserRegistry.__parser_registry.values())
 
     @staticmethod
-    def get_all_collection_parsers() -> list[CollectionParser]:
-        return [parser for parser in ParserRegistry.__parser_registry.values() if isinstance(parser, CollectionParser)]
+    def get_all_collection_parsers() -> list[Type[CollectionParser]]:
+        return [parser for parser in ParserRegistry.__parser_registry.values() if issubclass(parser, CollectionParser)]
 
     @staticmethod
-    def get_all_schema_parsers() -> list[SchemaParser]:
-        return [parser for parser in ParserRegistry.__parser_registry.values() if isinstance(parser, SchemaParser)]
+    def get_all_schema_parsers() -> list[Type[SchemaParser]]:
+        return [parser for parser in ParserRegistry.__parser_registry.values() if issubclass(parser, SchemaParser)]
 
     @staticmethod
-    def get_parser_cls_by_name(cls_name: str) -> Optional[BaseParser]:
+    def get_all_catchall_parsers() -> list[Type[CatchallParser]]:
+        return [parser for parser in ParserRegistry.__parser_registry.values() if issubclass(parser, CatchallParser)]
+
+    @staticmethod
+    def get_parser_cls_by_name(cls_name: str) -> Optional[Type[BaseParser]]:
         return ParserRegistry.__parser_registry.get(cls_name)
 
     @staticmethod

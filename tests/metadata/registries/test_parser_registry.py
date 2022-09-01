@@ -7,8 +7,7 @@ from offchain.metadata.parsers import (
     SuperRareParser,
     PunksParser,
     AutoglyphsParser,
-    HashmasksParser,
-    UnknownParser,
+    DefaultCatchallParser,
 )
 from offchain.metadata.parsers.schema.schema_parser import SchemaParser
 from offchain.metadata.parsers.collection.collection_parser import CollectionParser
@@ -47,7 +46,34 @@ class TestParserRegistry:
                 SuperRareParser,
                 PunksParser,
                 AutoglyphsParser,
-                HashmasksParser,
-                UnknownParser,
+                DefaultCatchallParser,
+            ]
+        )
+
+    def test_parser_registry_has_collection_parsers(self):
+        parser_registry = ParserRegistry()
+        assert set(parser_registry.get_all_collection_parsers()) == set(
+            [
+                ENSParser,
+                FoundationParser,
+                SuperRareParser,
+                PunksParser,
+                AutoglyphsParser,
+            ]
+        )
+
+    def test_parser_registry_has_schema_parsers(self):
+        parser_registry = ParserRegistry()
+        assert set(parser_registry.get_all_schema_parsers()) == set(
+            [
+                OpenseaParser,
+            ]
+        )
+
+    def test_parser_registry_has_catchall_parsers(self):
+        parser_registry = ParserRegistry()
+        assert set(parser_registry.get_all_catchall_parsers()) == set(
+            [
+                DefaultCatchallParser,
             ]
         )

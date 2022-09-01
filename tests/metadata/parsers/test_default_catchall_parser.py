@@ -8,10 +8,10 @@ from offchain.metadata.models.metadata import (
     MetadataStandard,
 )
 from offchain.metadata.models.token import Token
-from offchain.metadata.parsers.schema.unknown import UnknownParser
+from offchain.metadata.parsers.catchall.default_catchall import DefaultCatchallParser
 
 
-class TestUnknownParser:
+class TestDefaultCatchallParser:
     token = Token(
         chain_identifier="ETHEREUM-MAINNET",
         collection_address="0x74cb086a1611cc9ca672f458b7742dd4159ac9db",
@@ -51,15 +51,15 @@ class TestUnknownParser:
         },
     }
 
-    def test_unknown_parser_should_parse_token(self):
+    def test_default_catchall_parser_should_parse_token(self):
         fetcher = MetadataFetcher()
-        parser = UnknownParser(fetcher=fetcher)
+        parser = DefaultCatchallParser(fetcher=fetcher)
         assert parser.should_parse_token(token=self.token, raw_data=self.raw_data) == True
 
-    def test_unknown_parser_parses_metadata(self):
+    def test_default_catchall_parser_parses_metadata(self):
         fetcher = MetadataFetcher()
         fetcher.fetch_mime_type_and_size = MagicMock(return_value=(None, 0))
-        parser = UnknownParser(fetcher=fetcher)
+        parser = DefaultCatchallParser(fetcher=fetcher)
         metadata = parser.parse_metadata(token=self.token, raw_data=self.raw_data)
         assert metadata == Metadata(
             token=self.token,
@@ -95,7 +95,7 @@ class TestUnknownParser:
                     }
                 },
             },
-            standard=MetadataStandard.UNKNOWN,
+            standard=None,
             attributes=[],
             name=None,
             description=None,
