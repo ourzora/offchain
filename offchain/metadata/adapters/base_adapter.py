@@ -17,7 +17,7 @@ class HTTPAdapter(RequestsHTTPAdapter):
         self,
         pool_connections: int = ...,
         pool_maxsize: int = ...,
-        max_retries: Retry | int | None = ...,
+        max_retries: Union[Retry, int, None] = ...,
         pool_block: bool = ...,
         *args,
         **kwargs
