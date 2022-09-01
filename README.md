@@ -18,6 +18,14 @@ curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poet
 poetry install
 ```
 
+### Documentation
+
+This project uses `mkdocs` and `mkdocs-material` for documentation.
+
+```bash
+mkdocs serve
+```
+
 ### Testing
 
 ```bash
