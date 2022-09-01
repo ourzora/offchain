@@ -9,6 +9,7 @@ from offchain.metadata.parsers import (
     AutoglyphsParser,
     HashmasksParser,
     ChainRunnersParser,
+    LootParser,
     DefaultCatchallParser,
 )
 from offchain.metadata.parsers.schema.schema_parser import SchemaParser
@@ -50,6 +51,7 @@ class TestParserRegistry:
                 AutoglyphsParser,
                 HashmasksParser,
                 ChainRunnersParser,
+                LootParser,
                 DefaultCatchallParser,
             ]
         )
@@ -64,6 +66,7 @@ class TestParserRegistry:
                 PunksParser,
                 AutoglyphsParser,
                 ChainRunnersParser,
+                LootParser,
                 HashmasksParser,
             ]
         )
