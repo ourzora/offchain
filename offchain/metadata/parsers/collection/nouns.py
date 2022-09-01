@@ -59,21 +59,19 @@ class NounsParser(CollectionParser):
         return results[0]
 
     def get_seed_attributes(self, token: Token) -> list[Attribute]:
-        attributes = []
+        seeds = self.seeds(token)
 
         def normalize_value(value: str) -> str:
             return value.replace("-", " ")
 
-        seeds = self.seeds(token)
-        for trait, value in seeds.__dict__.items():
-            attribute = Attribute(
+        return [
+            Attribute(
                 trait_type=trait,
                 value=normalize_value(value),
                 display_type=None,
             )
-            attributes.append(attribute)
-
-        return attributes
+            for trait, value in seeds.__dict__.items()
+        ]
 
     def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Metadata:
         token.uri = self.get_uri(token)
