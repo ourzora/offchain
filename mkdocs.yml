@@ -1,0 +1,25 @@
+site_name: offchain
+repo_url: https://github.com/ourzora/offchain
+repo_name: ourzora/offchain
+nav:
+  - Introduction: introduction.md
+  - Basic usage: basic_usage.md
+theme:
+  name: material
+  font:
+    text: Roboto Mono
+  palette:
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: black
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+    # Palette toggle for light mode
+    - scheme: default
+      primary: black
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+  logo: assets/zorb.png
+  favicon: assets/zorb.png
