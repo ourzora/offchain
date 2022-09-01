@@ -22,15 +22,24 @@ from offchain.metadata.pipelines.metadata_pipeline import (
 
 class TestMetadataPipeline:
     def test_metadata_pipeline_mounts_adapters(self):
-        http_adapter = HTTPAdapter(pool_connections=100, pool_maxsize=1000, max_retries=0)
         pipeline = MetadataPipeline(
-            adapter_configs=[AdapterConfig(adapter=http_adapter, mount_prefixes=["https://", "http://"])]
+            adapter_configs=[
+                AdapterConfig(
+                    adapter_cls=HTTPAdapter,
+                    mount_prefixes=["https://", "http://"],
+                    kwargs={
+                        "pool_connections": 100,
+                        "pool_maxsize": 1000,
+                        "max_retries": 0,
+                    },
+                )
+            ]
         )
-        assert (
+        assert isinstance(
             pipeline.fetcher.sess.get_adapter(
                 "https://api.sorare.com/api/v1/cards/91116343315175353437320038031158839194898416502213211151306930097337986202850"
-            )
-            == http_adapter
+            ),
+            HTTPAdapter,
         )
         ipfs_adapter = IPFSAdapter(pool_connections=100, pool_maxsize=1000, max_retries=0)
         pipeline.mount_adapter(

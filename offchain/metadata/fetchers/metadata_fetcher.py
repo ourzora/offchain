@@ -1,7 +1,7 @@
 import cgi
-from typing import Tuple, Union
-
 import requests
+from tenacity import retry, stop_after_attempt, wait_exponential
+from typing import Tuple, Union
 
 from offchain.metadata.adapters.base_adapter import Adapter
 from offchain.metadata.fetchers.base_fetcher import BaseFetcher
@@ -59,6 +59,10 @@ class MetadataFetcher(BaseFetcher):
     def _get(self, uri: str):
         return self.sess.get(uri, timeout=self.timeout, allow_redirects=True)
 
+    @retry(
+        stop=stop_after_attempt(2),
+        wait=wait_exponential(multiplier=1, min=1, max=5),
+    )
     def fetch_mime_type_and_size(self, uri: str) -> Tuple[str, int]:
         """Fetch the mime type and size of the content at a given uri.
 
@@ -85,6 +89,10 @@ class MetadataFetcher(BaseFetcher):
             logger.error(f"Failed to fetch content-type and size from uri {uri}. Error: {e}")
             raise
 
+    @retry(
+        stop=stop_after_attempt(2),
+        wait=wait_exponential(multiplier=1, min=1, max=5),
+    )
     def fetch_content(self, uri: str) -> Union[dict, str]:
         """Fetch the content at a given uri
 
