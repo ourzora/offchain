@@ -97,6 +97,9 @@ class MetadataFetcher(BaseFetcher):
         try:
             res = self._get(uri)
             res.raise_for_status()
-            return res.json()
+            if res.text.startswith("{"):
+                return res.json()
+            else:
+                return res.text
         except Exception as e:
             raise Exception(f"Don't know how to fetch metadata for {uri=}. {str(e)}")

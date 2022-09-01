@@ -1,5 +1,3 @@
-import base64
-import json
 from typing import Optional
 from urllib.parse import quote
 
@@ -18,14 +16,11 @@ class NounsParser(CollectionParser):
         CollectionAddress.LIL_NOUNS,
     ]
 
-    @staticmethod
-    def decode_base64(uri: str) -> str:
-        start = uri.index(",") + 1
-        return base64.b64decode(uri[start:]).decode("utf-8").strip()
-
     def get_image(self, raw_data: dict) -> Optional[MediaDetails]:
         raw_image_uri = raw_data.get("image")
-        image_uri = quote(self.decode_base64(raw_image_uri))
+        image_uri = quote(self.fetcher.fetch_content(raw_image_uri))
+
+        # image_uri = quote(self.decode_base64(raw_image_uri))
         return MediaDetails(uri=image_uri, size=None, sha256=None, mime_type="image/svg+xml")
 
     def seeds(self, token: Token) -> Optional[Seeds]:
@@ -51,7 +46,7 @@ class NounsParser(CollectionParser):
 
         return seeds
 
-    def get_raw_data(self, token: Token) -> Optional[str]:
+    def get_uri(self, token: Token) -> Optional[str]:
         results = self.contract_caller.single_address_single_fn_many_args(
             token.collection_address,
             function_sig="tokenURI(uint256)",
@@ -63,9 +58,6 @@ class NounsParser(CollectionParser):
             return None
 
         return results[0]
-
-    def parse_raw_data(self, raw_data: str) -> dict:
-        return json.loads(self.decode_base64(raw_data))
 
     def get_seed_attributes(self, token: Token) -> list[Attribute]:
         attributes = []
@@ -85,7 +77,8 @@ class NounsParser(CollectionParser):
         return attributes
 
     def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Metadata:
-        raw_data = self.parse_raw_data(self.get_raw_data(token))
+        token.uri = self.get_uri(token)
+        raw_data = self.fetcher.fetch_content(token.uri)
 
         return Metadata(
             token=token,
