@@ -1,12 +1,39 @@
+from dataclasses import dataclass
 from typing import Optional
 from urllib.parse import quote
 
 from offchain.constants.addresses import CollectionAddress
-from offchain.metadata.constants.nouns import Seeds
+from offchain.metadata.constants.nouns import BACKGROUND, BODY, ACCESSORY, HEAD, GLASSES
 from offchain.metadata.models.metadata import Metadata, MediaDetails, Attribute
 from offchain.metadata.models.token import Token
 from offchain.metadata.parsers.collection.collection_parser import CollectionParser
 from offchain.metadata.registries.parser_registry import ParserRegistry
+
+
+@dataclass
+class Seeds:
+    background: str
+    body: str
+    accessory: str
+    head: str
+    glasses: str
+
+    @classmethod
+    def from_raw(
+        cls,
+        background_index: int,
+        body_index: int,
+        accessory_index: int,
+        head_index: int,
+        glasses_index: int,
+    ):
+        background = BACKGROUND[background_index]
+        body = BODY[body_index]
+        accessory = ACCESSORY[accessory_index]
+        head = HEAD[head_index]
+        glasses = GLASSES[glasses_index]
+
+        return Seeds(background, body, accessory, head, glasses)
 
 
 @ParserRegistry.register

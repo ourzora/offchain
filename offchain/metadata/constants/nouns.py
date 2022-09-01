@@ -1,5 +1,3 @@
-from dataclasses import dataclass
-
 BACKGROUND = ["cool", "warm"]
 
 BODY = [
@@ -435,29 +433,3 @@ GLASSES = [
     "square-yellow-orange-multi",
     "square-yellow-saturated",
 ]
-
-
-@dataclass
-class Seeds:
-    background: str
-    body: str
-    accessory: str
-    head: str
-    glasses: str
-
-    @classmethod
-    def from_raw(
-        cls,
-        background_index: int,
-        body_index: int,
-        accessory_index: int,
-        head_index: int,
-        glasses_index: int,
-    ):
-        background = BACKGROUND[background_index]
-        body = BODY[body_index]
-        accessory = ACCESSORY[accessory_index]
-        head = HEAD[head_index]
-        glasses = GLASSES[glasses_index]
-
-        return Seeds(background, body, accessory, head, glasses)
