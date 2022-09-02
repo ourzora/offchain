@@ -90,6 +90,12 @@ class OpenseaParser(SchemaParser):
             image_mime, image_size = self.fetcher.fetch_mime_type_and_size(image_uri)
             image = MediaDetails(size=image_size, uri=image_uri, mime_type=image_mime)
 
+        content = None
+        content_uri = raw_data.get("animation_url")
+        if content_uri:
+            content_mime, content_size = self.fetcher.fetch_mime_type_and_size(content_uri)
+            content = MediaDetails(uri=content_uri, size=content_size, mime_type=content_mime)
+
         return Metadata(
             token=token,
             raw_data=raw_data,
@@ -99,6 +105,7 @@ class OpenseaParser(SchemaParser):
             description=raw_data.get("description"),
             mime_type=mime,
             image=image,
+            content=content,
             additional_fields=self.parse_additional_fields(raw_data),
         )
 
