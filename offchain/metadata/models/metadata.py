@@ -8,7 +8,9 @@ from offchain.metadata.models.token import Token
 class MetadataStandard(StringEnum):
     """Standards for NFT metadata formats"""
 
+    COLLECTION_STANDARD = "COLLECTION_STANDARD"
     OPENSEA_STANDARD = "OPENSEA_STANDARD"
+    UNKNOWN_STANDARD = "UNKNOWN_STANDARD"
 
 
 class MetadataFieldType(StringEnum):

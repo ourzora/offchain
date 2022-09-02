@@ -142,8 +142,10 @@ class MetadataPipeline(BasePipeline):
             if parser.should_parse_token(token=token, raw_data=raw_data):
                 try:
                     metadata_or_error = parser.parse_metadata(token=token, raw_data=raw_data)
-                    if metadata_selector_fn is None and isinstance(metadata_or_error, Metadata):
-                        return metadata_or_error
+                    if isinstance(metadata_or_error, Metadata):
+                        metadata_or_error.standard = parser._METADATA_STANDARD
+                        if metadata_selector_fn is None:
+                            return metadata_or_error
                 except Exception as e:
                     metadata_or_error = MetadataProcessingError.from_token_and_error(token=token, e=e)
                 possible_metadatas_or_errors.append(metadata_or_error)

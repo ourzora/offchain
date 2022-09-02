@@ -1,4 +1,5 @@
 from offchain.metadata.fetchers.base_fetcher import BaseFetcher
+from offchain.metadata.models.metadata import MetadataStandard
 from offchain.metadata.parsers.base_parser import BaseParser
 from offchain.metadata.models.token import Token
 from offchain.web3.contract_caller import ContractCaller
@@ -15,6 +16,7 @@ class CollectionParser(BaseParser):
     """
 
     _COLLECTION_ADDRESSES: list[str]
+    _METADATA_STANDARD: MetadataStandard = MetadataStandard.COLLECTION_STANDARD
 
     def __init__(self, fetcher: BaseFetcher, contract_caller: ContractCaller, *args, **kwargs) -> None:
         self.contract_caller = contract_caller

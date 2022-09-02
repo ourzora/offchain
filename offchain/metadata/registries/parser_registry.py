@@ -43,12 +43,11 @@ class ParserRegistry(BaseRegistry):
                 and isinstance(parser_cls._COLLECTION_ADDRESSES, list)
                 and len(parser_cls._COLLECTION_ADDRESSES) > 0
             )
-        elif issubclass(parser_cls, SchemaParser):
-            assert (
-                hasattr(parser_cls, "_METADATA_STANDARD")
-                and parser_cls._METADATA_STANDARD is not None
-                and isinstance(parser_cls._METADATA_STANDARD, str)
-            )
+        assert (
+            hasattr(parser_cls, "_METADATA_STANDARD")
+            and parser_cls._METADATA_STANDARD is not None
+            and isinstance(parser_cls._METADATA_STANDARD, str)
+        )
 
     @staticmethod
     def add(parser_cls: Type[BaseParser]):

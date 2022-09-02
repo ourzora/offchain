@@ -57,7 +57,7 @@ class TestOpenseaParser:
         assert metadata == Metadata(
             token=self.token,
             raw_data=raw_crypto_coven_metadata,
-            standard=MetadataStandard.OPENSEA_STANDARD,
+            standard=None,
             attributes=[
                 Attribute(trait_type="Background", value="Sepia", display_type=None),
                 Attribute(trait_type="Skin Tone", value="Dawn", display_type=None),
@@ -163,7 +163,7 @@ class TestOpenseaParser:
                 Attribute(trait_type="Butterfly", value="Green", display_type=None),
                 Attribute(trait_type="Track", value="Chasing Paradise", display_type=None),
             ],
-            standard=MetadataStandard.OPENSEA_STANDARD,
+            standard=None,
             name="Glass House #996",
             description="Glass House is a collection from Daniel Allan’s forthcoming four-track EP. It’s meant to embody the calming nature of being at home, represented through 1000 unique tokens. It’s debuted first through web3, and available on all streaming platforms in September.",
             mime_type="application/json",

@@ -125,6 +125,15 @@ class DefaultCatchallParser(CatchallParser):
         """
         mime, _ = self.fetcher.fetch_mime_type_and_size(token.uri)
 
+        content = self.get_content_details(raw_data=raw_data)
+        image = self.get_image_details(raw_data=raw_data)
+
+        if image and image.mime_type:
+            mime = image.mime_type
+
+        if content and content.mime_type:
+            mime = content.mime_type
+
         return Metadata(
             token=token,
             raw_data=raw_data,
@@ -132,8 +141,8 @@ class DefaultCatchallParser(CatchallParser):
             name=self.get_name(raw_data=raw_data),
             description=self.get_description(raw_data=raw_data),
             mime_type=mime,
-            image=self.get_image_details(raw_data=raw_data),
-            content=self.get_content_details(raw_data=raw_data),
+            image=image,
+            content=content,
             additional_fields=[],
         )
 
