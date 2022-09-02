@@ -1,7 +1,7 @@
 from typing import Optional, Protocol
 
 from offchain.metadata.fetchers.base_fetcher import BaseFetcher
-from offchain.metadata.models.metadata import Metadata
+from offchain.metadata.models.metadata import Metadata, MetadataStandard
 from offchain.metadata.models.token import Token
 
 
@@ -9,9 +9,12 @@ class BaseParser(Protocol):
     """Base protocol for Parser classes
 
     Attributes:
+        _METADATA_STANDARD (MetadataStandard): a class variable defining the metadata standard a parser supports.
         fetcher (BaseFetcher): a fetcher instance responsible for fetching content,
             mime type, and size by making requests.
     """
+
+    _METADATA_STANDARD: MetadataStandard
 
     fetcher: BaseFetcher
 

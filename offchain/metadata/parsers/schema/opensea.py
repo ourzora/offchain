@@ -96,10 +96,15 @@ class OpenseaParser(SchemaParser):
             content_mime, content_size = self.fetcher.fetch_mime_type_and_size(content_uri)
             content = MediaDetails(uri=content_uri, size=content_size, mime_type=content_mime)
 
+        if image and image.mime_type:
+            mime = image.mime_type
+
+        if content and content.mime_type:
+            mime = content.mime_type
+
         return Metadata(
             token=token,
             raw_data=raw_data,
-            standard=OpenseaParser._METADATA_STANDARD,
             attributes=attributes,
             name=raw_data.get("name"),
             description=raw_data.get("description"),
