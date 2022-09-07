@@ -32,7 +32,7 @@ class DecentralandParser(CollectionParser):
                 MetadataField(
                     field_name="id",
                     type=MetadataFieldType.TEXT,
-                    description="This property defines an the ID for the NFT asset",
+                    description="This property defines the ID for the NFT asset",
                     value=id,
                 )
             )
