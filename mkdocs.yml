@@ -2,8 +2,16 @@ site_name: offchain
 repo_url: https://github.com/ourzora/offchain
 repo_name: ourzora/offchain
 nav:
-  - Introduction: introduction.md
-  - Basic usage: basic_usage.md
+  - Introduction:
+      - index.md
+      - introduction/basic_usage.md
+
+  - Docs:
+      - Pipeline: pipeline/pipeline.md
+      - Fetchers: pipeline/fetchers.md
+      - Adapters: pipeline/adapters.md
+      - Parsers: pipeline/parsers.md
+  - Contributing: contributing.md
 theme:
   name: material
   font:
@@ -23,3 +31,14 @@ theme:
         name: Switch to dark mode
   logo: assets/zorb.png
   favicon: assets/zorb.png
+plugins:
+  - search
+  - mkdocstrings:
+      custom_templates: templates
+      default_handler: python
+      handlers:
+        python:
+          options:
+            show_source: true
+            show_root_heading: false
+            show_root_toc_entry: false
