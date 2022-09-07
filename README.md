@@ -23,7 +23,7 @@ poetry install
 This project uses `mkdocs` and `mkdocs-material` for documentation.
 
 ```bash
-mkdocs serve
+poetry run mkdocs serve
 ```
 
 ### Testing
