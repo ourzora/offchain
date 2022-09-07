@@ -105,13 +105,13 @@ class TestDecentralandEstateParser:
                 MetadataField(
                     field_name="id",
                     type=MetadataFieldType.TEXT,
-                    description="This property defines an the ID for the NFT asset",
+                    description="This property defines the ID for the NFT asset",
                     value="4550",
                 ),
                 MetadataField(
                     field_name="background_color",
                     type=MetadataFieldType.TEXT,
-                    description="This property defines an the background color for the NFT asset",
+                    description="This property defines the background color for the NFT asset",
                     value="000000",
                 ),
             ],
