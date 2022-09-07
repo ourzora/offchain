@@ -42,7 +42,7 @@ class DecentralandParser(CollectionParser):
                 MetadataField(
                     field_name="background_color",
                     type=MetadataFieldType.TEXT,
-                    description="This property defines an the background color for the NFT asset",
+                    description="This property defines the background color for the NFT asset",
                     value=background_color,
                 )
             )
