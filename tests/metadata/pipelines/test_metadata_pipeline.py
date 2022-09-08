@@ -251,6 +251,6 @@ class TestMetadataPipeline:
                 token_id=token.token_id,
                 uri=token.uri,
                 error_type="Exception",
-                error_message="No parsers found.",
+                error_message=f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) No parsers found.",
             )
         ]

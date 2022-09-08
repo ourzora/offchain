@@ -121,6 +121,7 @@ class MetadataPipeline(BasePipeline):
         Returns:
             Optional[str]: the token uri, if found.
         """
+
         res = self.contract_caller.single_address_single_fn_many_args(
             address=token.collection_address,
             function_sig=function_signature,
@@ -147,32 +148,51 @@ class MetadataPipeline(BasePipeline):
                 or a MetadataProcessingError if unable to parse.
         """
         possible_metadatas_or_errors = []
-        if not token.uri:
-            token.uri = self.fetch_token_uri(token)
-        try:
-            raw_data = self.fetcher.fetch_content(token.uri)
-        except Exception as e:
-            error_message = f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) Failed to parse token uri: {token.uri}. {str(e)}"  # noqa: E501
-            logger.error(error_message)
-            possible_metadatas_or_errors.append(
-                MetadataProcessingError.from_token_and_error(token=token, e=Exception(error_message))
-            )
-            raw_data = None
+
+        # If no token uri is passed in, try to fetch the token uri from the contract
+        if token.uri is None:
+            try:
+                token.uri = self.fetch_token_uri(token)
+            except Exception as e:
+                error_message = f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) Failed to fetch token uri. {str(e)}"  # noqa: E501
+                logger.error(error_message)
+                possible_metadatas_or_errors.append(
+                    MetadataProcessingError.from_token_and_error(token=token, e=Exception(error_message))
+                )
+
+        raw_data = None
+
+        # Try to fetch the raw data from the token uri
+        if token.uri is not None:
+            try:
+                raw_data = self.fetcher.fetch_content(token.uri)
+            except Exception as e:
+                error_message = f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) Failed to parse token uri: {token.uri}. {str(e)}"  # noqa: E501
+                logger.error(error_message)
+                possible_metadatas_or_errors.append(
+                    MetadataProcessingError.from_token_and_error(token=token, e=Exception(error_message))
+                )
 
         for parser in self.parsers:
-            if parser.should_parse_token(token=token, raw_data=raw_data):
-                try:
-                    metadata_or_error = parser.parse_metadata(token=token, raw_data=raw_data)
-                    if isinstance(metadata_or_error, Metadata):
-                        metadata_or_error.standard = parser._METADATA_STANDARD
-                        if metadata_selector_fn is None:
-                            return metadata_or_error
-                except Exception as e:
-                    metadata_or_error = MetadataProcessingError.from_token_and_error(token=token, e=e)
-                possible_metadatas_or_errors.append(metadata_or_error)
+            if not parser.should_parse_token(token=token, raw_data=raw_data):
+                continue
+            try:
+                metadata_or_error = parser.parse_metadata(token=token, raw_data=raw_data)
+                if isinstance(metadata_or_error, Metadata):
+                    metadata_or_error.standard = parser._METADATA_STANDARD
+                    if metadata_selector_fn is None:
+                        return metadata_or_error
+            except Exception as e:
+                metadata_or_error = MetadataProcessingError.from_token_and_error(token=token, e=e)
+            possible_metadatas_or_errors.append(metadata_or_error)
         if len(possible_metadatas_or_errors) == 0:
             possible_metadatas_or_errors.append(
-                MetadataProcessingError.from_token_and_error(token=token, e=Exception("No parsers found."))
+                MetadataProcessingError.from_token_and_error(
+                    token=token,
+                    e=Exception(
+                        f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) No parsers found."
+                    ),
+                )
             )
 
         if metadata_selector_fn:
