@@ -110,6 +110,24 @@ class MetadataPipeline(BasePipeline):
         for prefix in url_prefixes:
             self.fetcher.register_adapter(adapter, prefix)
 
+    def fetch_token_uri(self, token: Token, function_signature: str = "tokenURI(uint256)") -> Optional[str]:
+        """Given a token, fetch the token uri from the contract using a specified function signature.
+
+        Args:
+            token (Token): token whose uri we want to fetch.
+            function_signature (str, optional): token uri contract function signature. Defaults to "tokenURI(uint256)".
+
+        Returns:
+            Optional[str]: the token uri, if found.
+        """
+        res = self.contract_caller.single_address_single_fn_many_args(
+            address=token.collection_address,
+            function_sig=function_signature,
+            return_type=["string"],
+            args=[[token.token_id]],
+        )
+        return res[0] if res and len(res) > 0 else None
+
     def fetch_token_metadata(
         self,
         token: Token,
@@ -128,6 +146,8 @@ class MetadataPipeline(BasePipeline):
                 or a MetadataProcessingError if unable to parse.
         """
         possible_metadatas_or_errors = []
+        if not token.uri:
+            token.uri = self.fetch_token_uri(token)
         try:
             raw_data = self.fetcher.fetch_content(token.uri)
         except Exception as e:
