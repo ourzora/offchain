@@ -51,6 +51,24 @@ class TestMetadataPipeline:
             == ipfs_adapter
         )
 
+    def test_metadata_pipeline_fetch_token_uri(self, raw_crypto_coven_metadata):
+
+        token = Token(
+            chain_identifier="ETHEREUM-MAINNET",
+            collection_address="0x5180db8f5c931aae63c74266b211f580155ecac8",
+            token_id="1",
+        )
+
+        fetcher = MetadataFetcher()
+        fetcher.fetch_content = MagicMock(return_value=raw_crypto_coven_metadata)
+        fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", "3095"))
+
+        pipeline = MetadataPipeline(fetcher=fetcher)
+        mock_fetch_token_uri = MagicMock()
+        pipeline.fetch_token_uri = mock_fetch_token_uri
+        pipeline.run([token])
+        mock_fetch_token_uri.assert_called_once_with(token)
+
     def test_metadata_pipeline_fetch_token_metadata(self, raw_crypto_coven_metadata):
 
         token = Token(
