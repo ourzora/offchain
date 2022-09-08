@@ -11,6 +11,7 @@ from offchain.metadata.parsers import (
     ChainRunnersParser,
     LootParser,
     NounsParser,
+    ZoraParser,
     DecentralandParser,
     DefaultCatchallParser,
 )
@@ -55,6 +56,7 @@ class TestParserRegistry:
                 ChainRunnersParser,
                 LootParser,
                 DecentralandParser,
+                ZoraParser,
                 NounsParser,
                 DefaultCatchallParser,
             ]
@@ -73,6 +75,7 @@ class TestParserRegistry:
                 LootParser,
                 NounsParser,
                 DecentralandParser,
+                ZoraParser,
                 HashmasksParser,
             ]
         )
