@@ -11,5 +11,6 @@ from .collection.loot import LootParser
 from .collection.nouns import NounsParser
 from .collection.punks import PunksParser
 from .collection.superrare import SuperRareParser
+from .collection.zora import ZoraParser
 from .schema.opensea import OpenseaParser
 from .schema.schema_parser import SchemaParser
