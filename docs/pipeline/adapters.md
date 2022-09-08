@@ -1,9 +1,5 @@
 # Adapters
 
-## BaseAdapter
-
-::: offchain.metadata.adapters.base_adapter.BaseAdapter
-
 ## IPFS
 
 ::: offchain.metadata.adapters.ipfs.IPFSAdapter
