@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from typing import Callable, Optional, Type, Union
 
 from offchain.concurrency import batched_parmap
+from offchain.constants.providers import RPCProvider
 from offchain.logger.logging import logger
 from offchain.metadata.adapters import (
     ARWeaveAdapter,
@@ -19,6 +20,7 @@ from offchain.metadata.parsers import BaseParser, DefaultCatchallParser
 from offchain.metadata.pipelines.base_pipeline import BasePipeline
 from offchain.metadata.registries.parser_registry import ParserRegistry
 from offchain.web3.contract_caller import ContractCaller
+from offchain.web3.jsonrpc import EthereumJSONRPC
 
 
 @dataclass
@@ -65,6 +67,7 @@ class MetadataPipeline(BasePipeline):
     By default, the parsers are run in order and we will early return when of them returns a valid metadata object.
 
     Attributes:
+        rpc_provider_url (str): an rpc provider url. defaults to "https://cloudflare-eth.com".
         fetcher (BaseFetcher, optional): a fetcher instance responsible for fetching content,
             mime type, and size by making requests.
         parsers (list[BaseParser], optional): a list of parser instances to use to parse token metadata.
@@ -74,12 +77,13 @@ class MetadataPipeline(BasePipeline):
 
     def __init__(
         self,
-        contract_caller: Optional[ContractCaller] = None,
+        rpc_provider_url: Optional[str] = RPCProvider.CLOUDFLARE_MAINNET,
         fetcher: Optional[BaseFetcher] = None,
         parsers: Optional[list[BaseParser]] = None,
         adapter_configs: Optional[list[AdapterConfig]] = None,
     ) -> None:
-        self.contract_caller = contract_caller or ContractCaller()
+        self.contract_caller = ContractCaller(rpc=EthereumJSONRPC(provider_url=rpc_provider_url))
+
         self.fetcher = fetcher or MetadataFetcher()
         if adapter_configs is None:
             adapter_configs = DEFAULT_ADAPTER_CONFIGS
