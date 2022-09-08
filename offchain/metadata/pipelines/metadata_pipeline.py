@@ -65,6 +65,7 @@ class MetadataPipeline(BasePipeline):
     By default, the parsers are run in order and we will early return when of them returns a valid metadata object.
 
     Attributes:
+        contract_caller (ContractCaller, optional): a contract caller instance for fetching data from contracts.
         fetcher (BaseFetcher, optional): a fetcher instance responsible for fetching content,
             mime type, and size by making requests.
         parsers (list[BaseParser], optional): a list of parser instances to use to parse token metadata.
