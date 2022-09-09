@@ -1,4 +1,4 @@
-# ZORA Metadata Repo
+# offchain
 
 ## Getting started
 
