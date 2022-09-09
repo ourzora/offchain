@@ -1,5 +1,6 @@
 from .base_parser import BaseParser
 from .catchall.default_catchall import DefaultCatchallParser
+from .collection.artblocks import ArtblocksParser
 from .collection.autoglyphs import AutoglyphsParser
 from .collection.chainrunners import ChainRunnersParser
 from .collection.collection_parser import CollectionParser

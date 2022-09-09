@@ -8,11 +8,15 @@ from urllib3.util.retry import Retry
 
 
 class BaseAdapter(RequestsBaseAdapter):
+    """Base Adapter inheriting from requests BaseAdapter"""
+
     def __init__(self, *args, **kwargs):
         super().__init__()
 
 
 class HTTPAdapter(RequestsHTTPAdapter):
+    """HTTP Adapter inheriting from requests HTTPAdapter"""
+
     def __init__(
         self,
         pool_connections: int = ...,

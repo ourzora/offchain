@@ -2,4 +2,5 @@
 
 ## v0.1.0
 
-- add docs
+- define all interfaces and pipeline components
+- add documentation
