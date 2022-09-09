@@ -594,9 +594,9 @@
   <div class="doc doc-contents first">
 
   
-      <p>NFT metadata</p>
+      <p>A standard metadata interface</p>
 <p>This aims to be a relatively comprehensive definition of NFT metadata, but not all
-metadata will fit cleanly into the shape defined here.</p>
+metadata will fit cleanly into this shape.</p>
 
   <p><strong>Attributes:</strong></p>
   <table>
@@ -613,7 +613,7 @@ metadata will fit cleanly into the shape defined here.</p>
           <td>
                 <code><span title="offchain.metadata.models.token.Token">Token</span></code>
           </td>
-          <td><p>(Token): the NFT associated with the metadata</p></td>
+          <td><p>(Token): a Token interface with all information required to uniquely identify an NFT</p></td>
         </tr>
         <tr>
           <td><code>raw_data</code></td>
@@ -655,7 +655,7 @@ metadata will fit cleanly into the shape defined here.</p>
           <td>
                 <code>str</code>
           </td>
-          <td><p>metadata mime type.</p></td>
+          <td><p>metadata mime type, e.g. "image/png".</p></td>
         </tr>
         <tr>
           <td><code>image</code></td>
@@ -722,20 +722,20 @@ that don't fit in the defined schema.</p></td>
 <span class="normal"><a href="#__codelineno-0-109">109</a></span>
 <span class="normal"><a href="#__codelineno-0-110">110</a></span>
 <span class="normal"><a href="#__codelineno-0-111">111</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-75" name="__codelineno-0-75"></a><span class="k">class</span> <span class="nc">Metadata</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<a id="__codelineno-0-76" name="__codelineno-0-76"></a>    <span class="sd">&quot;&quot;&quot;NFT metadata</span>
+<a id="__codelineno-0-76" name="__codelineno-0-76"></a>    <span class="sd">&quot;&quot;&quot;A standard metadata interface</span>
 <a id="__codelineno-0-77" name="__codelineno-0-77"></a>
 <a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="sd">    This aims to be a relatively comprehensive definition of NFT metadata, but not all</span>
-<a id="__codelineno-0-79" name="__codelineno-0-79"></a><span class="sd">    metadata will fit cleanly into the shape defined here.</span>
+<a id="__codelineno-0-79" name="__codelineno-0-79"></a><span class="sd">    metadata will fit cleanly into this shape.</span>
 <a id="__codelineno-0-80" name="__codelineno-0-80"></a>
 <a id="__codelineno-0-81" name="__codelineno-0-81"></a><span class="sd">    Attributes:</span>
-<a id="__codelineno-0-82" name="__codelineno-0-82"></a><span class="sd">        token: (Token): the NFT associated with the metadata</span>
+<a id="__codelineno-0-82" name="__codelineno-0-82"></a><span class="sd">        token: (Token): a Token interface with all information required to uniquely identify an NFT</span>
 <a id="__codelineno-0-83" name="__codelineno-0-83"></a>
 <a id="__codelineno-0-84" name="__codelineno-0-84"></a><span class="sd">        raw_data (dict): raw metadata object fetched from token uri.</span>
 <a id="__codelineno-0-85" name="__codelineno-0-85"></a><span class="sd">        standard (MetadataStandard): accepted metadata standard based on the format of the metadata.</span>
 <a id="__codelineno-0-86" name="__codelineno-0-86"></a><span class="sd">        attributes (list[Attribute]): list of token metadata attributes.</span>
 <a id="__codelineno-0-87" name="__codelineno-0-87"></a><span class="sd">        name (str, optional): token name.</span>
 <a id="__codelineno-0-88" name="__codelineno-0-88"></a><span class="sd">        description (str, optional): token description.</span>
-<a id="__codelineno-0-89" name="__codelineno-0-89"></a><span class="sd">        mime_type (str, optional): metadata mime type.</span>
+<a id="__codelineno-0-89" name="__codelineno-0-89"></a><span class="sd">        mime_type (str, optional): metadata mime type, e.g. &quot;image/png&quot;.</span>
 <a id="__codelineno-0-90" name="__codelineno-0-90"></a>
 <a id="__codelineno-0-91" name="__codelineno-0-91"></a><span class="sd">        image (str, optional): nested image in the metadata.</span>
 <a id="__codelineno-0-92" name="__codelineno-0-92"></a><span class="sd">        content (str, optional): nested content, e.g. video, audio, etc., in the metadata.</span>

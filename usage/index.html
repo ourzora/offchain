@@ -664,7 +664,7 @@
 </li>
 </ol>
 <h2 id="using-a-custom-rpc-provider-url">Using a custom RPC provider url</h2>
-<p>By default, the pipeline uses a free Ethereum JSON RPC url: <code>https://cloudflare-eth.com</code>. You can specify your own rpc provider url like this:</p>
+<p>By default, the pipeline uses <code>https://cloudflare-eth.com</code> as the Ethereum JSON RPC url. You can specify your own rpc provider url like this:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">offchain.metadata.pipelines.metadata_pipeline</span> <span class="kn">import</span> <span class="n">MetadataPipeline</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span> <span class="nn">offchain.web3.contract_caller</span> <span class="kn">import</span> <span class="n">ContractCaller</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span> <span class="nn">offchain.web3.jsonrpc</span> <span class="kn">import</span> <span class="n">EthereumJSONRPC</span>
@@ -674,7 +674,7 @@
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">pipeline</span> <span class="o">=</span> <span class="n">MetadataPipeline</span><span class="p">(</span><span class="n">contract_caller</span><span class="o">=</span><span class="n">contract_caller</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="using-custom-parsers">Using custom parsers</h2>
-<p>By default, the pipeline runs with all collection and schema parsers. You can pass in a list of specific parser instances to run. For instance, the following configuration runs the pipeline using only the ENS collection parser.</p>
+<p>By default, the pipeline runs with all collection, schema, and catch-all parsers. You can pass in a list of specific parser instances to run. For instance, the following configuration runs the pipeline using only the ENS collection parser.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">offchain.metadata.pipelines.metadata_pipeline</span> <span class="kn">import</span> <span class="n">MetadataPipeline</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span> <span class="nn">offchain.metadata.parsers.collection.ens</span> <span class="kn">import</span> <span class="n">ENSParser</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
@@ -682,7 +682,7 @@
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">pipeline</span> <span class="o">=</span> <span class="n">MetadataPipeline</span><span class="p">(</span><span class="n">parsers</span><span class="o">=</span><span class="p">[</span><span class="n">ens_parser</span><span class="p">])</span>
 </code></pre></div>
 <h2 id="using-custom-adapters">Using custom adapters</h2>
-<p>By default, the pipeline is run with all available adapters. Each adapter uses a default free host prefix and is configured with the following args: <code>{"pool_connections": 100, "pool_maxsize": 1000, "max_retries": 0}</code></p>
+<p>By default, the pipeline is run with all available adapters. Each adapter has a default host prefix and is configured with the following args: <code>{"pool_connections": 100, "pool_maxsize": 1000, "max_retries": 0}</code></p>
 <p>There are two ways to configure custom adapters for the pipeline:</p>
 <h4 id="specifying-adapter-configs">Specifying adapter configs</h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span> <span class="nn">offchain.metadata.adapters</span> <span class="kn">import</span> <span class="n">ARWeaveAdapter</span><span class="p">,</span> <span class="n">DataURIAdapter</span><span class="p">,</span> <span class="n">HTTPAdapter</span><span class="p">,</span> <span class="n">IPFSAdapter</span>

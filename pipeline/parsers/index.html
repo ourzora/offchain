@@ -613,6 +613,28 @@ inherit from this base class.</p>
           </td>
           <td><p>list of collection addresses that a parser class handles.</p></td>
         </tr>
+        <tr>
+          <td><code>_METADATA_STANDARD</code></td>
+          <td>
+                <code><span title="offchain.metadata.models.metadata.MetadataStandard">MetadataStandard</span></code>
+          </td>
+          <td><p>(MetadataStandard): metadata standard of all metadata returned by this class of parser.
+Defaults to MetadataStandard.COLLECTION_STANDARD.</p></td>
+        </tr>
+        <tr>
+          <td><code>fetcher</code></td>
+          <td>
+                <code><span title="offchain.metadata.fetchers.base_fetcher.BaseFetcher">BaseFetcher</span></code>
+          </td>
+          <td><p>a fetcher instance for making network requests.</p></td>
+        </tr>
+        <tr>
+          <td><code>contract_caller</code></td>
+          <td>
+                <code><span title="offchain.web3.contract_caller.ContractCaller">ContractCaller</span></code>
+          </td>
+          <td><p>a contract caller instance for fetching data from contracts.</p></td>
+        </tr>
     </tbody>
   </table>
 
@@ -647,7 +669,11 @@ inherit from this base class.</p>
 <span class="normal"><a href="#__codelineno-0-36">36</a></span>
 <span class="normal"><a href="#__codelineno-0-37">37</a></span>
 <span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="k">class</span> <span class="nc">CollectionParser</span><span class="p">(</span><span class="n">BaseParser</span><span class="p">):</span>
+<span class="normal"><a href="#__codelineno-0-39">39</a></span>
+<span class="normal"><a href="#__codelineno-0-40">40</a></span>
+<span class="normal"><a href="#__codelineno-0-41">41</a></span>
+<span class="normal"><a href="#__codelineno-0-42">42</a></span>
+<span class="normal"><a href="#__codelineno-0-43">43</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="k">class</span> <span class="nc">CollectionParser</span><span class="p">(</span><span class="n">BaseParser</span><span class="p">):</span>
 <a id="__codelineno-0-12" name="__codelineno-0-12"></a>    <span class="sd">&quot;&quot;&quot;Base class for collection parsers</span>
 <a id="__codelineno-0-13" name="__codelineno-0-13"></a>
 <a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="sd">    All parsers that handle collection-based metadata parsing will need to</span>
@@ -655,27 +681,31 @@ inherit from this base class.</p>
 <a id="__codelineno-0-16" name="__codelineno-0-16"></a>
 <a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">    Attributes:</span>
 <a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">        _COLLECTION_ADDRESSES (list[str]): list of collection addresses that a parser class handles.</span>
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a>
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a>    <span class="n">_COLLECTION_ADDRESSES</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>    <span class="n">_METADATA_STANDARD</span><span class="p">:</span> <span class="n">MetadataStandard</span> <span class="o">=</span> <span class="n">MetadataStandard</span><span class="o">.</span><span class="n">COLLECTION_STANDARD</span>
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">fetcher</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseFetcher</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">contract_caller</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ContractCaller</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">contract_caller</span> <span class="o">=</span> <span class="n">contract_caller</span> <span class="ow">or</span> <span class="n">ContractCaller</span><span class="p">()</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">fetcher</span> <span class="o">=</span> <span class="n">fetcher</span> <span class="ow">or</span> <span class="n">MetadataFetcher</span><span class="p">()</span>
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>    <span class="k">def</span> <span class="nf">should_parse_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a>        <span class="sd">&quot;&quot;&quot;Return whether or not a collection parser should parse a given token.</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">        Args:</span>
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">            token (Token): the token whose metadata needs to be parsed.</span>
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a>
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">        Returns:</span>
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">            bool: whether or not the collection parser handles this token.</span>
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a>        <span class="k">return</span> <span class="n">token</span><span class="o">.</span><span class="n">collection_address</span> <span class="ow">in</span> <span class="p">[</span><span class="n">address</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_COLLECTION_ADDRESSES</span><span class="p">]</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">        _METADATA_STANDARD: (MetadataStandard): metadata standard of all metadata returned by this class of parser.</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">            Defaults to MetadataStandard.COLLECTION_STANDARD.</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="sd">        fetcher (BaseFetcher, optional): a fetcher instance for making network requests.</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">        contract_caller (ContractCaller, optional): a contract caller instance for fetching data from contracts.</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a>    <span class="n">_COLLECTION_ADDRESSES</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="n">_METADATA_STANDARD</span><span class="p">:</span> <span class="n">MetadataStandard</span> <span class="o">=</span> <span class="n">MetadataStandard</span><span class="o">.</span><span class="n">COLLECTION_STANDARD</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">fetcher</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseFetcher</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">contract_caller</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ContractCaller</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">contract_caller</span> <span class="o">=</span> <span class="n">contract_caller</span> <span class="ow">or</span> <span class="n">ContractCaller</span><span class="p">()</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">fetcher</span> <span class="o">=</span> <span class="n">fetcher</span> <span class="ow">or</span> <span class="n">MetadataFetcher</span><span class="p">()</span>
+<a id="__codelineno-0-33" name="__codelineno-0-33"></a>
+<a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="k">def</span> <span class="nf">should_parse_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35"></a>        <span class="sd">&quot;&quot;&quot;Return whether or not a collection parser should parse a given token.</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a>
+<a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">        Args:</span>
+<a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">            token (Token): the token whose metadata needs to be parsed.</span>
+<a id="__codelineno-0-39" name="__codelineno-0-39"></a>
+<a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">        Returns:</span>
+<a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">            bool: whether or not the collection parser handles this token.</span>
+<a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-43" name="__codelineno-0-43"></a>        <span class="k">return</span> <span class="n">token</span><span class="o">.</span><span class="n">collection_address</span> <span class="ow">in</span> <span class="p">[</span><span class="n">address</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_COLLECTION_ADDRESSES</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -749,25 +779,25 @@ inherit from this base class.</p>
 
       <details class="quote">
         <summary>Source code in <code>offchain/metadata/parsers/collection/collection_parser.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span>
-<span class="normal"><a href="#__codelineno-0-34">34</a></span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-34">34</a></span>
 <span class="normal"><a href="#__codelineno-0-35">35</a></span>
 <span class="normal"><a href="#__codelineno-0-36">36</a></span>
 <span class="normal"><a href="#__codelineno-0-37">37</a></span>
 <span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="k">def</span> <span class="nf">should_parse_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a>    <span class="sd">&quot;&quot;&quot;Return whether or not a collection parser should parse a given token.</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">        token (Token): the token whose metadata needs to be parsed.</span>
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a>
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">        bool: whether or not the collection parser handles this token.</span>
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a>    <span class="k">return</span> <span class="n">token</span><span class="o">.</span><span class="n">collection_address</span> <span class="ow">in</span> <span class="p">[</span><span class="n">address</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_COLLECTION_ADDRESSES</span><span class="p">]</span>
+<span class="normal"><a href="#__codelineno-0-39">39</a></span>
+<span class="normal"><a href="#__codelineno-0-40">40</a></span>
+<span class="normal"><a href="#__codelineno-0-41">41</a></span>
+<span class="normal"><a href="#__codelineno-0-42">42</a></span>
+<span class="normal"><a href="#__codelineno-0-43">43</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="k">def</span> <span class="nf">should_parse_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35"></a>    <span class="sd">&quot;&quot;&quot;Return whether or not a collection parser should parse a given token.</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a>
+<a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">        token (Token): the token whose metadata needs to be parsed.</span>
+<a id="__codelineno-0-39" name="__codelineno-0-39"></a>
+<a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">        bool: whether or not the collection parser handles this token.</span>
+<a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-43" name="__codelineno-0-43"></a>    <span class="k">return</span> <span class="n">token</span><span class="o">.</span><span class="n">collection_address</span> <span class="ow">in</span> <span class="p">[</span><span class="n">address</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_COLLECTION_ADDRESSES</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -793,6 +823,26 @@ inherit from this base class.</p>
       <p>Base class for schema parsers</p>
 <p>All parsers that handle schema-based metadata parsing will need to inherit from this base class.</p>
 
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>fetcher</code></td>
+          <td>
+                <code><span title="offchain.metadata.fetchers.base_fetcher.BaseFetcher">BaseFetcher</span></code>
+          </td>
+          <td><p>a fetcher instance for making network requests</p></td>
+        </tr>
+    </tbody>
+  </table>
+
 
         <details class="quote">
           <summary>Source code in <code>offchain/metadata/parsers/schema/schema_parser.py</code></summary>
@@ -803,14 +853,20 @@ inherit from this base class.</p>
 <span class="normal"><a href="#__codelineno-0-12">12</a></span>
 <span class="normal"><a href="#__codelineno-0-13">13</a></span>
 <span class="normal"><a href="#__codelineno-0-14">14</a></span>
-<span class="normal"><a href="#__codelineno-0-15">15</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="k">class</span> <span class="nc">SchemaParser</span><span class="p">(</span><span class="n">BaseParser</span><span class="p">):</span>
+<span class="normal"><a href="#__codelineno-0-15">15</a></span>
+<span class="normal"><a href="#__codelineno-0-16">16</a></span>
+<span class="normal"><a href="#__codelineno-0-17">17</a></span>
+<span class="normal"><a href="#__codelineno-0-18">18</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="k">class</span> <span class="nc">SchemaParser</span><span class="p">(</span><span class="n">BaseParser</span><span class="p">):</span>
 <a id="__codelineno-0-9" name="__codelineno-0-9"></a>    <span class="sd">&quot;&quot;&quot;Base class for schema parsers</span>
 <a id="__codelineno-0-10" name="__codelineno-0-10"></a>
 <a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="sd">    All parsers that handle schema-based metadata parsing will need to inherit from this base class.</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a>
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fetcher</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseFetcher</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">fetcher</span> <span class="o">=</span> <span class="n">fetcher</span> <span class="ow">or</span> <span class="n">MetadataFetcher</span><span class="p">()</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">    Attributes:</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="sd">        fetcher (BaseFetcher, optional): a fetcher instance for making network requests</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fetcher</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseFetcher</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">fetcher</span> <span class="o">=</span> <span class="n">fetcher</span> <span class="ow">or</span> <span class="n">MetadataFetcher</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
         </details>
 

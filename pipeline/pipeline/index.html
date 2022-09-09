@@ -646,14 +646,14 @@
                 <code><span title="offchain.metadata.fetchers.base_fetcher.BaseFetcher">BaseFetcher</span></code>
           </td>
           <td><p>a fetcher instance responsible for fetching content,
-mime type, and size by making requests.</p></td>
+mime type, and size by making network requests.</p></td>
         </tr>
         <tr>
           <td><code>parsers</code></td>
           <td>
                 <code>list[<span title="offchain.metadata.parsers.BaseParser">BaseParser</span>]</code>
           </td>
-          <td><p>a list of parser instances to use to parse token metadata.</p></td>
+          <td><p>a list of parser instances for parsing token metadata.</p></td>
         </tr>
         <tr>
           <td><code>adapter_configs</code></td>
@@ -846,8 +846,8 @@ to specified url prefixes.</p></td>
 <a id="__codelineno-0-67" name="__codelineno-0-67"></a><span class="sd">    Attributes:</span>
 <a id="__codelineno-0-68" name="__codelineno-0-68"></a><span class="sd">        contract_caller (ContractCaller, optional): a contract caller instance for fetching data from contracts.</span>
 <a id="__codelineno-0-69" name="__codelineno-0-69"></a><span class="sd">        fetcher (BaseFetcher, optional): a fetcher instance responsible for fetching content,</span>
-<a id="__codelineno-0-70" name="__codelineno-0-70"></a><span class="sd">            mime type, and size by making requests.</span>
-<a id="__codelineno-0-71" name="__codelineno-0-71"></a><span class="sd">        parsers (list[BaseParser], optional): a list of parser instances to use to parse token metadata.</span>
+<a id="__codelineno-0-70" name="__codelineno-0-70"></a><span class="sd">            mime type, and size by making network requests.</span>
+<a id="__codelineno-0-71" name="__codelineno-0-71"></a><span class="sd">        parsers (list[BaseParser], optional): a list of parser instances for parsing token metadata.</span>
 <a id="__codelineno-0-72" name="__codelineno-0-72"></a><span class="sd">        adapter_configs: (list[AdapterConfig], optional): a list of adapter configs used to register adapters</span>
 <a id="__codelineno-0-73" name="__codelineno-0-73"></a><span class="sd">            to specified url prefixes.</span>
 <a id="__codelineno-0-74" name="__codelineno-0-74"></a><span class="sd">    &quot;&quot;&quot;</span>
