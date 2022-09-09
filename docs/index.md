@@ -4,7 +4,9 @@ Documentation for version: **v0.1.0**
 
 ## Overview
 
-`offchain` is an open-source Python package for processing NFT metadata. Despite the name, it handles both offchain and onchain NFT metadata. `offchain` is maintained by Zora and used by the Zora Indexer and API. The goal of this project is to enable anyone to contribute a parser to standardize their custom NFT metadata schema. If you'd like to contribute your own metadata parsing implementation, please see the `Contributing` page.
+`offchain` is an open-source Python package for processing both **onchain and offchain** NFT metadata. The purpose of this project is to enable anyone to define and standardize their own custom NFT metadata schema.
+
+`offchain` powers the Zora Indexer, and any contributions to metadata parsing implementations will be reflected in the Zora API. If you'd like to contribute your own metadata parsing implementation, please see the `Contributing` page.
 
 ## Installation
 

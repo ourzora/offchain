@@ -3,7 +3,7 @@ from offchain.base.base_model import BaseModel
 
 
 class Token(BaseModel):
-    """Information required to uniquely identify an NFT.
+    """Token interface with all information required to uniquely identify an NFT.
 
 
     Attributes:

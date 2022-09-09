@@ -30,7 +30,7 @@ The `MetadataPipeline` is run on a list of `Token` objects and returns a list of
 
 ## Using a custom RPC provider url
 
-By default, the pipeline uses a free Ethereum JSON RPC url: `https://cloudflare-eth.com`. You can specify your own rpc provider url like this:
+By default, the pipeline uses `https://cloudflare-eth.com` as the Ethereum JSON RPC url. You can specify your own rpc provider url like this:
 
 ```python
 from offchain.metadata.pipelines.metadata_pipeline import MetadataPipeline
@@ -44,7 +44,7 @@ pipeline = MetadataPipeline(contract_caller=contract_caller)
 
 ## Using custom parsers
 
-By default, the pipeline runs with all collection and schema parsers. You can pass in a list of specific parser instances to run. For instance, the following configuration runs the pipeline using only the ENS collection parser.
+By default, the pipeline runs with all collection, schema, and catch-all parsers. You can pass in a list of specific parser instances to run. For instance, the following configuration runs the pipeline using only the ENS collection parser.
 
 ```python
 from offchain.metadata.pipelines.metadata_pipeline import MetadataPipeline
@@ -56,7 +56,7 @@ pipeline = MetadataPipeline(parsers=[ens_parser])
 
 ## Using custom adapters
 
-By default, the pipeline is run with all available adapters. Each adapter uses a default free host prefix and is configured with the following args: `{"pool_connections": 100, "pool_maxsize": 1000, "max_retries": 0}`
+By default, the pipeline is run with all available adapters. Each adapter has a default host prefix and is configured with the following args: `{"pool_connections": 100, "pool_maxsize": 1000, "max_retries": 0}`
 
 There are two ways to configure custom adapters for the pipeline:
 

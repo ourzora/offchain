@@ -16,6 +16,10 @@ class CollectionParser(BaseParser):
 
     Attributes:
         _COLLECTION_ADDRESSES (list[str]): list of collection addresses that a parser class handles.
+        _METADATA_STANDARD: (MetadataStandard): metadata standard of all metadata returned by this class of parser.
+            Defaults to MetadataStandard.COLLECTION_STANDARD.
+        fetcher (BaseFetcher, optional): a fetcher instance for making network requests.
+        contract_caller (ContractCaller, optional): a contract caller instance for fetching data from contracts.
     """
 
     _COLLECTION_ADDRESSES: list[str]
