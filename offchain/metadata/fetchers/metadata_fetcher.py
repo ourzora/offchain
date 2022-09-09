@@ -40,7 +40,7 @@ class MetadataFetcher(BaseFetcher):
         """Setter function for max retries
 
         Args:
-            new_max_retries (int): new maximum number of request retries.
+            max_retries (int): new maximum number of request retries.
         """
         self.max_retries = max_retries
 
@@ -48,7 +48,7 @@ class MetadataFetcher(BaseFetcher):
         """Setter function for timeout
 
         Args:
-            new_timeout (int): new request timeout in seconds.
+            timeout (int): new request timeout in seconds.
         """
         self.timeout = timeout
 

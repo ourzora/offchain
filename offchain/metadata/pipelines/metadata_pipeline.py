@@ -67,8 +67,8 @@ class MetadataPipeline(BasePipeline):
     Attributes:
         contract_caller (ContractCaller, optional): a contract caller instance for fetching data from contracts.
         fetcher (BaseFetcher, optional): a fetcher instance responsible for fetching content,
-            mime type, and size by making requests.
-        parsers (list[BaseParser], optional): a list of parser instances to use to parse token metadata.
+            mime type, and size by making network requests.
+        parsers (list[BaseParser], optional): a list of parser instances for parsing token metadata.
         adapter_configs: (list[AdapterConfig], optional): a list of adapter configs used to register adapters
             to specified url prefixes.
     """

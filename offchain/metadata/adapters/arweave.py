@@ -9,7 +9,14 @@ from offchain.metadata.registries.adapter_registry import AdapterRegistry
 
 @AdapterRegistry.register
 class ARWeaveAdapter(HTTPAdapter):
-    """Provides an interface for Requests sessions to contact ARWeave urls."""
+    """Provides an interface for Requests sessions to contact ARWeave urls.
+
+    Args:
+        host_prefixes (list[str], optional): list of possible host url prefixes to choose from
+        key (str, optional): optional key to send with request
+        secret (str, optional): optional secret to send with request
+        timeout (int): request timeout in seconds. Defaults to 10 seconds.
+    """
 
     def __init__(
         self,
@@ -31,13 +38,13 @@ class ARWeaveAdapter(HTTPAdapter):
         super().__init__(*args, **kwargs)
 
     def send(self, request: PreparedRequest, *args, **kwargs) -> Response:
-        """For IPFS hashes, query pinata cloud gateway
+        """Format and send request to ARWeave host.
 
         Args:
             request (PreparedRequest): incoming request
 
         Returns:
-            Response: response from IPFS Gateway
+            Response: response from ARWeave host.
         """
         parsed = parse_url(request.url)
         if parsed.scheme == "ar":

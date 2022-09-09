@@ -9,6 +9,9 @@ class SchemaParser(BaseParser):
     """Base class for schema parsers
 
     All parsers that handle schema-based metadata parsing will need to inherit from this base class.
+
+    Attributes:
+        fetcher (BaseFetcher, optional): a fetcher instance for making network requests
     """
 
     def __init__(self, fetcher: Optional[BaseFetcher] = None, *args, **kwargs) -> None:
