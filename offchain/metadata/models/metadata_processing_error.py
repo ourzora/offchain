@@ -8,7 +8,7 @@ class MetadataProcessingError(BaseModel):
     """Interface for metadata processing errors and relevant contextual information.
 
     Attributes:
-        chain_identifier (str): dentifier for network and chain of token,
+        chain_identifier (str): identifier for network and chain of token,
             formatted as NETWORK_NAME-CHAIN_NAME (e.g. "ETHEREUM-MAINNET").
         collection_address (str): collection address of the token.
         token_id (int): token id of the token.
