@@ -14,7 +14,7 @@ class Token(BaseModel):
         uri (str, optional): the uri where the metadata is stored.
     """
 
-    chain_identifier: str
     collection_address: str
     token_id: int
+    chain_identifier: str = "ETHEREUM-MAINNET"
     uri: Optional[str] = None
