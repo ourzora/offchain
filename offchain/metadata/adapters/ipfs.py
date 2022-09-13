@@ -9,7 +9,14 @@ from offchain.metadata.registries.adapter_registry import AdapterRegistry
 
 @AdapterRegistry.register
 class IPFSAdapter(HTTPAdapter):
-    """Provides an interface for Requests sessions to contact IPFS urls."""
+    """Provides an interface for Requests sessions to contact IPFS urls.
+
+    Args:
+        host_prefixes (list[str], optional): list of possible host url prefixes to choose from
+        key (str, optional): optional key to send with request
+        secret (str, optional): optional secret to send with request
+        timeout (int): request timeout in seconds. Defaults to 10 seconds.
+    """
 
     def __init__(
         self,
@@ -30,7 +37,15 @@ class IPFSAdapter(HTTPAdapter):
         self.timeout = timeout
         super().__init__(*args, **kwargs)
 
-    def make_request_url(self, request_url: str):
+    def make_request_url(self, request_url: str) -> str:
+        """Parse and format incoming IPFS request url
+
+        Args:
+            request_url (str): incoming IPFS request url
+
+        Returns:
+            str: formatted IPFS url
+        """
         parsed_url = parse_url(request_url)
         gateway = random.choice(self.host_prefixes)
         url = f"{gateway}"

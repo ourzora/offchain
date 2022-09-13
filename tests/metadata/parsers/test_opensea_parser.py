@@ -24,6 +24,22 @@ class TestOpenseaParser:
         uri="ipfs://QmSr3vdMuP2fSxWD7S26KzzBWcAN1eNhm4hk1qaR3x3vmj/1.json",
     )
 
+    metadata_with_content_raw = {
+        "name": "Glass House #996",
+        "description": "Glass House is a collection from Daniel Allan’s forthcoming four-track EP. It’s meant to embody the calming nature of being at home, represented through 1000 unique tokens. It’s debuted first through web3, and available on all streaming platforms in September.",
+        "external_url": "https://danielallan.xyz",
+        "image": "ipfs://bafybeigyjbnmnifzzkl5a7nywllmu2aoqedazz6dlos5mfqovvrcnn562a/996.jpeg",
+        "animation_url": "ipfs://bafybeihfcqvofl3qlf747wg2jxghumqzrnu2w5x6zunnqfj3mssp7v5og4/996.mp4",
+        "attributes": [
+            {"trait_type": "Background", "value": "Flower"},
+            {"trait_type": "Rings", "value": "None"},
+            {"trait_type": "Antenna", "value": "In"},
+            {"trait_type": "Butterfly", "value": "Green"},
+            {"trait_type": "Track", "value": "Chasing Paradise"},
+        ],
+        "edition": 996,
+    }
+
     def test_opensea_parser_should_parse_token(self, raw_crypto_coven_metadata):
         fetcher = MetadataFetcher()
         ipfs_adapter = IPFSAdapter()
@@ -41,7 +57,7 @@ class TestOpenseaParser:
         assert metadata == Metadata(
             token=self.token,
             raw_data=raw_crypto_coven_metadata,
-            standard=MetadataStandard.OPENSEA_STANDARD,
+            standard=None,
             attributes=[
                 Attribute(trait_type="Background", value="Sepia", display_type=None),
                 Attribute(trait_type="Skin Tone", value="Dawn", display_type=None),
@@ -101,6 +117,80 @@ class TestOpenseaParser:
                     type=MetadataFieldType.TEXT,
                     description="Background color of the item on OpenSea. Must be a six-character hexadecimal without a pre-pended #.",
                     value="",
+                ),
+            ],
+        )
+
+    def test_opensea_parser_parses_metadata_with_content(self):
+        fetcher = MetadataFetcher()
+        ipfs_adapter = IPFSAdapter()
+        fetcher.register_adapter(ipfs_adapter, "ipfs://")
+        fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", "3095"))
+        parser = OpenseaParser(fetcher=fetcher)
+        token = Token(
+            chain_identifier="ETHEREUM-MAINNET",
+            collection_address="0x719c6d392fc659f4fe9b0576cbc46e18939687a7",
+            token_id=996,
+            uri="ipfs://bafybeighjepdqehd2jq3i3q7363r3o24zcoam62ki5bmp6ddsvzwhnktyu/996",
+        )
+        metadata = parser.parse_metadata(token=token, raw_data=self.metadata_with_content_raw)
+        assert metadata == Metadata(
+            token=Token(
+                chain_identifier="ETHEREUM-MAINNET",
+                collection_address="0x719c6d392fc659f4fe9b0576cbc46e18939687a7",
+                token_id=996,
+                uri="ipfs://bafybeighjepdqehd2jq3i3q7363r3o24zcoam62ki5bmp6ddsvzwhnktyu/996",
+            ),
+            raw_data={
+                "name": "Glass House #996",
+                "description": "Glass House is a collection from Daniel Allan’s forthcoming four-track EP. It’s meant to embody the calming nature of being at home, represented through 1000 unique tokens. It’s debuted first through web3, and available on all streaming platforms in September.",
+                "external_url": "https://danielallan.xyz",
+                "image": "ipfs://bafybeigyjbnmnifzzkl5a7nywllmu2aoqedazz6dlos5mfqovvrcnn562a/996.jpeg",
+                "animation_url": "ipfs://bafybeihfcqvofl3qlf747wg2jxghumqzrnu2w5x6zunnqfj3mssp7v5og4/996.mp4",
+                "attributes": [
+                    {"trait_type": "Background", "value": "Flower"},
+                    {"trait_type": "Rings", "value": "None"},
+                    {"trait_type": "Antenna", "value": "In"},
+                    {"trait_type": "Butterfly", "value": "Green"},
+                    {"trait_type": "Track", "value": "Chasing Paradise"},
+                ],
+                "edition": 996,
+            },
+            attributes=[
+                Attribute(trait_type="Background", value="Flower", display_type=None),
+                Attribute(trait_type="Rings", value="None", display_type=None),
+                Attribute(trait_type="Antenna", value="In", display_type=None),
+                Attribute(trait_type="Butterfly", value="Green", display_type=None),
+                Attribute(trait_type="Track", value="Chasing Paradise", display_type=None),
+            ],
+            standard=None,
+            name="Glass House #996",
+            description="Glass House is a collection from Daniel Allan’s forthcoming four-track EP. It’s meant to embody the calming nature of being at home, represented through 1000 unique tokens. It’s debuted first through web3, and available on all streaming platforms in September.",
+            mime_type="application/json",
+            image=MediaDetails(
+                size=3095,
+                sha256=None,
+                uri="ipfs://bafybeigyjbnmnifzzkl5a7nywllmu2aoqedazz6dlos5mfqovvrcnn562a/996.jpeg",
+                mime_type="application/json",
+            ),
+            content=MediaDetails(
+                size=3095,
+                sha256=None,
+                uri="ipfs://bafybeihfcqvofl3qlf747wg2jxghumqzrnu2w5x6zunnqfj3mssp7v5og4/996.mp4",
+                mime_type="application/json",
+            ),
+            additional_fields=[
+                MetadataField(
+                    field_name="external_url",
+                    type=MetadataFieldType.TEXT,
+                    description="This is the URL that will appear below the asset's image on OpenSea and will allow users to leave OpenSea and view the item on your site.",
+                    value="https://danielallan.xyz",
+                ),
+                MetadataField(
+                    field_name="animation_url",
+                    type=MetadataFieldType.TEXT,
+                    description="A URL to a multi-media attachment for the item.",
+                    value="ipfs://bafybeihfcqvofl3qlf747wg2jxghumqzrnu2w5x6zunnqfj3mssp7v5og4/996.mp4",
                 ),
             ],
         )

@@ -1,6 +1,7 @@
 from typing import Optional
 
 from offchain.constants.addresses import CollectionAddress
+from offchain.logger.logging import logger
 from offchain.metadata.models.metadata import (
     Attribute,
     MediaDetails,
@@ -19,7 +20,11 @@ class ENSParser(CollectionParser):
 
     @staticmethod
     def make_ens_chain_name(chain_identifier: str):
-        return chain_identifier.split("-")[1].lower()
+        try:
+            return chain_identifier.split("-")[1].lower()
+        except Exception:
+            logger.error(f"Received unexpected chain identifier: {chain_identifier}")
+            return "mainnet"
 
     def get_additional_fields(self, raw_data: dict) -> list[MetadataField]:
         additional_fields = []

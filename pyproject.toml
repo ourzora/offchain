@@ -12,6 +12,9 @@ python-json-logger = "^2.0.4"
 urllib3 = "^1.26.11"
 web3 = "^5.30.0"
 tenacity = "^8.0.1"
+mkdocs-material = "^8.4.2"
+mkdocstrings = "^0.19.0"
+mkdocstrings-python = "^0.7.1"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.20.0"

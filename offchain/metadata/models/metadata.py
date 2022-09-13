@@ -8,7 +8,9 @@ from offchain.metadata.models.token import Token
 class MetadataStandard(StringEnum):
     """Standards for NFT metadata formats"""
 
+    COLLECTION_STANDARD = "COLLECTION_STANDARD"
     OPENSEA_STANDARD = "OPENSEA_STANDARD"
+    UNKNOWN_STANDARD = "UNKNOWN_STANDARD"
 
 
 class MetadataFieldType(StringEnum):
@@ -71,20 +73,20 @@ class MetadataField(BaseModel):
 
 
 class Metadata(BaseModel):
-    """NFT metadata
+    """A standard metadata interface
 
     This aims to be a relatively comprehensive definition of NFT metadata, but not all
-    metadata will fit cleanly into the shape defined here.
+    metadata will fit cleanly into this shape.
 
     Attributes:
-        token: (Token): the NFT associated with the metadata
+        token: (Token): a Token interface with all information required to uniquely identify an NFT
 
         raw_data (dict): raw metadata object fetched from token uri.
         standard (MetadataStandard): accepted metadata standard based on the format of the metadata.
         attributes (list[Attribute]): list of token metadata attributes.
         name (str, optional): token name.
         description (str, optional): token description.
-        mime_type (str, optional): metadata mime type.
+        mime_type (str, optional): metadata mime type, e.g. "image/png".
 
         image (str, optional): nested image in the metadata.
         content (str, optional): nested content, e.g. video, audio, etc., in the metadata.

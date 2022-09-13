@@ -90,15 +90,27 @@ class OpenseaParser(SchemaParser):
             image_mime, image_size = self.fetcher.fetch_mime_type_and_size(image_uri)
             image = MediaDetails(size=image_size, uri=image_uri, mime_type=image_mime)
 
+        content = None
+        content_uri = raw_data.get("animation_url")
+        if content_uri:
+            content_mime, content_size = self.fetcher.fetch_mime_type_and_size(content_uri)
+            content = MediaDetails(uri=content_uri, size=content_size, mime_type=content_mime)
+
+        if image and image.mime_type:
+            mime = image.mime_type
+
+        if content and content.mime_type:
+            mime = content.mime_type
+
         return Metadata(
             token=token,
             raw_data=raw_data,
-            standard=OpenseaParser._METADATA_STANDARD,
             attributes=attributes,
             name=raw_data.get("name"),
             description=raw_data.get("description"),
             mime_type=mime,
             image=image,
+            content=content,
             additional_fields=self.parse_additional_fields(raw_data),
         )
 
@@ -113,5 +125,5 @@ class OpenseaParser(SchemaParser):
             bool: whether or not the collection parser handles this token.
         """
         return raw_data is not None and (
-            isinstance(raw_data.get("attributes"), list) or isinstance(raw_data.get("animation_url"), str)
+            raw_data.get("background_color") is not None or raw_data.get("youtube_url") is not None
         )

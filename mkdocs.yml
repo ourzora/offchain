@@ -1,0 +1,57 @@
+site_name: offchain
+repo_url: https://github.com/ourzora/offchain
+repo_name: ourzora/offchain
+nav:
+  - Getting started: index.md
+  - Usage: usage.md
+  - Interfaces:
+      - Token: models/token.md
+      - Metadata: models/metadata.md
+      - MetadataProcessingError: models/metadata_processing_error.md
+  - Pipeline:
+      - Pipeline: pipeline/pipeline.md
+      - Fetchers: pipeline/fetchers.md
+      - Adapters: pipeline/adapters.md
+      - Parsers: pipeline/parsers.md
+  - Contributing:
+      - Guidelines: contributing/guidelines.md
+      - Tutorial: contributing/tutorial.md
+  - Changelog: changelog.md
+theme:
+  name: material
+  font:
+    text: Roboto Mono
+  palette:
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: black
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+    # Palette toggle for light mode
+    - scheme: default
+      primary: black
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+  logo: assets/zorb.png
+  favicon: assets/zorb.png
+plugins:
+  - search
+  - mkdocstrings:
+      custom_templates: templates
+      default_handler: python
+      handlers:
+        python:
+          options:
+            show_source: true
+            show_root_heading: false
+            show_root_toc_entry: false
+            show_bases: false
+            heading_level: 3
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences

@@ -6,11 +6,14 @@ from offchain.metadata.parsers import (
     OpenseaParser,
     SuperRareParser,
     PunksParser,
+    ArtblocksParser,
     AutoglyphsParser,
     HashmasksParser,
     ChainRunnersParser,
     LootParser,
     NounsParser,
+    ZoraParser,
+    DecentralandParser,
     DefaultCatchallParser,
 )
 from offchain.metadata.parsers.schema.schema_parser import SchemaParser
@@ -53,6 +56,9 @@ class TestParserRegistry:
                 HashmasksParser,
                 ChainRunnersParser,
                 LootParser,
+                ArtblocksParser,
+                DecentralandParser,
+                ZoraParser,
                 NounsParser,
                 DefaultCatchallParser,
             ]
@@ -65,11 +71,14 @@ class TestParserRegistry:
                 ENSParser,
                 FoundationParser,
                 SuperRareParser,
+                ArtblocksParser,
                 PunksParser,
                 AutoglyphsParser,
                 ChainRunnersParser,
                 LootParser,
                 NounsParser,
+                DecentralandParser,
+                ZoraParser,
                 HashmasksParser,
             ]
         )

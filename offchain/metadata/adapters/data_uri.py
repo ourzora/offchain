@@ -13,6 +13,14 @@ class DataURIAdapter(BaseAdapter):
         super().__init__(*args, **kwargs)
 
     def send(self, request: PreparedRequest, *args, **kwargs):
+        """Handle data uri request.
+
+        Args:
+            request (PreparedRequest): incoming request
+
+        Returns:
+            Response: encoded data uri response.
+        """
         newResponse = Response()
         newResponse.request = request
         newResponse.url = request.url
