@@ -208,6 +208,14 @@ def create_raw_data(token_id: int) -> dict:
 
 ### Extracting Metadata
 
+#### Attributes
+
+#### Additional Fields
+
+#### Using data from on-chain
+
+#### Images and Content
+
 ### Testing your collection parser
 
 ### Writing tests
