@@ -69,6 +69,8 @@ class DefaultCatchallParser(CatchallParser):
             return raw_data["image"]
         if isinstance(raw_data.get("image_url"), str):
             return raw_data["image_url"]
+        if isinstance(raw_data.get("imageUrl"), str):
+            return raw_data["imageUrl"]
         return None
 
     def get_image_details(self, raw_data: dict) -> Optional[MediaDetails]:
