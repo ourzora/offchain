@@ -1,4 +1,4 @@
-# Guidelines for contributing
+# Guidelines
 
 ## Contributing a collection parser
 
