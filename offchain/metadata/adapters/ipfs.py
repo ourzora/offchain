@@ -7,6 +7,48 @@ from offchain.metadata.adapters.base_adapter import HTTPAdapter
 from offchain.metadata.registries.adapter_registry import AdapterRegistry
 
 
+def build_request_url(gateway: str, request_url: str) -> str:
+    """Parse and format incoming IPFS request url
+
+    Args:
+        gateway (str): gateway to use when making a request
+        request_url (str): incoming IPFS request url
+
+    Returns:
+        str: formatted IPFS url
+    """
+
+    parsed_url = parse_url(request_url)
+    url = f"{gateway}"
+    # Handle "ipfs://" prefixed urls
+    if parsed_url.scheme == "ipfs":
+        # Don't duplicate since gateways already have "ipfs/"
+        if parsed_url.host != "ipfs":
+            host = parsed_url.host
+            # Remove duplicate slashes
+            if url.endswith("/") and host.startswith("/"):
+                host = host[1:]
+            url += host
+        if parsed_url.path is not None:
+            path = parsed_url.path
+            # Remove duplicate slashes
+            if url.endswith("/") and path.startswith("/"):
+                path = path[1:]
+            url += path
+    # Handle "https://" prefixed urls that have "/ipfs/" in the path
+    elif parsed_url.scheme == "https" and "ipfs" in parsed_url.path:
+        url = f"{gateway}"
+        if parsed_url.path is not None:
+            path = parsed_url.path
+            # Remove duplicate slashes
+            if url.endswith("/") and path.startswith("/"):
+                path = path[1:]
+            if path.startswith("ipfs/"):
+                path = path[5:]
+            url += path
+    return url
+
+
 @AdapterRegistry.register
 class IPFSAdapter(HTTPAdapter):
     """Provides an interface for Requests sessions to contact IPFS urls.
@@ -37,46 +79,19 @@ class IPFSAdapter(HTTPAdapter):
         self.timeout = timeout
         super().__init__(*args, **kwargs)
 
-    def make_request_url(self, request_url: str) -> str:
+    def make_request_url(self, request_url: str, gateway: Optional[str] = None) -> str:
         """Parse and format incoming IPFS request url
 
         Args:
             request_url (str): incoming IPFS request url
+            gateway (Optional[str]): gateway to use when making a request
 
         Returns:
             str: formatted IPFS url
         """
-        parsed_url = parse_url(request_url)
-        gateway = random.choice(self.host_prefixes)
-        url = f"{gateway}"
-        # Handle "ipfs://" prefixed urls
-        if parsed_url.scheme == "ipfs":
-            # Don't duplicate since gateways already have "ipfs/"
-            if parsed_url.host != "ipfs":
-                host = parsed_url.host
-                # Remove duplicate slashes
-                if url.endswith("/") and host.startswith("/"):
-                    host = host[1:]
-                url += host
-            if parsed_url.path is not None:
-                path = parsed_url.path
-                # Remove duplicate slashes
-                if url.endswith("/") and path.startswith("/"):
-                    path = path[1:]
-                url += path
-        # Handle "https://" prefixed urls that have "/ipfs/" in the path
-        elif parsed_url.scheme == "https" and "ipfs" in parsed_url.path:
-            gateway = random.choice(self.host_prefixes)
-            url = f"{gateway}"
-            if parsed_url.path is not None:
-                path = parsed_url.path
-                # Remove duplicate slashes
-                if url.endswith("/") and path.startswith("/"):
-                    path = path[1:]
-                if path.startswith("ipfs/"):
-                    path = path[5:]
-                url += path
-        return url
+
+        gateway = gateway or random.choice(self.host_prefixes)
+        return build_request_url(gateway=gateway, request_url=request_url)
 
     def send(self, request: PreparedRequest, *args, **kwargs) -> Response:
         """For IPFS hashes, query pinata cloud gateway
