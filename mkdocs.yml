@@ -13,7 +13,9 @@ nav:
       - Fetchers: pipeline/fetchers.md
       - Adapters: pipeline/adapters.md
       - Parsers: pipeline/parsers.md
-  - Contributing: contributing.md
+  - Contributing:
+      - Guidelines: contributing/guidelines.md
+      - Tutorial: contributing/tutorial.md
   - Changelog: changelog.md
 theme:
   name: material
