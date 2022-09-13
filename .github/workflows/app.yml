@@ -37,8 +37,8 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: Setup poetry
-        uses: Gr1N/setup-poetry@v7
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
 
       - name: Install dependencies
         run: poetry install
@@ -65,8 +65,8 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: Setup poetry
-        uses: Gr1N/setup-poetry@v7
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
 
       - name: Install dependencies
         run: poetry install
