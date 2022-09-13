@@ -28,7 +28,7 @@ metadata.name               # -> 'antares the improbable'
 metadata.description        # -> 'You are a WITCH who bathes in the tears of...'
 metadata.standard           # -> OPENSEA_STANDARD
 metadata.attributes         # -> [Attribute(trait_type='Skin Tone', ...]
-metadata.image              # -> >>> MediaDetails(size=2139693, sha256=None, uri='https://cryptocoven.s3.amazonaws.com/2048b255aa1d02045eef13cdd7100479.png', mime_type='image/png')
+metadata.image              # -> MediaDetails(size=2139693, sha256=None, uri='https://cryptocoven.s3.amazonaws.com/2048b255aa1d02045eef13cdd7100479.png', mime_type='image/png')
 metadata.additional_fields  # -> [MetadataField(...), ...]
 ```
 
