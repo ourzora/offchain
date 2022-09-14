@@ -2,7 +2,7 @@
 name = "offchain"
 version = "0.1.0"
 description = "Open source metadata processing framework"
-authors = ["Steve Jiang <steve@zora.co>", "Matt Malec <matt.malec_ext@zora.co>"]
+authors = ["Zora eng <eng@zora.co>"]
 readme = "README.md"
 documentation = "https://ourzora.github.io/offchain"
 
