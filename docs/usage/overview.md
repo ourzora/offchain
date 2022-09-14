@@ -2,16 +2,22 @@
 
 ## Basic usage
 
-```py
-from offchain.metadata.pipelines.metadata_pipeline import MetadataPipeline
-from offchain.metadata.models.token import Token
+```python
+from offchain import MetadataPipeline, Token
 
 pipeline = MetadataPipeline()
 token = Token(
     collection_address="0x5180db8f5c931aae63c74266b211f580155ecac8",
     token_id=9559
 )
-metadatas = pipeline.run([token])
+metadata = pipeline.run([token])[0]
+
+metadata.name               # -> 'antares the improbable'
+metadata.description        # -> 'You are a WITCH who bathes in the tears of...'
+metadata.standard           # -> OPENSEA_STANDARD
+metadata.attributes         # -> [Attribute(trait_type='Skin Tone', ...]
+metadata.image              # -> MediaDetails(size=2139693, sha256=None, uri='https://cryptocoven.s3.amazonaws.com/2048b255aa1d02045eef13cdd7100479.png', mime_type='image/png')
+metadata.additional_fields  # -> [MetadataField(...), ...]
 ```
 
 ## Input
@@ -26,6 +32,8 @@ The `Token` interface is how the metadata pipeline uniquely identifies an NFT. T
 Example of token `9559` from `CryptoCoven` on Ethereum Mainnet:
 
 ```python
+from offchain import Token
+
 Token(
     chain_identifier="ETHEREUM-MAINNET",
     collection_address="0x5180db8f5c931aae63c74266b211f580155ecac8",
