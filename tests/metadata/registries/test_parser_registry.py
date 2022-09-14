@@ -13,6 +13,7 @@ from offchain.metadata.parsers import (
     LootParser,
     NounsParser,
     ZoraParser,
+    MakersPlaceParser,
     DecentralandParser,
     DefaultCatchallParser,
 )
@@ -60,6 +61,7 @@ class TestParserRegistry:
                 DecentralandParser,
                 ZoraParser,
                 NounsParser,
+                MakersPlaceParser,
                 DefaultCatchallParser,
             ]
         )
@@ -79,6 +81,7 @@ class TestParserRegistry:
                 NounsParser,
                 DecentralandParser,
                 ZoraParser,
+                MakersPlaceParser,
                 HashmasksParser,
             ]
         )

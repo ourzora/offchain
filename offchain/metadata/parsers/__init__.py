@@ -9,6 +9,7 @@ from .collection.ens import ENSParser
 from .collection.foundation import FoundationParser
 from .collection.hashmasks import HashmasksParser
 from .collection.loot import LootParser
+from .collection.makersplace import MakersPlaceParser
 from .collection.nouns import NounsParser
 from .collection.punks import PunksParser
 from .collection.superrare import SuperRareParser
