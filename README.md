@@ -59,7 +59,7 @@ This project is developed using Python 3.9. Here's a recommended setup:
 This project uses `poetry` for dependency management and packaging. Install poetry:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+curl -sSL https://install.python-poetry.org | python3 -
 ```
 
 ### Setup

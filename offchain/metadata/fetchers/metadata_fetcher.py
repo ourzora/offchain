@@ -10,7 +10,7 @@ from offchain.metadata.registries.fetcher_registry import FetcherRegistry
 
 @FetcherRegistry.register
 class MetadataFetcher(BaseFetcher):
-    """Metadata fetcher class
+    """Fetcher class that makes network requests for metadata-related information.
 
     Attributes:
         timeout (int): request timeout in seconds.

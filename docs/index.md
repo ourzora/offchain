@@ -22,12 +22,6 @@ with poetry:
 poetry add offchain
 ```
 
-with conda:
-
-```bash
-conda install offchain -c conda-forge
-```
-
 from repository:
 
 ```bash

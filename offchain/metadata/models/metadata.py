@@ -61,9 +61,9 @@ class MetadataField(BaseModel):
 
     Attributes:
         field_name (str): name of the metadata field.
-        type: (MetadataFieldType): metadata field type.
-        description: (str, optional): a description of what this metadata field represents.
-        value: (any): the value of the metadata field.
+        type (MetadataFieldType): metadata field type.
+        description (str, optional): a description of what this metadata field represents.
+        value (any): the value of the metadata field.
     """
 
     field_name: str
@@ -79,7 +79,7 @@ class Metadata(BaseModel):
     metadata will fit cleanly into this shape.
 
     Attributes:
-        token: (Token): a Token interface with all information required to uniquely identify an NFT
+        token (Token): a Token interface with all information required to uniquely identify an NFT
 
         raw_data (dict): raw metadata object fetched from token uri.
         standard (MetadataStandard): accepted metadata standard based on the format of the metadata.
