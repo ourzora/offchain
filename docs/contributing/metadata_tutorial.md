@@ -186,23 +186,6 @@ Each of these fields can be mapped into the standard metadata format:
 And this is how it would look programatically:
 
 ```python
-<<<<<<< HEAD
-from typing import Optional
-
-from offchain.metadata.models.token import Token
-from offchain.metadata.parsers.schema.schema_parser import SchemaParser
-
-class NewSchemaParser(SchemaParser):
-    def should_parse_token(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> bool:
-        return raw_data is not None and raw_data.get("unique_field") is not None
-```
-
-### Step 3b: Writing the metadata parsing implementation
-
-#### Constructing the token uri
-
-The token uri is needed to tell the parser where to fetch the metadata from. If the token uri is not passed in as part of the input, the pipeline will attempt to fetch it from a `tokenURI(uint256)` view function on the contract. Otherwise, it is expected that the parser will construct the token uri. For instance, ENS hosts their own metadata service and token uris are constructed in the following format: `https://metadata.ens.domains/<chain_name>/<collection_address>/<token_id>/`
-=======
 class ENSParser(CollectionParser):
     _COLLECTION_ADDRESSES: list[str] = ["0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85"]
 
@@ -303,73 +286,19 @@ class ENSParser(CollectionParser):
             content=self.get_background_image(raw_data=raw_data),
             additional_fields=self.get_additional_fields(raw_data=raw_data),
         )
->>>>>>> 257c641 (touch up contribution tutorial)
 
 ```
 
 ---
 
-<<<<<<< HEAD
-```python
-from offchain.metadata.adapters import HTTPAdapter
-from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
-
-fetcher = MetadataFetcher()
-fetcher.register_adapter(
-    adapter=HTTPAdapter(
-        pool_connections=100,
-        pool_maxsize=1000,
-        max_retries=0,
-    ),
-    url_prefix="https://",
-)
-raw_data = fetcher.fetch_content(uri)
-```
-=======
 ## Step 4: Registering your parser
->>>>>>> 257c641 (touch up contribution tutorial)
 
 After writing your custom metadata parser implementation, you'll want to register it to the `ParserRegistry`.
 
 The `ParserRegistry` tracks all parsers and is used by the metadata pipeline to know which parsers to run by default.
 
-```python
 <<<<<<< HEAD
-from typing import Optional
-from offchain.metadata.models.metadata import Attribute, Metadata
 
-def parse_attributes(raw_data: dict) -> Optional[list[Attribute]]:
-    attributes = raw_data.get("attributes")
-    if not attributes or not isinstance(attributes, list):
-        return
-
-    return [
-        Attribute(
-            trait_type=attribute_dict.get("trait_type"),
-            value=attribute_dict.get("value"),
-            display_type=attribute_dict.get("display_type"),
-        )
-        for attribute_dict in attributes
-    ]
-
-Metadata(
-    token=token,
-    raw_data=raw_data,
-    attributes=parse_attributes(raw_data),
-    name=raw_data.get("name"),
-    description=raw_data.get("description"),
-=======
-@ParserRegistry.register
-class ENSParser(CollectionParser):
->>>>>>> 257c641 (touch up contribution tutorial)
-    ...
-```
-
-Note: in order to have the parser be registered, you'll also need to import it in `offchain/metadata/parsers/__init__.py`.
-
----
-
-<<<<<<< HEAD
 ```python
 from offchain.metadata.parsers.collection.collection_parser import CollectionParser
 from offchain.metadata.registries.parser_registry import ParserRegistry
@@ -378,9 +307,18 @@ from offchain.metadata.registries.parser_registry import ParserRegistry
 class ENSParser(CollectionParser):
     ...
 ```
+
 =======
+
 ## Step 5: Testing your parser
->>>>>>> 257c641 (touch up contribution tutorial)
+
+> > > > > > > 257c641 (touch up contribution tutorial)
+
+Note: in order to have the parser be registered, you'll also need to import it in `offchain/metadata/parsers/__init__.py`.
+
+---
+
+## Step 5: Testing your parser
 
 ### Step 5a: Writing unit tests
 
