@@ -60,7 +60,7 @@ DEFAULT_PARSERS = (
 
 
 class MetadataPipeline(BasePipeline):
-    """Pipeline for processing NFT metadata
+    """Pipeline for processing NFT metadata.
 
     By default, the parsers are run in order and we will early return when of them returns a valid metadata object.
 

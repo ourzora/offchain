@@ -3,19 +3,21 @@ repo_url: https://github.com/ourzora/offchain
 repo_name: ourzora/offchain
 nav:
   - Getting started: index.md
-  - Usage: usage.md
+  - Usage:
+      - Overview: usage/overview.md
+      - Customizing the pipeline: usage/customize.md
   - Interfaces:
       - Token: models/token.md
       - Metadata: models/metadata.md
       - MetadataProcessingError: models/metadata_processing_error.md
   - Pipeline:
       - Pipeline: pipeline/pipeline.md
-      - Fetchers: pipeline/fetchers.md
       - Adapters: pipeline/adapters.md
+      - Fetchers: pipeline/fetchers.md
       - Parsers: pipeline/parsers.md
   - Contributing:
       - Guidelines: contributing/guidelines.md
-      - Tutorial: contributing/tutorial.md
+      - Adding a new metadata format: contributing/metadata_tutorial.md
   - Changelog: changelog.md
 theme:
   name: material
