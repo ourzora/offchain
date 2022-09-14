@@ -65,7 +65,10 @@ For a collection parser, the selection criteria are the collection addresses tha
 For a schema parser, you will need to override the `should_parse_token()` method of `BaseParser` to implement selection logic based on the shape of the metadata. For example, if the new metadata schema contains a unique field, you could do something like this:
 
 ```python
+from typing import Optional
+
 from offchain.metadata.models.token import Token
+from offchain.metadata.parsers.schema.schema_parser import SchemaParser
 
 class NewSchemaParser(SchemaParser):
     def should_parse_token(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> bool:
@@ -99,7 +102,7 @@ fetcher.register_adapter(
         pool_maxsize=1000,
         max_retries=0,
     ),
-    url_prefixes=["https://"],
+    url_prefix="https://",
 )
 raw_data = fetcher.fetch_content(uri)
 ```
@@ -109,7 +112,10 @@ raw_data = fetcher.fetch_content(uri)
 Once you've fetched the raw metadata from the token uri, you can reshape it into the standardized metadata format. For instance, extracting `attributes` from the raw ENS metadata JSON may look something like this:
 
 ```python
-def parse_attributes(self, raw_data: dict) -> Optional[list[Attribute]]:
+from typing import Optional
+from offchain.metadata.models.metadata import Attribute, Metadata
+
+def parse_attributes(raw_data: dict) -> Optional[list[Attribute]]:
     attributes = raw_data.get("attributes")
     if not attributes or not isinstance(attributes, list):
         return
@@ -138,6 +144,9 @@ Metadata(
 After writing your custom metadata parser implementation, you'll want to register it to the `ParserRegistry`. The `ParserRegistry` tracks all parsers and is used by the metadata pipeline to know which parsers to run by default.
 
 ```python
+from offchain.metadata.parsers.collection.collection_parser import CollectionParser
+from offchain.metadata.registries.parser_registry import ParserRegistry
+
 @ParserRegistry.register
 class ENSParser(CollectionParser):
     ...
@@ -152,6 +161,12 @@ It's important to verify that the `should_parse_token()` function returns `True`
 Given a token, `parse_metadata()` should normalize the raw data into the standardized metadata format. Since making network requests can be flaky, it's preferable to mock the data that would be returned by the server that hosts the metadata information.
 
 ```python
+from unittest.mock import MagicMock
+
+from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
+from offchain.web3.contract_caller import ContractCaller
+from offchain.metadata.parsers.collection.ens import ENSParser
+
 def test_ens_parser_should_parse_token(self):
     fetcher = MetadataFetcher()
     contract_caller = ContractCaller()
