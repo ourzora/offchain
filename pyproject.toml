@@ -2,25 +2,27 @@
 name = "offchain"
 version = "0.1.0"
 description = "Open source metadata processing framework"
-authors = ["Your Name <you@example.com>"]
+authors = ["Steve Jiang <steve@zora.co>", "Matt Malec <matt.malec_ext@zora.co>"]
+readme = "README.md"
+documentation = "https://ourzora.github.io/offchain"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.9"
 requests = "^2.28.1"
 pydantic = "^1.9.2"
 python-json-logger = "^2.0.4"
 urllib3 = "^1.26.11"
 web3 = "^5.30.0"
 tenacity = "^8.0.1"
-mkdocs-material = "^8.4.2"
-mkdocstrings = "^0.19.0"
-mkdocstrings-python = "^0.7.1"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.20.0"
 pytest = "^7.1.2"
 black = "^22.6.0"
 flake8 = "^5.0.4"
+mkdocs-material = "^8.4.2"
+mkdocstrings = "^0.19.0"
+mkdocstrings-python = "^0.7.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
