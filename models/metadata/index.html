@@ -243,10 +243,57 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Usage
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Usage" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Usage
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
     <li class="md-nav__item">
-      <a href="../../usage/" class="md-nav__link">
-        Usage
+      <a href="../../usage/overview/" class="md-nav__link">
+        Overview
       </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/customize/" class="md-nav__link">
+        Customizing the pipeline
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -439,8 +486,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../pipeline/fetchers/" class="md-nav__link">
-        Fetchers
+      <a href="../../pipeline/adapters/" class="md-nav__link">
+        Adapters
       </a>
     </li>
   
@@ -453,8 +500,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../pipeline/adapters/" class="md-nav__link">
-        Adapters
+      <a href="../../pipeline/fetchers/" class="md-nav__link">
+        Fetchers
       </a>
     </li>
   
@@ -529,8 +576,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../contributing/tutorial/" class="md-nav__link">
-        Tutorial
+      <a href="../../contributing/metadata_tutorial/" class="md-nav__link">
+        Adding a new metadata format
       </a>
     </li>
   
@@ -660,7 +707,7 @@ metadata will fit cleanly into this shape.</p>
           <td>
                 <code><span title="offchain.metadata.models.token.Token">Token</span></code>
           </td>
-          <td><p>(Token): a Token interface with all information required to uniquely identify an NFT</p></td>
+          <td><p>a Token interface with all information required to uniquely identify an NFT</p></td>
         </tr>
         <tr>
           <td><code>raw_data</code></td>
@@ -775,7 +822,7 @@ that don't fit in the defined schema.</p></td>
 <a id="__codelineno-0-79" name="__codelineno-0-79"></a><span class="sd">    metadata will fit cleanly into this shape.</span>
 <a id="__codelineno-0-80" name="__codelineno-0-80"></a>
 <a id="__codelineno-0-81" name="__codelineno-0-81"></a><span class="sd">    Attributes:</span>
-<a id="__codelineno-0-82" name="__codelineno-0-82"></a><span class="sd">        token: (Token): a Token interface with all information required to uniquely identify an NFT</span>
+<a id="__codelineno-0-82" name="__codelineno-0-82"></a><span class="sd">        token (Token): a Token interface with all information required to uniquely identify an NFT</span>
 <a id="__codelineno-0-83" name="__codelineno-0-83"></a>
 <a id="__codelineno-0-84" name="__codelineno-0-84"></a><span class="sd">        raw_data (dict): raw metadata object fetched from token uri.</span>
 <a id="__codelineno-0-85" name="__codelineno-0-85"></a><span class="sd">        standard (MetadataStandard): accepted metadata standard based on the format of the metadata.</span>
@@ -1059,21 +1106,21 @@ captured in our metadata schema. For example, OpenSea allows for an 'external_ur
           <td>
                 <code><span title="offchain.metadata.models.metadata.MetadataFieldType">MetadataFieldType</span></code>
           </td>
-          <td><p>(MetadataFieldType): metadata field type.</p></td>
+          <td><p>metadata field type.</p></td>
         </tr>
         <tr>
           <td><code>description</code></td>
           <td>
                 <code>str</code>
           </td>
-          <td><p>(str, optional): a description of what this metadata field represents.</p></td>
+          <td><p>a description of what this metadata field represents.</p></td>
         </tr>
         <tr>
           <td><code>value</code></td>
           <td>
-                <code><span title="typing.Any">Any</span></code>
+                <code>any</code>
           </td>
-          <td><p>(any): the value of the metadata field.</p></td>
+          <td><p>the value of the metadata field.</p></td>
         </tr>
     </tbody>
   </table>
@@ -1105,9 +1152,9 @@ captured in our metadata schema. For example, OpenSea allows for an 'external_ur
 <a id="__codelineno-0-61" name="__codelineno-0-61"></a>
 <a id="__codelineno-0-62" name="__codelineno-0-62"></a><span class="sd">    Attributes:</span>
 <a id="__codelineno-0-63" name="__codelineno-0-63"></a><span class="sd">        field_name (str): name of the metadata field.</span>
-<a id="__codelineno-0-64" name="__codelineno-0-64"></a><span class="sd">        type: (MetadataFieldType): metadata field type.</span>
-<a id="__codelineno-0-65" name="__codelineno-0-65"></a><span class="sd">        description: (str, optional): a description of what this metadata field represents.</span>
-<a id="__codelineno-0-66" name="__codelineno-0-66"></a><span class="sd">        value: (any): the value of the metadata field.</span>
+<a id="__codelineno-0-64" name="__codelineno-0-64"></a><span class="sd">        type (MetadataFieldType): metadata field type.</span>
+<a id="__codelineno-0-65" name="__codelineno-0-65"></a><span class="sd">        description (str, optional): a description of what this metadata field represents.</span>
+<a id="__codelineno-0-66" name="__codelineno-0-66"></a><span class="sd">        value (any): the value of the metadata field.</span>
 <a id="__codelineno-0-67" name="__codelineno-0-67"></a><span class="sd">    &quot;&quot;&quot;</span>
 <a id="__codelineno-0-68" name="__codelineno-0-68"></a>
 <a id="__codelineno-0-69" name="__codelineno-0-69"></a>    <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span>

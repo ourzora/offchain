@@ -243,10 +243,57 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Usage
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Usage" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Usage
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
     <li class="md-nav__item">
-      <a href="../../usage/" class="md-nav__link">
-        Usage
+      <a href="../../usage/overview/" class="md-nav__link">
+        Overview
       </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/customize/" class="md-nav__link">
+        Customizing the pipeline
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -405,28 +452,28 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#offchain.metadata.metadata.metadata_pipeline.MetadataPipeline.fetch_token_metadata" class="md-nav__link">
+  <a href="#offchain.metadata.pipelines.metadata_pipeline.MetadataPipeline.fetch_token_metadata" class="md-nav__link">
     fetch_token_metadata()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#offchain.metadata.metadata.metadata_pipeline.MetadataPipeline.fetch_token_uri" class="md-nav__link">
+  <a href="#offchain.metadata.pipelines.metadata_pipeline.MetadataPipeline.fetch_token_uri" class="md-nav__link">
     fetch_token_uri()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#offchain.metadata.metadata.metadata_pipeline.MetadataPipeline.mount_adapter" class="md-nav__link">
+  <a href="#offchain.metadata.pipelines.metadata_pipeline.MetadataPipeline.mount_adapter" class="md-nav__link">
     mount_adapter()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#offchain.metadata.metadata.metadata_pipeline.MetadataPipeline.run" class="md-nav__link">
+  <a href="#offchain.metadata.pipelines.metadata_pipeline.MetadataPipeline.run" class="md-nav__link">
     run()
   </a>
   
@@ -452,8 +499,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../fetchers/" class="md-nav__link">
-        Fetchers
+      <a href="../adapters/" class="md-nav__link">
+        Adapters
       </a>
     </li>
   
@@ -466,8 +513,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../adapters/" class="md-nav__link">
-        Adapters
+      <a href="../fetchers/" class="md-nav__link">
+        Fetchers
       </a>
     </li>
   
@@ -542,8 +589,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../contributing/tutorial/" class="md-nav__link">
-        Tutorial
+      <a href="../../contributing/metadata_tutorial/" class="md-nav__link">
+        Adding a new metadata format
       </a>
     </li>
   
@@ -606,28 +653,28 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#offchain.metadata.metadata.metadata_pipeline.MetadataPipeline.fetch_token_metadata" class="md-nav__link">
+  <a href="#offchain.metadata.pipelines.metadata_pipeline.MetadataPipeline.fetch_token_metadata" class="md-nav__link">
     fetch_token_metadata()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#offchain.metadata.metadata.metadata_pipeline.MetadataPipeline.fetch_token_uri" class="md-nav__link">
+  <a href="#offchain.metadata.pipelines.metadata_pipeline.MetadataPipeline.fetch_token_uri" class="md-nav__link">
     fetch_token_uri()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#offchain.metadata.metadata.metadata_pipeline.MetadataPipeline.mount_adapter" class="md-nav__link">
+  <a href="#offchain.metadata.pipelines.metadata_pipeline.MetadataPipeline.mount_adapter" class="md-nav__link">
     mount_adapter()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#offchain.metadata.metadata.metadata_pipeline.MetadataPipeline.run" class="md-nav__link">
+  <a href="#offchain.metadata.pipelines.metadata_pipeline.MetadataPipeline.run" class="md-nav__link">
     run()
   </a>
   
@@ -667,7 +714,7 @@
   <div class="doc doc-contents first">
 
   
-      <p>Pipeline for processing NFT metadata</p>
+      <p>Pipeline for processing NFT metadata.</p>
 <p>By default, the parsers are run in order and we will early return when of them returns a valid metadata object.</p>
 
   <p><strong>Attributes:</strong></p>
@@ -886,7 +933,7 @@ to specified url prefixes.</p></td>
 <span class="normal"><a href="#__codelineno-0-229">229</a></span>
 <span class="normal"><a href="#__codelineno-0-230">230</a></span>
 <span class="normal"><a href="#__codelineno-0-231">231</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-62" name="__codelineno-0-62"></a><span class="k">class</span> <span class="nc">MetadataPipeline</span><span class="p">(</span><span class="n">BasePipeline</span><span class="p">):</span>
-<a id="__codelineno-0-63" name="__codelineno-0-63"></a>    <span class="sd">&quot;&quot;&quot;Pipeline for processing NFT metadata</span>
+<a id="__codelineno-0-63" name="__codelineno-0-63"></a>    <span class="sd">&quot;&quot;&quot;Pipeline for processing NFT metadata.</span>
 <a id="__codelineno-0-64" name="__codelineno-0-64"></a>
 <a id="__codelineno-0-65" name="__codelineno-0-65"></a><span class="sd">    By default, the parsers are run in order and we will early return when of them returns a valid metadata object.</span>
 <a id="__codelineno-0-66" name="__codelineno-0-66"></a>
@@ -1074,7 +1121,7 @@ to specified url prefixes.</p></td>
 
 
 
-<h3 id="offchain.metadata.metadata.metadata_pipeline.MetadataPipeline.fetch_token_metadata" class="doc doc-heading">
+<h3 id="offchain.metadata.pipelines.metadata_pipeline.MetadataPipeline.fetch_token_metadata" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">fetch_token_metadata</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">metadata_selector_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
@@ -1285,7 +1332,7 @@ or a MetadataProcessingError if unable to parse.</p></td>
 
 
 
-<h3 id="offchain.metadata.metadata.metadata_pipeline.MetadataPipeline.fetch_token_uri" class="doc doc-heading">
+<h3 id="offchain.metadata.pipelines.metadata_pipeline.MetadataPipeline.fetch_token_uri" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">fetch_token_uri</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">function_signature</span><span class="o">=</span><span class="s1">&#39;tokenURI(uint256)&#39;</span><span class="p">)</span></code>
 
 </h3>
@@ -1394,7 +1441,7 @@ or a MetadataProcessingError if unable to parse.</p></td>
 
 
 
-<h3 id="offchain.metadata.metadata.metadata_pipeline.MetadataPipeline.mount_adapter" class="doc doc-heading">
+<h3 id="offchain.metadata.pipelines.metadata_pipeline.MetadataPipeline.mount_adapter" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">mount_adapter</span><span class="p">(</span><span class="n">adapter</span><span class="p">,</span> <span class="n">url_prefixes</span><span class="p">)</span></code>
 
 </h3>
@@ -1480,7 +1527,7 @@ or a MetadataProcessingError if unable to parse.</p></td>
 
 
 
-<h3 id="offchain.metadata.metadata.metadata_pipeline.MetadataPipeline.run" class="doc doc-heading">
+<h3 id="offchain.metadata.pipelines.metadata_pipeline.MetadataPipeline.run" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">run</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">parallelize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">select_metadata_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
 </h3>
@@ -1663,13 +1710,13 @@ or MetadataProcessingErrors that map 1:1 to the tokens passed in.</p></td>
       
       
         
-        <a href="../fetchers/" class="md-footer__link md-footer__link--next" aria-label="Next: Fetchers" rel="next">
+        <a href="../adapters/" class="md-footer__link md-footer__link--next" aria-label="Next: Adapters" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Fetchers
+              Adapters
             </div>
           </div>
           <div class="md-footer__button md-icon">
