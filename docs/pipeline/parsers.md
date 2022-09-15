@@ -1,5 +1,9 @@
 # Parsers
 
+## BaseParser
+
+::: offchain.metadata.parsers.BaseParser
+
 ## CollectionParser
 
 ::: offchain.metadata.parsers.collection.collection_parser.CollectionParser

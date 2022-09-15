@@ -1,30 +1,4 @@
-# Usage
-
-## Basic usage
-
-```py
-from offchain.metadata.pipelines.metadata_pipeline import MetadataPipeline
-from offchain.metadata.models.token import Token
-
-pipeline = MetadataPipeline()
-token = Token(
-    collection_address="0x5180db8f5c931aae63c74266b211f580155ecac8",
-    token_id=9559
-)
-metadatas = pipeline.run([token])
-```
-
-## How it works
-
-The `MetadataPipeline` is run on a list of `Token` objects and returns a list of `Metadata` or `MetadataProcessingError` objects, each of which maps to the `Token` at the same index in the input list. (see `Interfaces` for more information).
-
-1. The `MetadataPipeline` is initialized with a `ContractCaller`, a `Fetcher`, a list of `Adapters`, and a list of `Parsers`.
-2. If no `uri` is passed in for a token, the pipeline will use the `ContractCaller` to attempt to fetch it from a `tokenURI(uint256)` view function on the contract.
-3. The pipeline use the `Fetcher` and `Adapters` to attempt to fetch metadata in form of raw JSON from the uri.
-4. The pipeline runs each parser in the order they were passed in. By default, the ordering is `CollectionParsers`, `SchemaParsers`, and then `CatchallParsers`.
-5. The pipeline will return the result of the first parser that is able to successfully parse the token, unless a `metadata_selector_fn` is specified.
-
-6. If no parser is able to successfully parse a token, the pipeline will return a `MetadataProcessingError` for that token.
+# Customizing the pipeline
 
 ## Using a custom RPC provider url
 
