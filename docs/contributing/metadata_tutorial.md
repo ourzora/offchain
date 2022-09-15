@@ -90,7 +90,7 @@ Let's use this ENS NFT as an example:
 Token(
     chain_identifier="ETHEREUM-MAINNET",
     collection_address="0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85",
-    token_id="10110056301157368922112380646085332716736091604887080310048917803187113883396",
+    token_id=10110056301157368922112380646085332716736091604887080310048917803187113883396,
 )
 ```
 
@@ -305,6 +305,24 @@ class ENSParser(CollectionParser):
 
 Note: in order to have the parser be registered, you'll also need to import it in `offchain/metadata/parsers/__init__.py`.
 
+If you're developing locally, you still need to import the `ParserRegistry` to register your parser. The parser must be registered in order for it to be run by default in the `MetadataPipeline`. In the example below, we register the `ENSParser` class locally and run `get_token_metadata()`, which leverages the `MetadataPipeline`.
+
+```python
+from offchain import get_token_metadata
+from offchain.metadata import CollectionParser
+from offchain.metadata.registries.parser_registry import ParserRegistry
+
+@ParserRegistry.register
+class ENSParser(CollectionParser):
+    ...
+
+get_token_metadata(
+    collection_address="0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85",
+    token_id=10110056301157368922112380646085332716736091604887080310048917803187113883396,
+    chain_identifier="ETHEREUM-MAINNET"
+)
+```
+
 ---
 
 ## Step 5: Testing your parser
@@ -349,7 +367,7 @@ pipeline = MetadataPipeline()
 token = Token(
     chain_identifier="ETHEREUM-MAINNET",
     collection_address="0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85",
-    token_id="10110056301157368922112380646085332716736091604887080310048917803187113883396",
+    token_id=10110056301157368922112380646085332716736091604887080310048917803187113883396,
 )
 metadata = pipeline.run([token])[0]
 ```
