@@ -1,4 +1,7 @@
+from pydantic import validator
+import re
 from typing import Optional
+
 from offchain.base.base_model import BaseModel
 
 
@@ -18,3 +21,12 @@ class Token(BaseModel):
     token_id: int
     chain_identifier: str = "ETHEREUM-MAINNET"
     uri: Optional[str] = None
+
+    @validator("chain_identifier")
+    def validate_chain_identifier(cls, chain_identifier):
+        if not re.match("^[A-Z]*-[A-Z]*$", chain_identifier):
+            raise ValueError(
+                "Expected chain identifier to be formatted as NETWORKNAME-CHAINNAME, e.g. ETHEREUM-MAINNET"
+            )
+
+        return chain_identifier

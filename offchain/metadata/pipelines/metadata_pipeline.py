@@ -1,5 +1,4 @@
-from dataclasses import dataclass, field
-from typing import Callable, Optional, Type, Union
+from typing import Callable, Optional, Union
 
 from offchain.concurrency import batched_parmap
 from offchain.logger.logging import logger
@@ -9,7 +8,7 @@ from offchain.metadata.adapters import (
     HTTPAdapter,
     IPFSAdapter,
 )
-from offchain.metadata.adapters.base_adapter import Adapter
+from offchain.metadata.adapters.base_adapter import Adapter, AdapterConfig
 from offchain.metadata.fetchers.base_fetcher import BaseFetcher
 from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 from offchain.metadata.models.metadata import Metadata
@@ -19,14 +18,6 @@ from offchain.metadata.parsers import BaseParser, DefaultCatchallParser
 from offchain.metadata.pipelines.base_pipeline import BasePipeline
 from offchain.metadata.registries.parser_registry import ParserRegistry
 from offchain.web3.contract_caller import ContractCaller
-
-
-@dataclass
-class AdapterConfig:
-    adapter_cls: Type[Adapter]
-    mount_prefixes: list[str]
-    host_prefixes: Optional[list[str]] = None
-    kwargs: dict = field(default_factory=dict)
 
 
 DEFAULT_ADAPTER_CONFIGS: list[AdapterConfig] = [
