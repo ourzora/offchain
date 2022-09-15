@@ -310,6 +310,26 @@
     Basic usage
   </a>
   
+    <nav class="md-nav" aria-label="Basic usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fetching-metadata-for-a-single-token" class="md-nav__link">
+    Fetching metadata for a single token
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fetching-metadata-for-multiple-tokens" class="md-nav__link">
+    Fetching metadata for multiple tokens
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -643,6 +663,26 @@
     Basic usage
   </a>
   
+    <nav class="md-nav" aria-label="Basic usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fetching-metadata-for-a-single-token" class="md-nav__link">
+    Fetching metadata for a single token
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fetching-metadata-for-multiple-tokens" class="md-nav__link">
+    Fetching metadata for multiple tokens
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -693,21 +733,34 @@
 
 <h1 id="usage">Usage</h1>
 <h2 id="basic-usage">Basic usage</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">offchain</span> <span class="kn">import</span> <span class="n">MetadataPipeline</span><span class="p">,</span> <span class="n">Token</span>
+<h3 id="fetching-metadata-for-a-single-token">Fetching metadata for a single token</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">offchain</span> <span class="kn">import</span> <span class="n">get_token_metadata</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">pipeline</span> <span class="o">=</span> <span class="n">MetadataPipeline</span><span class="p">()</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">token</span> <span class="o">=</span> <span class="n">Token</span><span class="p">(</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">collection_address</span><span class="o">=</span><span class="s2">&quot;0x5180db8f5c931aae63c74266b211f580155ecac8&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">token_id</span><span class="o">=</span><span class="mi">9559</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">)</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">metadata</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">token</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="n">metadata</span><span class="o">.</span><span class="n">name</span>               <span class="c1"># -&gt; &#39;antares the improbable&#39;</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="n">metadata</span><span class="o">.</span><span class="n">description</span>        <span class="c1"># -&gt; &#39;You are a WITCH who bathes in the tears of...&#39;</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="n">metadata</span><span class="o">.</span><span class="n">standard</span>           <span class="c1"># -&gt; OPENSEA_STANDARD</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="n">metadata</span><span class="o">.</span><span class="n">attributes</span>         <span class="c1"># -&gt; [Attribute(trait_type=&#39;Skin Tone&#39;, ...]</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="n">metadata</span><span class="o">.</span><span class="n">image</span>              <span class="c1"># -&gt; MediaDetails(size=2139693, sha256=None, uri=&#39;https://cryptocoven.s3.amazonaws.com/2048b255aa1d02045eef13cdd7100479.png&#39;, mime_type=&#39;image/png&#39;)</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="n">metadata</span><span class="o">.</span><span class="n">additional_fields</span>  <span class="c1"># -&gt; [MetadataField(...), ...]</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">metadata</span> <span class="o">=</span> <span class="n">get_token_metadata</span><span class="p">(</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">collection_address</span><span class="o">=</span><span class="s2">&quot;0x5180db8f5c931aae63c74266b211f580155ecac8&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">token_id</span><span class="o">=</span><span class="mi">9559</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="p">)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">metadata</span><span class="o">.</span><span class="n">name</span>               <span class="c1"># -&gt; &#39;antares the improbable&#39;</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">metadata</span><span class="o">.</span><span class="n">description</span>        <span class="c1"># -&gt; &#39;You are a WITCH who bathes in the tears of...&#39;</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="n">metadata</span><span class="o">.</span><span class="n">standard</span>           <span class="c1"># -&gt; OPENSEA_STANDARD</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="n">metadata</span><span class="o">.</span><span class="n">attributes</span>         <span class="c1"># -&gt; [Attribute(trait_type=&#39;Skin Tone&#39;, ...]</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="n">metadata</span><span class="o">.</span><span class="n">image</span>              <span class="c1"># -&gt; MediaDetails(size=2139693, sha256=None, uri=&#39;https://cryptocoven.s3.amazonaws.com/2048b255aa1d02045eef13cdd7100479.png&#39;, mime_type=&#39;image/png&#39;)</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="n">metadata</span><span class="o">.</span><span class="n">additional_fields</span>  <span class="c1"># -&gt; [MetadataField(...), ...]</span>
+</code></pre></div>
+<h3 id="fetching-metadata-for-multiple-tokens">Fetching metadata for multiple tokens</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">offchain</span> <span class="kn">import</span> <span class="n">MetadataPipeline</span><span class="p">,</span> <span class="n">Token</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">pipeline</span> <span class="o">=</span> <span class="n">MetadataPipeline</span><span class="p">()</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">token_1</span> <span class="o">=</span> <span class="n">Token</span><span class="p">(</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">collection_address</span><span class="o">=</span><span class="s2">&quot;0x5180db8f5c931aae63c74266b211f580155ecac8&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">token_id</span><span class="o">=</span><span class="mi">9559</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="p">)</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">token_2</span> <span class="o">=</span> <span class="n">Token</span><span class="p">(</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">collection_address</span><span class="o">=</span><span class="s2">&quot;0x5180db8f5c931aae63c74266b211f580155ecac8&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="n">token_id</span><span class="o">=</span><span class="mi">9560</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="p">)</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="n">metadatas</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">token_1</span><span class="p">,</span> <span class="n">token_2</span><span class="p">])</span>
 </code></pre></div>
 <h2 id="input">Input</h2>
 <p>The <code>Token</code> interface is how the metadata pipeline uniquely identifies an NFT. They are composed of four properties:</p>
@@ -718,13 +771,13 @@
 <li>The token URI: the url where the metadata information lives. If this is not passed in, the metadata pipeline will attempt to fetch it from the contract.</li>
 </ol>
 <p>Example of token <code>9559</code> from <code>CryptoCoven</code> on Ethereum Mainnet:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">offchain</span> <span class="kn">import</span> <span class="n">Token</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">Token</span><span class="p">(</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">chain_identifier</span><span class="o">=</span><span class="s2">&quot;ETHEREUM-MAINNET&quot;</span><span class="p">,</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">collection_address</span><span class="o">=</span><span class="s2">&quot;0x5180db8f5c931aae63c74266b211f580155ecac8&quot;</span><span class="p">,</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">token_id</span><span class="o">=</span><span class="mi">9559</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">offchain</span> <span class="kn">import</span> <span class="n">Token</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">Token</span><span class="p">(</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">chain_identifier</span><span class="o">=</span><span class="s2">&quot;ETHEREUM-MAINNET&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">collection_address</span><span class="o">=</span><span class="s2">&quot;0x5180db8f5c931aae63c74266b211f580155ecac8&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">token_id</span><span class="o">=</span><span class="mi">9559</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="p">)</span>
 </code></pre></div>
 <h2 id="output">Output</h2>
 <p>The <code>MetadataPipeline</code> is run on a list of <code>Token</code> objects and outputs a list of equal length. Each item in the output list maps to the <code>Token</code> at the same index in the input list. If pipeline successfully fetches metadata for a token, the token should map to a <a href="../../models/metadata/">Metadata</a> object. The <code>Metadata</code> interface is a standardized representation of NFT metadata. Conversely, if the pipeline fails to fetch metadata for a token, it should map to a <a href="../../models/metadata_processing_error/">MetadataProcessingError</a> object. The <code>MetadataProcessingError</code> interface defines contextual information for how and why processing metadata for a specific token failed.</p>
