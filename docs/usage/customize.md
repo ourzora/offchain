@@ -1,8 +1,9 @@
-# Customizing the pipeline
+# Customizing the Pipeline
 
-## Using a custom RPC provider url
+## Using a Custom RPC
 
-By default, the pipeline uses `https://cloudflare-eth.com` as the Ethereum JSON RPC url. You can specify your own rpc provider url like this:
+By default, the pipeline uses `https://cloudflare-eth.com` as the Ethereum JSON RPC url.
+A custom RPC provider can be specified like so:
 
 ```python
 from offchain.metadata.pipelines.metadata_pipeline import MetadataPipeline
@@ -14,9 +15,11 @@ contract_caller = ContractCaller(rpc=rpc)
 pipeline = MetadataPipeline(contract_caller=contract_caller)
 ```
 
-## Using custom parsers
+## Using Custom Parsers
 
-By default, the pipeline runs with all collection, schema, and catch-all parsers. You can pass in a list of specific parser instances to run. For instance, the following configuration runs the pipeline using only the ENS collection parser.
+By default, the pipeline runs with all collection, schema, and catch-all parsers.
+It is possible to pass in a list of specific parser instances to run.
+For instance, the following configuration runs the pipeline using only the ENS collection parser.
 
 ```python
 from offchain.metadata.pipelines.metadata_pipeline import MetadataPipeline
@@ -26,13 +29,15 @@ ens_parser = ENSParser()
 pipeline = MetadataPipeline(parsers=[ens_parser])
 ```
 
-## Using custom adapters
+View the full list of available parsers [here](https://github.com/ourzora/offchain/tree/main/offchain/metadata/parsers).
+
+## Using Custom Adapters
 
 By default, the pipeline is run with all available adapters. Each adapter has a default host prefix and is configured with the following args: `{"pool_connections": 100, "pool_maxsize": 1000, "max_retries": 0}`
 
 There are two ways to configure custom adapters for the pipeline:
 
-#### Specifying adapter configs
+### Specifying Adapter Configs
 
 ```python
 from offchain.metadata.adapters import ARWeaveAdapter, DataURIAdapter, HTTPAdapter, IPFSAdapter
@@ -52,7 +57,9 @@ adapter_configs = [
 pipeline = MetadataPipeline(adapter_configs=adapter_configs)
 ```
 
-#### Mounting custom adapters
+View the full list of available adapters [here](https://github.com/ourzora/offchain/tree/main/offchain/metadata/adapters).
+
+### Mounting Custom Adapters
 
 ```python
 from offchain.metadata.adapters import IPFSAdapter

@@ -1,24 +1,37 @@
 # Adding a new metadata format
 
-## Step 1: Determine the type of parser
+## Step 1: Determine the Type of Parser
 
-`offchain` supports two parser types: collection parsers and schema parsers.
+`offchain` supports two parser types: collection and schema.
 
-Collection parsers know how to standardize token metadata based on a token's collection address. If you want to add metadata support for specific collections, a collection parser will suffice.
+### Collection Parsers
 
-Schema parsers know how to standardize token metadata based on the shape of the metadata. If you want to add support for new metadata shapes that will be used across numerous NFT collections, then you'll need to use a schema parser.
+Collection parsers standardize token metadata for a specific NFT collection based on address.
+This is the parser to create if you want to add metadata support for a specific collection e.g. Autoglphys, Nouns, and ENS.
+Note, a collection parser must specify the collection address(es) that it should be run on.
 
-Unlike collection parsers, schema parsers are not constrained to a specific set of tokens. As a result, each new schema parser should define a sufficiently different schema than the existing supported schemas. A schema parser should only be defined if the answer to all of the following questions is Yes:
+### Schema Parsers
+
+Schema parsers standardize token metadata based on the shape of the data.
+If you want to add support for new metadata shapes that will be used across numerous NFT collections, then you'll need to use a schema parser e.g. Opensea Metadata Standard.
+
+Unlike collection parsers, schema parsers are not constrained to a specific set of addresses.
+However, a schema parser should only be defined if the answer to all of the following questions is Yes:
 
 1. Is there a way to uniquely identify tokens that have this metadata format?
-2. Will there be new NFT collections that use this new metadata format?
-3. Should the resulting standardized metadata schema be different from what is currently returned by the default catchall parser?
+2. Will there be more collections that use this new metadata format?
+3. Is the resulting standardized metadata schema different from what is already being parsed by `offchain`?
+
+### TLDR
+
+Create a collection parser if you have built a collection that has unquie metadata.
+Create a schema parser if you are trying to create a new metadata standard that will be used in many different projects.
 
 ---
 
-## Step 2: Standardize the new metadata format
+## Step 2: Standardize the New Metadata Format
 
-In order to support a new metadata format, we need to be able to map it into the [standardized metadata format](../models/metadata.md). Each field in the new metadata format should either map a field in the standardized metadata format or be added as an `MetadataField` under the `additional_fields` property. For instance, ENS metadata has the following fields:
+In order to support a new format, we need to be able to map it into the [standardized metadata format](../models/metadata.md). Each field in the new format should either map a field in the standardized metadata format or be added as an `MetadataField` under the `additional_fields` property. For instance, ENS metadata has the following fields:
 
 ```json
 {
@@ -50,7 +63,7 @@ and these fields can be mapped into the standard metadata format as such:
 
 ---
 
-## Step 3: Define a new parser
+## Step 3: Define a New Parser
 
 Before implementing a new parser, first familiarize yourself with the `BaseParser` class, as well as either the `CollectionParser` or `SchemaParser` base class:
 
@@ -58,7 +71,7 @@ Before implementing a new parser, first familiarize yourself with the `BaseParse
 - [CollectionParser](../pipeline/parsers.md#collectionparser)
 - [SchemaParser](../pipeline/parsers.md#schemaparser)
 
-### Step 3a: Defining the selection criteria
+### Step 3a: Define the Selection Criteria
 
 For a collection parser, the selection criteria are the collection addresses that the parser runs on. For example, the ENS collection parser will only run on tokens with the ENS collection contract address: `0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85`
 
@@ -75,9 +88,9 @@ class NewSchemaParser(SchemaParser):
         return raw_data is not None and raw_data.get("unique_field") is not None
 ```
 
-### Step 3b: Writing the metadata parsing implementation
+### Step 3b: Write the Metadata Parsing Implementation
 
-#### Constructing the token uri
+#### Construct the Token URI
 
 The token uri is needed to tell the parser where to fetch the metadata from. If the token uri is not passed in as part of the input, the pipeline will attempt to fetch it from a `tokenURI(uint256)` view function on the contract. Otherwise, it is expected that the parser will construct the token uri. For instance, ENS hosts their own metadata service and token uris are constructed in the following format: `https://metadata.ens.domains/<chain_name>/<collection_address>/<token_id>/`
 
@@ -87,7 +100,7 @@ uri = f"https://metadata.ens.domains/mainnet/{token.collection_address}/{token.t
 
 Note: it is not uncommon for token uris to be base64 encoded data is stored entirely on chain. This is the case for collections like Nouns or Zorbs.
 
-#### Fetching metadata from the token uri
+#### Fetch Metadata from the Token URI
 
 Once you have the token uri, we can use the `Fetcher` to fetch the raw JSON data from the token uri.
 
@@ -107,7 +120,7 @@ fetcher.register_adapter(
 raw_data = fetcher.fetch_content(uri)
 ```
 
-#### Standardizing the raw metadata
+#### Standardize the Raw Metadata
 
 Once you've fetched the raw metadata from the token uri, you can reshape it into the standardized metadata format. For instance, extracting `attributes` from the raw ENS metadata JSON may look something like this:
 
@@ -139,7 +152,7 @@ Metadata(
 )
 ```
 
-## Step 4: Register your new parser
+## Step 4: Register a Parser
 
 After writing your custom metadata parser implementation, you'll want to register it to the `ParserRegistry`. The `ParserRegistry` tracks all parsers and is used by the metadata pipeline to know which parsers to run by default.
 
@@ -152,7 +165,7 @@ class ENSParser(CollectionParser):
     ...
 ```
 
-## Step 5: Write tests
+## Step 5: Write Tests
 
 Finally, you'll want to write tests to verify that your parser works as expected. At minimum, the `should_parse_token()` and `parse_metadata()` functions should be tested because the pipeline will call those directly.
 
@@ -182,6 +195,6 @@ def test_ens_parser_parses_metadata(self):
     assert parser.parse_metadata(token=token, raw_data=None) == expected_metadata
 ```
 
-## Example ENS collection parser
+## Example ENS Collection Parser
 
 ::: offchain.metadata.parsers.collection.ens.ENSParser
