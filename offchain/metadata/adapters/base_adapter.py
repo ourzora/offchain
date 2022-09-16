@@ -1,4 +1,5 @@
-from typing import Union
+from dataclasses import dataclass, field
+from typing import Optional, Type, Union
 
 from requests.adapters import (
     BaseAdapter as RequestsBaseAdapter,
@@ -30,3 +31,11 @@ class HTTPAdapter(RequestsHTTPAdapter):
 
 
 Adapter = Union[BaseAdapter, HTTPAdapter]
+
+
+@dataclass
+class AdapterConfig:
+    adapter_cls: Type[Adapter]
+    mount_prefixes: list[str]
+    host_prefixes: Optional[list[str]] = None
+    kwargs: dict = field(default_factory=dict)
