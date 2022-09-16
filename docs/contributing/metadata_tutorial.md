@@ -96,7 +96,7 @@ Token(
 
 If we pass it into the parser, we'll get the following uri: `https://metadata.ens.domains/mainnet/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/10110056301157368922112380646085332716736091604887080310048917803187113883396`, which returns metadata information from the ENS metadata service.
 
-### Step 3b: Fetch Metadata From the Token uri
+### Step 3b: Fetch Metadata From the Token URI
 
 Once you have the token uri, we can use the `Fetcher` to fetch the raw JSON data from the token uri. By default, the parser is initialized with a `Fetcher` instance with an HTTP adapter.
 
@@ -189,53 +189,44 @@ And this is how it would look programatically:
 class ENSParser(CollectionParser):
     _COLLECTION_ADDRESSES: list[str] = ["0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85"]
 
-from offchain.metadata.models.token import Token
-from offchain.metadata.parsers.schema.schema_parser import SchemaParser
+    @staticmethod
+    def make_ens_chain_name(chain_identifier: str):
+        try:
+            return chain_identifier.split("-")[1].lower()
+        except Exception:
+            logger.error(f"Received unexpected chain identifier: {chain_identifier}")
+            return "mainnet"
 
-class NewSchemaParser(SchemaParser):
-    def should_parse_token(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> bool:
-        return raw_data is not None and raw_data.get("unique_field") is not None
-```
-
-### Step 3d: Write the Metadata Parsing Implementation
-
-#### Constructing the Token URI
-
-The token uri is needed to tell the parser where to fetch the metadata from. If the token uri is not passed in as part of the input, the pipeline will attempt to fetch it from a `tokenURI(uint256)` view function on the contract. Otherwise, it is expected that the parser will construct the token uri. For instance, ENS hosts their own metadata service and token uris are constructed in the following format: `https://metadata.ens.domains/<chain_name>/<collection_address>/<token_id>/`
-
-```python
-uri = f"https://metadata.ens.domains/mainnet/{token.collection_address}/{token.token_id}/"
-```
-
-Note: it is not uncommon for token uris to be base64 encoded data is stored entirely on chain. This is the case for collections like Nouns or Zorbs.
-
-#### Fetching Metadata from the Token URI
-
-Once you have the token uri, we can use the `Fetcher` to fetch the raw JSON data from the token uri.
-
-```python
-from offchain.metadata.adapters import HTTPAdapter
-from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
-
-fetcher = MetadataFetcher()
-fetcher.register_adapter(
-    adapter=HTTPAdapter(
-        pool_connections=100,
-        pool_maxsize=1000,
-        max_retries=0,
-    ),
-    url_prefix="https://",
-)
-raw_data = fetcher.fetch_content(uri)
-```
-
-#### Standardizing the Raw Metadata
-
-Once you've fetched the raw metadata from the token uri, you can reshape it into the standardized metadata format. For instance, extracting `attributes` from the raw ENS metadata JSON may look something like this:
-
-```python
-from typing import Optional
-from offchain.metadata.models.metadata import Attribute, Metadata
+    def get_additional_fields(self, raw_data: dict) -> list[MetadataField]:
+        additional_fields = []
+        if name_length := raw_data.get("name_length"):
+            additional_fields.append(
+                MetadataField(
+                    field_name="name_length",
+                    type=MetadataFieldType.TEXT,
+                    description="Character length of ens name",
+                    value=name_length,
+                )
+            )
+        if version := raw_data.get("version"):
+            additional_fields.append(
+                MetadataField(
+                    field_name="version",
+                    type=MetadataFieldType.TEXT,
+                    description="ENS NFT version",
+                    value=version,
+                )
+            )
+        if url := raw_data.get("url"):
+            additional_fields.append(
+                MetadataField(
+                    field_name="url",
+                    type=MetadataFieldType.TEXT,
+                    description="ENS App URL of the name",
+                    value=url,
+                )
+            )
+        return additional_fields
 
     def parse_attributes(self, raw_data: dict) -> Optional[list[Attribute]]:
         attributes = raw_data.get("attributes")
@@ -251,16 +242,68 @@ from offchain.metadata.models.metadata import Attribute, Metadata
             for attribute_dict in attributes
         ]
 
-Metadata(
-    token=token,
-    raw_data=raw_data,
-    attributes=parse_attributes(raw_data),
-    name=raw_data.get("name"),
-    description=raw_data.get("description"),
+    def get_image(self, raw_data: dict) -> Optional[MediaDetails]:
+        image_uri = raw_data.get("image_url") or raw_data.get("image")
+        if image_uri:
+            image = MediaDetails(uri=image_uri, size=None, sha256=None, mime_type=None)
+            try:
+                content_type, size = self.fetcher.fetch_mime_type_and_size(image_uri)
+                image.mime_type = content_type
+                image.size = size
+                return image
+            except Exception:
+                pass
+
+    def get_background_image(self, raw_data: dict) -> Optional[MediaDetails]:
+        bg_image_uri = raw_data.get("background_image")
+        if bg_image_uri:
+            image = MediaDetails(uri=bg_image_uri, size=None, sha256=None, mime_type=None)
+            try:
+                content_type, size = self.fetcher.fetch_mime_type_and_size(bg_image_uri)
+                image.mime_type = content_type
+                image.size = size
+                return image
+            except Exception:
+                pass
+
+    def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:
+        ens_chain_name = self.make_ens_chain_name(token.chain_identifier)
+
+        token.uri = (
+            f"https://metadata.ens.domains/{ens_chain_name}/{token.collection_address.lower()}/{token.token_id}/"
+        )
+        raw_data = self.fetcher.fetch_content(token.uri)
+        mime_type, _ = self.fetcher.fetch_mime_type_and_size(token.uri)
+
+        return Metadata(
+            token=token,
+            raw_data=raw_data,
+            attributes=self.parse_attributes(raw_data),
+            name=raw_data.get("name"),
+            description=raw_data.get("description"),
+            mime_type=mime_type,
+            image=self.get_image(raw_data=raw_data),
+            content=self.get_background_image(raw_data=raw_data),
+            additional_fields=self.get_additional_fields(raw_data=raw_data),
+        )
+
+```
+
+---
+
+## Step 4: Registering your parser
+
+After writing your custom metadata parser implementation, you'll want to register it to the `ParserRegistry`.
+
+The `ParserRegistry` tracks all parsers and is used by the metadata pipeline to know which parsers to run by default.
+
+```python
+@ParserRegistry.register
+class ENSParser(CollectionParser):
     ...
 ```
 
-## Step 4: Register your New Parser
+Note: in order to have the parser be registered, you'll also need to import it in `offchain/metadata/parsers/__init__.py`.
 
 If you're developing locally, you still need to import the `ParserRegistry` to register your parser. The parser must be registered in order for it to be run by default in the `MetadataPipeline`. In the example below, we register the `ENSParser` class locally and run `get_token_metadata()`, which leverages the `MetadataPipeline`.
 
@@ -280,7 +323,11 @@ get_token_metadata(
 )
 ```
 
-## Step 5: Write Tests
+---
+
+## Step 5: Testing the Parser
+
+### Step 5a: Write Unit Tests
 
 You'll want to write tests to verify that your parser works as expected. At minimum, the `should_parse_token()` and `parse_metadata()` functions should be tested because the pipeline will call those directly.
 
@@ -304,6 +351,123 @@ def test_ens_parser_parses_metadata(self):
     assert parser.parse_metadata(token=token, raw_data=None) == expected_metadata
 ```
 
-## Example ENS Collection Parser
+In addition to testing your parser, you'll need to verify that the parser has been registered and added to the pipeline correctly. The tests in `tests/metadata/registries/test_parser_registry.py` should break if the not modified to include your new parser class.
+
+---
+
+### Step 5b: Testing Manually
+
+It's always good practice to test manually as well. We can set up our pipeline using the example NFT from earlier:
+
+```python
+from offchain.metadata.pipelines.metadata_pipeline import MetadataPipeline
+from offchain.metadata.models.token import Token
+
+pipeline = MetadataPipeline()
+token = Token(
+    chain_identifier="ETHEREUM-MAINNET",
+    collection_address="0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85",
+    token_id=10110056301157368922112380646085332716736091604887080310048917803187113883396,
+)
+metadata = pipeline.run([token])[0]
+```
+
+This should give us the following standardized metadata:
+
+```python
+Metadata(
+    token=Token(
+        collection_address='0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85'
+        token_id=10110056301157368922112380646085332716736091604887080310048917803187113883396,
+        chain_identifier='ETHEREUM-MAINNET',
+        uri='https://metadata.ens.domains/mainnet/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/10110056301157368922112380646085332716736091604887080310048917803187113883396/'
+    ),
+    raw_data={
+        'is_normalized': True,
+        'name': 'steev.eth',
+        'description': 'steev.eth, an ENS name.',
+        'attributes': [
+            {
+                'trait_type': 'Created Date',
+                'display_type': 'date',
+                'value': 1633123738000
+            },
+            {
+                'trait_type': 'Length',
+                'display_type': 'number',
+                'value': 5
+            },
+            {
+                'trait_type': 'Segment Length',
+                'display_type': 'number',
+                'value': 5
+            },
+            {
+                'trait_type': 'Character Set',
+                'display_type': 'string',
+                'value': 'letter'
+            },
+            {
+                'trait_type': 'Registration Date',
+                'display_type': 'date',
+                'value': 1633123738000
+            },
+            {
+                'trait_type': 'Expiration Date',
+                'display_type': 'date',
+                'value': 1822465450000
+                }
+        ],
+        'name_length': 5,
+        'segment_length': 5,
+        'url': 'https://app.ens.domains/name/steev.eth',
+        'version': 0,
+        'background_image': 'https://metadata.ens.domains/mainnet/avatar/steev.eth',
+        'image': 'https://metadata.ens.domains/mainnet/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/0x165a16ce2915e51295772b6a67bfc8ceee2c1c7caa85591fba107af4ee24f704/image',
+        'image_url': 'https://metadata.ens.domains/mainnet/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/0x165a16ce2915e51295772b6a67bfc8ceee2c1c7caa85591fba107af4ee24f704/image'
+    },
+    attributes=[
+        Attribute(trait_type='Created Date', value='1633123738000', display_type='date'),
+        Attribute(trait_type='Length', value='5', display_type='number'),
+        Attribute(trait_type='Segment Length', value='5', display_type='number'),
+        Attribute(trait_type='Character Set', value='letter', display_type='string'),
+        Attribute(trait_type='Registration Date', value='1633123738000', display_type='date'),
+        Attribute(trait_type='Expiration Date', value='1822465450000', display_type='date')
+    ],
+    standard=COLLECTION_STANDARD,
+    name='steev.eth',
+    description='steev.eth, an ENS name.',
+    mime_type='application/json',
+    image=MediaDetails(
+        size=0,
+        sha256=None,
+        uri='https://metadata.ens.domains/mainnet/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/0x165a16ce2915e51295772b6a67bfc8ceee2c1c7caa85591fba107af4ee24f704/image',
+        mime_type='image/svg+xml'
+    ),
+    content=MediaDetails(
+        size=0,
+        sha256=None,
+        uri='https://metadata.ens.domains/mainnet/avatar/steev.eth',
+        mime_type=None
+    ),
+    additional_fields=[
+        MetadataField(
+            field_name='name_length',
+            type=TEXT,
+            description='Character length of ens name',
+            value=5
+        ),
+        MetadataField(
+            field_name='url',
+            type=TEXT,
+            description='ENS App URL of the name',
+            value='https://app.ens.domains/name/steev.eth'
+        )
+    ]
+)
+
+```
+
+## ENS collection parser source code
 
 ::: offchain.metadata.parsers.collection.ens.ENSParser
