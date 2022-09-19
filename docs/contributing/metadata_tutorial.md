@@ -1,4 +1,4 @@
-# Adding a new metadata format
+# Adding a New Metadata Format
 
 To add support for a new metadata format, you'll need to add a new parser to the `offchain` repo.
 
@@ -6,7 +6,7 @@ In this guide, we'll build a parser for the ENS collection from scratch and go o
 
 ---
 
-## Step 1: Determine the type of parser
+## Step 1: Determine the Type of Parser
 
 The first consideration is determining which type of parser to build.
 
@@ -32,7 +32,7 @@ class ENSParser(CollectionParser):
 
 ---
 
-## Step 2: Defining the selection criteria
+## Step 2: Define the Selection Criteria
 
 The next step is to define your parser's selection criteria. This tells the pipeline which tokens to run your parser on.
 
@@ -52,9 +52,9 @@ class ENSParser(CollectionParser):
 
 ---
 
-## Step 3: Writing the metadata parsing implementation
+## Step 3: Write the Metadata Parsing Implementation
 
-### Step 3a: Constructing the token uri
+### Step 3a: Construct the Token URI
 
 The token uri is needed to tell the parser where to fetch the metadata from.
 
@@ -96,7 +96,7 @@ Token(
 
 If we pass it into the parser, we'll get the following uri: `https://metadata.ens.domains/mainnet/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/10110056301157368922112380646085332716736091604887080310048917803187113883396`, which returns metadata information from the ENS metadata service.
 
-### Step 3b: Fetching metadata from the token uri
+### Step 3b: Fetch Metadata From the Token URI
 
 Once you have the token uri, we can use the `Fetcher` to fetch the raw JSON data from the token uri. By default, the parser is initialized with a `Fetcher` instance with an HTTP adapter.
 
@@ -145,7 +145,7 @@ This should return the following data from the ENS metadata service:
 }
 ```
 
-### Step 3c: Standardize the new metadata format
+### Step 3c: Standardize the New Metadata Format
 
 The next step is to convert the metadata into the [standardized metadata format](../models/metadata.md).
 
@@ -325,9 +325,9 @@ get_token_metadata(
 
 ---
 
-## Step 5: Testing your parser
+## Step 5: Testing the Parser
 
-### Step 5a: Writing unit tests
+### Step 5a: Write Unit Tests
 
 You'll want to write tests to verify that your parser works as expected. At minimum, the `should_parse_token()` and `parse_metadata()` functions should be tested because the pipeline will call those directly.
 
@@ -355,7 +355,7 @@ In addition to testing your parser, you'll need to verify that the parser has be
 
 ---
 
-### Step 5b: Testing manually
+### Step 5b: Testing Manually
 
 It's always good practice to test manually as well. We can set up our pipeline using the example NFT from earlier:
 
