@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.1.3
+
+- bug fix: add a type check to `should_parse_token()` in `OpenseaParser` to validate that `raw_data` is a `dict`
+
 ## v0.1.2
 
 - bug fix: a typo resulted in `token` field being assigned to the model class, rather than being specified as a type annotation.
