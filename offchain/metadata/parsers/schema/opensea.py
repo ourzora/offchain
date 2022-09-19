@@ -124,6 +124,8 @@ class OpenseaParser(SchemaParser):
         Returns:
             bool: whether or not the collection parser handles this token.
         """
-        return raw_data is not None and (
-            raw_data.get("background_color") is not None or raw_data.get("youtube_url") is not None
+        return (
+            raw_data is not None
+            and isinstance(raw_data, dict)
+            and (raw_data.get("background_color") is not None or raw_data.get("youtube_url") is not None)
         )

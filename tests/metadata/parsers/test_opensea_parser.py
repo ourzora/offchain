@@ -47,6 +47,13 @@ class TestOpenseaParser:
         parser = OpenseaParser(fetcher=fetcher)
         assert parser.should_parse_token(token=self.token, raw_data=raw_crypto_coven_metadata) == True
 
+    def test_opensea_parser_should_parse_token_raw_data_string(self):
+        fetcher = MetadataFetcher()
+        ipfs_adapter = IPFSAdapter()
+        fetcher.register_adapter(ipfs_adapter, "ipfs://")
+        parser = OpenseaParser(fetcher=fetcher)
+        assert parser.should_parse_token(token=self.token, raw_data="test") == False
+
     def test_opensea_parser_parses_metadata(self, raw_crypto_coven_metadata):
         fetcher = MetadataFetcher()
         ipfs_adapter = IPFSAdapter()
