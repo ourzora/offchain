@@ -246,10 +246,7 @@ class TestMetadataPipeline:
         pipeline = MetadataPipeline(fetcher=fetcher, parsers=[])
         assert pipeline.run(tokens=[token]) == [
             MetadataProcessingError(
-                chain_identifier=token.chain_identifier,
-                collection_address=token.collection_address,
-                token_id=token.token_id,
-                uri=token.uri,
+                token=token,
                 error_type="Exception",
                 error_message=f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) No parsers found.",
             )
