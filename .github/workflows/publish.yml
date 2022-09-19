@@ -2,21 +2,31 @@ name: Publish Offchain
 
 on:
   release:
-    types: [created]
+    types: [published]
 
 jobs:
-  deploy:
+  publish:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: Extract release branch
+        id: extract_branch
+        env:
+          REF: ${{ github.ref }}
+        run: echo ::set-output name=branch::release/${REF:10}
+
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.extract_branch.outputs.branch }}
+
       - uses: actions/setup-python@v2
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
 
-      - run: poetry config repositories.testpypi https://test.pypi.org/legacy/
-      - run: poetry config pypi-token.testpypi ${{ secrets.PYPI_API_KEY }}
+      - name: Configure Poetry token
+        run: |
+          poetry config pypi-token.pypi ${{ secrets.PYPI_API_KEY }}
 
       - name: Publish package
-        run: poetry publish --build -r testpypi
+        run: poetry publish --build

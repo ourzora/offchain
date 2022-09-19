@@ -28,8 +28,8 @@ jobs:
         env:
           REF: ${{ github.ref }}
         run: |
-          echo ::set-output name=body::`sed -n "/^## ${REF:10}/,/^## /{/^## /b;p}" docs/changelog.md | sed -r '1d;$d'`
-          echo ::set-output name=version_name::`sed -nr "s/^## (${REF:10} .*)$/\1/p" docs/changelog.md`
+          sed -n "/^## ${REF:10}/,/^## /{/^## /b;p}" docs/changelog.md | sed -r '1d;$d' > ./RELEASE_CHANGELOG
+          echo ::set-output name=version_name::`sed -nr "s/^## (${REF:10}.*)$/\1/p" docs/changelog.md`
 
       - name: Create Release
         id: create_release
@@ -39,5 +39,5 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: ${{ steps.extract_changelog.outputs.version_name }}
-          body_path: ${{ steps.extract_changelog.outputs.body }}
+          body_path: ./RELEASE_CHANGELOG
           draft: true
