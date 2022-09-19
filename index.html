@@ -276,6 +276,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#pipeline-components" class="md-nav__link">
+    Pipeline Components
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -629,6 +636,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#pipeline-components" class="md-nav__link">
+    Pipeline Components
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -647,11 +661,14 @@
 
 
 
-<h1 id="getting-started">Getting started</h1>
+<h1 id="getting-started">Getting Started</h1>
 <p>Documentation for version: <strong>v0.1.1</strong></p>
 <h2 id="overview">Overview</h2>
-<p><code>offchain</code> is an open-source Python package for processing both <strong>onchain and offchain</strong> NFT metadata. The purpose of this project is to enable anyone to define and standardize their own custom NFT metadata schema.</p>
-<p><code>offchain</code> powers the Zora Indexer, and any contributions to metadata parsing implementations will be reflected in the Zora API. If you'd like to contribute your own metadata parsing implementation, please see the <code>Contributing</code> page.</p>
+<p><code>offchain</code> is an open-source Python package for processing both <strong>onchain and offchain</strong> NFT metadata.
+The purpose of this project is to enable anyone to define and standardize the indexing of their own custom NFT metadata schemas.</p>
+<p><code>offchain</code> powers the Zora Indexer, and any contributions to metadata parsing implementations will be reflected in the Zora API.
+Meaning an NFT with unique metadata properties can be indexed by the API by adding a contribution to this repo.</p>
+<p>Check out the <a href="contributing/guidelines/"><code>Contributing</code></a> page if you'd like to add your own metadata parsing implementation.</p>
 <h2 id="installation">Installation</h2>
 <p>with pip:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip install offchain
@@ -662,6 +679,14 @@
 <p>from repository:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pip install git+https://github.com/ourzora/offchain.git
 </code></pre></div>
+<h2 id="pipeline-components">Pipeline Components</h2>
+<ul>
+<li><a href="pipeline/pipeline/">Pipeline</a>: Orchestrates the metadata fetching and normalizing process for multiple tokens.</li>
+<li><a href="pipeline/adapters/">Adapter</a>: Parses the metadata url into an acceptable request format for the fetcher.</li>
+<li><a href="pipeline/fetchers/">Fetcher</a>: Makes network requests to a given uri to fetch data.</li>
+<li><a href="pipeline/parsers/">Parser</a>: Parses raw data into a standardized metadata format</li>
+<li>ContractCaller: Makes RPC calls to NFT contracts to retrieve the uri if not provided.</li>
+</ul>
 
 
 

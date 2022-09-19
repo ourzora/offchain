@@ -535,21 +535,21 @@
       
         <li class="md-nav__item">
   <a href="#contributing-a-collection-parser" class="md-nav__link">
-    Contributing a collection parser
+    Contributing a Collection Parser
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#contributing-a-schema-parser" class="md-nav__link">
-    Contributing a schema parser
+    Contributing a Schema Parser
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#contributing-an-adapter" class="md-nav__link">
-    Contributing an adapter
+    Contributing an Adapter
   </a>
   
 </li>
@@ -626,21 +626,21 @@
       
         <li class="md-nav__item">
   <a href="#contributing-a-collection-parser" class="md-nav__link">
-    Contributing a collection parser
+    Contributing a Collection Parser
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#contributing-a-schema-parser" class="md-nav__link">
-    Contributing a schema parser
+    Contributing a Schema Parser
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#contributing-an-adapter" class="md-nav__link">
-    Contributing an adapter
+    Contributing an Adapter
   </a>
   
 </li>
@@ -664,17 +664,33 @@
 
 
 <h1 id="guidelines">Guidelines</h1>
-<h2 id="contributing-a-collection-parser">Contributing a collection parser</h2>
-<p>If you have a specific NFT collection you'd like to support, you can contribute a collection parser. A collection parser must specify the collection address(es) that it should be run on.</p>
-<h2 id="contributing-a-schema-parser">Contributing a schema parser</h2>
-<p>If you have a new metadata format you'd like to support, you can add a schema parser. A new schema parser should only be defined if</p>
-<ol>
-<li>the metadata format spans across multiple collections, and new collections will be created that use this format.</li>
-<li>the parsed schema is sufficiently different from that returned by a <code>CatchallParser</code>.</li>
-<li>there is a way to uniquely identify tokens that have this metadata format, without including other metadata formats.</li>
-</ol>
-<h2 id="contributing-an-adapter">Contributing an adapter</h2>
-<p>We currently support HTTP, Data URI, IPFS, and ARWeave url formats. If you have another url format you'd like to support, you can write a custom adapter to handle your url format.</p>
+<p>Listed below are the main types of contributions that are possible for <code>offchain</code>.
+Check out the <a href="../metadata_tutorial/"><strong>guide here</strong></a> to learn more about how to make a contribution for both collection and schema parsers.</p>
+<h2 id="contributing-a-collection-parser">Contributing a Collection Parser</h2>
+<p>Collection parsers are used on specific NFT collections that have unique metadata e.g. Autoglphys, Nouns, and ENS.
+If you have a specific NFT collection you'd like to support, you can contribute a collection parser.</p>
+<h2 id="contributing-a-schema-parser">Contributing a Schema Parser</h2>
+<p>Schema parsers are used for general purpose formatting across many NFT collections e.g. Opensea Metadata Standard.
+If you have a new NFT metadata format you'd like to be supported by <code>offchain</code>, you can add a schema parser.</p>
+<h2 id="contributing-an-adapter">Contributing an Adapter</h2>
+<p>Adapters are used to parse the metadata url into an acceptable request format for the fetcher to retrieve the data.
+For example if retrieving the IPFS hash from a contract the adapter will reformat the URI so a request can be made to an IPFS gateway.</p>
+<p>from</p>
+<ul>
+<li>IPFS Hash: <code>ipfs://QmaXzZhcYnsisuue5WRdQDH6FDvqkLQX1NckLqBYeYYEfm/9559.json</code></li>
+</ul>
+<p>to</p>
+<ul>
+<li>Valid Format: <a href="https://gateway.pinata.cloud/ipfs/QmaXzZhcYnsisuue5WRdQDH6FDvqkLQX1NckLqBYeYYEfm/9559.json"><code>https://gateway.pinata.cloud/ipfs/QmaXzZhcYnsisuue5WRdQDH6FDvqkLQX1NckLqBYeYYEfm/9559.json</code></a></li>
+</ul>
+<p>Currently supported URL formats:</p>
+<ul>
+<li>HTTP</li>
+<li>Data URI (base64 encoded onchain)</li>
+<li>IPFS</li>
+<li>Arweave</li>
+</ul>
+<p>If you have another url format you'd like to support, you can write a custom adapter to handle it.</p>
 
 
 

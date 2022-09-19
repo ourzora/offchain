@@ -321,36 +321,36 @@
       
         <li class="md-nav__item">
   <a href="#using-a-custom-rpc-provider-url" class="md-nav__link">
-    Using a custom RPC provider url
+    Using a Custom RPC Provider URL
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#using-custom-parsers" class="md-nav__link">
-    Using custom parsers
+    Using Custom Parsers
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#using-custom-adapters" class="md-nav__link">
-    Using custom adapters
+    Using Custom Adapters
   </a>
   
-    <nav class="md-nav" aria-label="Using custom adapters">
+    <nav class="md-nav" aria-label="Using Custom Adapters">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#specifying-adapter-configs" class="md-nav__link">
-    Specifying adapter configs
+    Specifying Adapter Configs
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#mounting-custom-adapters" class="md-nav__link">
-    Mounting custom adapters
+    Mounting Custom Adapters
   </a>
   
 </li>
@@ -646,36 +646,36 @@
       
         <li class="md-nav__item">
   <a href="#using-a-custom-rpc-provider-url" class="md-nav__link">
-    Using a custom RPC provider url
+    Using a Custom RPC Provider URL
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#using-custom-parsers" class="md-nav__link">
-    Using custom parsers
+    Using Custom Parsers
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#using-custom-adapters" class="md-nav__link">
-    Using custom adapters
+    Using Custom Adapters
   </a>
   
-    <nav class="md-nav" aria-label="Using custom adapters">
+    <nav class="md-nav" aria-label="Using Custom Adapters">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#specifying-adapter-configs" class="md-nav__link">
-    Specifying adapter configs
+    Specifying Adapter Configs
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#mounting-custom-adapters" class="md-nav__link">
-    Mounting custom adapters
+    Mounting Custom Adapters
   </a>
   
 </li>
@@ -703,10 +703,10 @@
 
 
 
-<h1 id="customizing-the-pipeline">Customizing the pipeline</h1>
+<h1 id="customizing-the-pipeline">Customizing the Pipeline</h1>
 <p>There are countless ways to customize the pipeline. The default <code>MetadataPipeline</code> can be constructed with any permutation of <code>Fetchers</code>, <code>Adapters</code>, <code>Parsers</code>, and <code>ContractCallers</code>. And you can even define your own custom <code>Pipeline</code> by extending the <code>BasePipeline</code> class.</p>
 <p>In this guide, we'll enumerate few ways you can customize the <code>MetadataPipeline</code> to best suit your needs.</p>
-<h2 id="using-a-custom-rpc-provider-url">Using a custom RPC provider url</h2>
+<h2 id="using-a-custom-rpc-provider-url">Using a Custom RPC Provider URL</h2>
 <p>By default, the pipeline uses <code>https://cloudflare-eth.com</code> as the Ethereum JSON RPC url. This is a free Ethereum RPC provider, which means that it is very easy to exceed the rate-limit. If you have a custom RPC provider url you'd like to use, you can specify it like this:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">offchain</span> <span class="kn">import</span> <span class="n">MetadataPipeline</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span> <span class="nn">offchain.web3.contract_caller</span> <span class="kn">import</span> <span class="n">ContractCaller</span>
@@ -716,7 +716,7 @@
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">contract_caller</span> <span class="o">=</span> <span class="n">ContractCaller</span><span class="p">(</span><span class="n">rpc</span><span class="o">=</span><span class="n">rpc</span><span class="p">)</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">pipeline</span> <span class="o">=</span> <span class="n">MetadataPipeline</span><span class="p">(</span><span class="n">contract_caller</span><span class="o">=</span><span class="n">contract_caller</span><span class="p">)</span>
 </code></pre></div>
-<h2 id="using-custom-parsers">Using custom parsers</h2>
+<h2 id="using-custom-parsers">Using Custom Parsers</h2>
 <p>By default, the pipeline runs with all collection, schema, and catch-all parsers. That said, you may find that you're only interested in using a subset of the parsers. Let's say you're only interested in parsing metadata for a specific collection.</p>
 <p>If this is the case, you can pass in a list of specific parser instances to run. For example, the following configuration runs the pipeline using only the ENS collection parser.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">offchain</span> <span class="kn">import</span> <span class="n">MetadataPipeline</span>
@@ -725,11 +725,12 @@
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">ens_parser</span> <span class="o">=</span> <span class="n">ENSParser</span><span class="p">()</span>
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">pipeline</span> <span class="o">=</span> <span class="n">MetadataPipeline</span><span class="p">(</span><span class="n">parsers</span><span class="o">=</span><span class="p">[</span><span class="n">ens_parser</span><span class="p">])</span>
 </code></pre></div>
-<h2 id="using-custom-adapters">Using custom adapters</h2>
+<p>View the full list of available parsers <a href="https://github.com/ourzora/offchain/tree/main/offchain/metadata/parsers">here</a>.</p>
+<h2 id="using-custom-adapters">Using Custom Adapters</h2>
 <p>By default, the pipeline is run with all available adapters. Each adapter has a default host prefix and is configured with the following args: <code>{"pool_connections": 100, "pool_maxsize": 1000, "max_retries": 0}</code></p>
 <p>You can also customize the pipeline to only use a subset of the adapters. For instance, if you wanted to build a metadata indexer that only indexes onchain metadata, you may opt to only use the IPFS, ARWeave, and DataURI adapters.</p>
 <p>There are two ways to configure custom adapters for the pipeline:</p>
-<h4 id="specifying-adapter-configs">Specifying adapter configs</h4>
+<h3 id="specifying-adapter-configs">Specifying Adapter Configs</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">offchain.metadata.adapters</span> <span class="kn">import</span> <span class="n">ARWeaveAdapter</span><span class="p">,</span> <span class="n">DataURIAdapter</span><span class="p">,</span> <span class="n">HTTPAdapter</span><span class="p">,</span> <span class="n">IPFSAdapter</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span> <span class="nn">offchain.metadata.pipelines.metadata_pipeline</span> <span class="kn">import</span> <span class="n">AdapterConfig</span><span class="p">,</span> <span class="n">MetadataPipeline</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
@@ -746,7 +747,8 @@
 <a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>
 <a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="n">pipeline</span> <span class="o">=</span> <span class="n">MetadataPipeline</span><span class="p">(</span><span class="n">adapter_configs</span><span class="o">=</span><span class="n">adapter_configs</span><span class="p">)</span>
 </code></pre></div>
-<h4 id="mounting-custom-adapters">Mounting custom adapters</h4>
+<p>View the full list of available adapters <a href="https://github.com/ourzora/offchain/tree/main/offchain/metadata/adapters">here</a>.</p>
+<h3 id="mounting-custom-adapters">Mounting Custom Adapters</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span> <span class="nn">offchain.metadata.adapters</span> <span class="kn">import</span> <span class="n">IPFSAdapter</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span> <span class="nn">offchain.metadata.pipelines.metadata_pipeline</span> <span class="kn">import</span> <span class="n">MetadataPipeline</span>
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
