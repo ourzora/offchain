@@ -11,7 +11,7 @@ class MetadataProcessingError(BaseModel):
         error_message (str): the error message of the caught exception.
     """
 
-    token = Token
+    token: Token
 
     error_type: str
     error_message: str
