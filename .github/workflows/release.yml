@@ -9,19 +9,32 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Bump version if needed
+        continue-on-error: true
+        env:
+          REF: ${{ github.ref }}
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          git checkout -b ${REF:10}-update
+          git tag -d ${REF:10}
+          git push -d origin ${REF:10}
+
+          sed -i "s/version = \".*\"/version = \"${REF:11}\"/" pyproject.toml
+          git add pyproject.toml
+          git commit -m "bump version for release"
+
+          git tag -a ${REF:10} -m "${REF:10}"
+          git push -u origin HEAD:main ${REF:10}
+
       - name: Create release branch and bump version
         env:
           REF: ${{ github.ref }}
         run: |
           BRANCH=release/${REF:10}
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
           git checkout -b $BRANCH
           git push -u origin $BRANCH
-          sed -i "s/version = \"0.0.0\"/version = \"${REF:11}\"/" pyproject.toml
-          git add pyproject.toml
-          git commit -m "bump version for release"
-          git push
 
       - name: Extract Changelog
         id: extract_changelog
