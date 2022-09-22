@@ -1,8 +1,8 @@
-# Adding a New Metadata Format
+# Contributing a Schema Paser
 
-To add support for a new metadata format, you'll need to add a new parser to the `offchain` repo.
+This guide will walk you through how to contribute a schema parser.
 
-In this guide, we'll build a parser for the ENS collection from scratch and go over important considerations for building your own parser.
+We'll learn how to build a parser for OpenSea Metadata and go over important considerations for building your own parser.
 
 ---
 
@@ -14,20 +14,13 @@ Before implementing your parser, familiarize yourself with the [BaseParser](../p
 
 Your parser will be one of the following:
 
-- `CollectionParser`: determines if it should run on a token by looking at the token's collection address
-- `SchemaParser`: determines if it should run on a token by looking at the shape of the token's metadata
+- `CollectionParser`: Determines if it should run on a token by looking at the token's collection address.
+- `SchemaParser`: Determines if it should run on a token by looking at the shape of the token's metadata.
 
-As a general rule of thumb, you should only define a new schema parser if the answer to all of the following questions is `Yes`:
-
-1. Is there a way to uniquely identify tokens that have this new metadata format?
-2. Will there be new NFT collections that use this new metadata format?
-3. Does the default parser in the pipeline parse the this new metadata format incorrectly?
-
-Since, we're building a parser for the ENS collection, we'll be building a `CollectionParser`.
+Since, we're building a parser for OpenSea Metada, we'll be building a `SchemaParser`.
 
 ```python
-class ENSParser(CollectionParser):
-    pass
+class OpenseaParser(SchemaParser):
 ```
 
 ---
@@ -36,69 +29,84 @@ class ENSParser(CollectionParser):
 
 The next step is to define your parser's selection criteria. This tells the pipeline which tokens to run your parser on.
 
-If you're building a schema parser, you'll need to override the `should_parse_token()` method of `BaseParser` to implement custom selection logic based on the shape of the metadata. For instance, if the new metadata schema contains a unique field, checking for the existence of that field would qualify as selection criteria:
+Since you're building a schema parser, you'll need to override the `should_parse_token()` method of `BaseParser` to implement custom selection logic based on the shape of the metadata. For instance, if the new metadata schema contains a unique field, checking for the existence of that field would qualify as selection criteria:
 
 ```python
 def should_parse_token(self, raw_data: Optional[dict], *args, **kwargs) -> bool:
     return raw_data is not None and raw_data.get("unique_field") is not None
 ```
 
-If you're building a collection parser, the selection criteria is simply defined by a `_COLLECTION_ADDRESSES` class variable, which tells the parser which collection address(es) to run on. The ENS collection parser will only run on tokens with the ENS collection contract address (`0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85`).
-
-```python
-class ENSParser(CollectionParser):
-    _COLLECTION_ADDRESSES: list[str] = ["0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85"]
-```
-
 ---
 
-## Step 3: Write the Metadata Parsing Implementation
+## Step 3: Write the Parsing Implementation
 
 ### Step 3a: Construct the Token URI
 
 The token uri is needed to tell the parser where to fetch the metadata from.
 
-If the token uri is not passed in as part of the input, the pipeline will attempt to fetch it from a `tokenURI(uint256)` view function on the contract. Otherwise, it is expected that the parser will construct the token uri.
+If the token uri is not passed in as part of the input, the pipeline will attempt to fetch it from the `tokenURI(uint256)` function on the contract. Otherwise, it is expected that the parser will construct the token uri.
 
-Note: it is not uncommon for token uris to be base64 encoded data is stored entirely on chain. This is the case for collections like Nouns or Zorbs.
-
-ENS hosts their own metadata service and token uris are constructed in the following format: `https://metadata.ens.domains/<chain_name>/<collection_address>/<token_id>/`
+Note, it is not uncommon for token uris to be base64 encoded data is stored entirely on chain e.g. Nouns, Zorbs.
 
 ```python
-class ENSParser(CollectionParser):
-    _COLLECTION_ADDRESSES: list[str] = ["0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85"]
+def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:
+    """Given a token and raw data returned from the token uri, return a normalized Metadata object.
+    Args:
+        token (Token): token to process metadata for.
+        raw_data (dict): raw data returned from token uri.
+    Returns:
+        Optional[Metadata]: normalized metadata object, if successfully parsed.
+    """
+    mime, _ = self.fetcher.fetch_mime_type_and_size(token.uri)
 
-    @staticmethod
-    def make_ens_chain_name(chain_identifier: str):
-        try:
-            return chain_identifier.split("-")[1].lower()
-        except Exception:
-            logger.error(f"Received unexpected chain identifier: {chain_identifier}")
-            return "mainnet"
+    attributes = [self.parse_attribute(attribute) for attribute in raw_data.get("attributes", [])]
+    image = None
+    image_uri = raw_data.get("image") or raw_data.get("image_data")
+    if image_uri:
+        image_mime, image_size = self.fetcher.fetch_mime_type_and_size(image_uri)
+        image = MediaDetails(size=image_size, uri=image_uri, mime_type=image_mime)
 
-    def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:
-        ens_chain_name = self.make_ens_chain_name(token.chain_identifier)
+    content = None
+    content_uri = raw_data.get("animation_url")
+    if content_uri:
+        content_mime, content_size = self.fetcher.fetch_mime_type_and_size(content_uri)
+        content = MediaDetails(uri=content_uri, size=content_size, mime_type=content_mime)
 
-        token.uri = (
-            f"https://metadata.ens.domains/{ens_chain_name}/{token.collection_address.lower()}/{token.token_id}/"
-        )
+    if image and image.mime_type:
+        mime = image.mime_type
+
+    if content and content.mime_type:
+        mime = content.mime_type
+
+    return Metadata(
+        token=token,
+        raw_data=raw_data,
+        attributes=attributes,
+        name=raw_data.get("name"),
+        description=raw_data.get("description"),
+        mime_type=mime,
+        image=image,
+        content=content,
+        additional_fields=self.parse_additional_fields(raw_data),
+    )
 ```
 
-Let's use this ENS NFT as an example:
+Let's use Azuki #40 as an example:
 
 ```python
 Token(
     chain_identifier="ETHEREUM-MAINNET",
-    collection_address="0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85",
-    token_id=10110056301157368922112380646085332716736091604887080310048917803187113883396,
+    collection_address="0xED5AF388653567Af2F388E6224dC7C4b3241C544",
+    token_id=40,
 )
 ```
 
-If we pass it into the parser, we'll get the following uri: `https://metadata.ens.domains/mainnet/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/10110056301157368922112380646085332716736091604887080310048917803187113883396`, which returns metadata information from the ENS metadata service.
+If we pass it into the parser, we'll get the following uri: `https://ikzttp.mypinata.cloud/ipfs/QmQFkLSQysj94s5GvTHPyzTxrawwtjgiiYS2TBLgrvw8CW/40`, which returns metadata for Azuki #40.
 
 ### Step 3b: Fetch Metadata From the Token URI
 
-Once you have the token uri, we can use the `Fetcher` to fetch the raw JSON data from the token uri. By default, the parser is initialized with a `Fetcher` instance with an HTTP adapter.
+Once you have the token uri, we can use the `Fetcher` to fetch the raw JSON data from the token uri.
+By default, the parser is initialized with a `Fetcher` instance with an HTTP adapter.
 
 ```python
     raw_data = self.fetcher.fetch_content(token.uri)

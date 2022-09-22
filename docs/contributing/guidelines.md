@@ -1,7 +1,6 @@
 # Guidelines
 
-Listed below are the main types of contributions that are possible for `offchain`.
-Check out the [**guide here**](./metadata_tutorial.md) to learn more about how to make a contribution for both collection and schema parsers.
+This section is an overview for the 3 main types of contributions that are possible for `offchain`.
 
 ## Contributing a Collection Parser
 
@@ -11,7 +10,7 @@ If you have a specific NFT collection you'd like to support, you can contribute 
 ## Contributing a Schema Parser
 
 Schema parsers are used for general purpose formatting across many NFT collections e.g. Opensea Metadata Standard.
-If you have a new NFT metadata format you'd like to be supported by `offchain`, you can add a schema parser.
+If you have a new NFT metadata format that will be used in many different NFT contracts, you can contribute a schema parser.
 
 ## Contributing an Adapter
 

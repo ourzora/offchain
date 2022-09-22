@@ -1,5 +1,7 @@
 # Usage
 
+Please review the [Core Concepts](../concepts.md) page before reading the rest of the documentation.
+
 ## Basic Usage
 
 ### Fetching metadata for a single token
@@ -66,22 +68,5 @@ The `MetadataPipeline` is run on a list of `Token` objects and outputs a list of
 Each item in the output list maps to the `Token` at the same index in the input list.
 If the pipeline successfully fetches metadata for a token, the token should map to a [Metadata](../models/metadata.md) object.
 
-The `Metadata` interface is a standardized representation of NFT metadata. Conversely, if the pipeline fails to fetch metadata for a token, it should map to a [MetadataProcessingError](../models/metadata_processing_error.md) object. The `MetadataProcessingError` interface defines contextual information for how and why processing metadata for a specific token failed.
-
-## Pipeline Components
-
-- [Pipeline](../pipeline/pipeline.md): Orchestrates the metadata fetching and normalizing process for multiple tokens.
-- [Adapter](../pipeline/adapters.md): Parses the metadata url into an acceptable request format for the fetcher.
-- [Fetcher](../pipeline/fetchers.md): Makes network requests to a given uri to fetch data.
-- [Parser](../pipeline/parsers.md): Parses raw data into a standardized metadata format
-- ContractCaller: Makes RPC calls to NFT contracts to retrieve the URI if not provided.
-
-## How it Works
-
-1. The `MetadataPipeline` is initialized with a `ContractCaller`, a `Fetcher`, a list of `Adapters`, and a list of `Parsers`.
-2. If no `uri` is passed in for a token, the pipeline will use the `ContractCaller` to attempt to fetch it from a `tokenURI(uint256)` view function on the contract.
-3. The pipeline use the `Fetcher` and `Adapters` to attempt to fetch metadata in form of raw JSON from the uri.
-4. The pipeline runs each parser in the order they were passed in. By default, the ordering is `CollectionParsers`, `SchemaParsers`, and then `CatchallParsers`.
-5. The pipeline will return the result of the first parser that is able to successfully parse the token, unless a `metadata_selector_fn` is specified.
-
-6. If no parser is able to successfully parse a token, the pipeline will return a `MetadataProcessingError` for that token.
+The `Metadata` interface is a standardized representation of NFT metadata. Conversely, if the pipeline fails to fetch metadata for a token, it should map to a [MetadataProcessingError](../models/metadata_processing_error.md) object.
+The `MetadataProcessingError` interface defines contextual information for how and why processing metadata for a specific token failed.
