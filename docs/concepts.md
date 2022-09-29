@@ -3,15 +3,6 @@
 This section will walk through the different components of `offchain` as well as how it works.
 Please make sure to read this section first before diving into the rest of the documentation.
 
-## Token Interface
-
-This interface is how an NFT is passed into the pipeline for fetching.
-
-- `collection_address`: The token's contract address.
-- `token_id`: The unique identifier for a token within a collection.
-- `chain_identifier`: The network and chain for the token. Defaults to "ETHEREUM-MAINNET" if nothing is passed in.
-- `uri`: The url where the metadata lives. Defaults to fetching from the contract directly if nothing is passed in.
-
 ## Key Components
 
 - [Pipeline](./pipeline/pipeline.md): Orchestrates the metadata fetching and normalizing process for multiple tokens.
@@ -38,6 +29,32 @@ An overview of how offchain retrieves NFT metadata.
 7. Each parser runs in the order they were passed in. By default, the ordering is `CollectionParsers`, `SchemaParsers`, and then `CatchallParsers`.
 8. The pipeline returns the result from the first parser that is successful, unless a `metadata_selector_fn` is specified.
 9. However, the pipeline returns a [`MetadataProcessingError`](./models/metadata_processing_error.md) if no parser is successful for that specific token.
+
+## Token Interface
+
+This interface is how an NFT is passed into the pipeline for fetching.
+
+- `collection_address`: The token's contract address.
+- `token_id`: The unique identifier for a token within a collection.
+- `chain_identifier`: The network and chain for the token. Defaults to "ETHEREUM-MAINNET" if nothing is passed in.
+- `uri`: The url where the metadata lives. Defaults to fetching from the contract directly if nothing is passed in.
+
+```python
+# Gets metadata for Azuki #40
+
+from offchain.metadata.pipelines.metadata_pipeline import MetadataPipeline
+from offchain.metadata.models.token import Token
+
+pipeline = MetadataPipeline()
+token = Token(
+    collection_address="0xED5AF388653567Af2F388E6224dC7C4b3241C544",
+    token_id=40,
+    chain_identifier="ETHEREUM-MAINNET",
+    uri="https://ikzttp.mypinata.cloud/ipfs/QmQFkLSQysj94s5GvTHPyzTxrawwtjgiiYS2TBLgrvw8CW/40"
+)
+
+metadata = pipeline.run([token])[0]
+```
 
 ## RPC Provider
 

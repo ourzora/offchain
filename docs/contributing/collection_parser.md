@@ -1,23 +1,20 @@
 # Contributing a Collection Parser
 
-This guide will walk you through how to contribute a collection parser.
-
-We'll learn how to build a parser for ENS from scratch and go over important considerations for building your own parser.
+A guide on how to contribute a collection parser.
 
 ---
 
 ## Step 1: Determine the Type of Parser
 
-The first consideration is determining which type of parser to build.
-
 Before implementing your parser, familiarize yourself with the [BaseParser](../pipeline/parsers.md#baseparser), [CollectionParser](../pipeline/parsers.md#collectionparser), and [SchemaParser](../pipeline/parsers.md#schemaparser) base classes.
 
-Your parser will be one of the following:
+A parser will be one of the following:
 
-- `CollectionParser`: Determines if it should run on a token by looking at the token's collection address.
-- `SchemaParser`: Determines if it should run on a token by looking at the shape of the token's metadata.
+- `CollectionParser`: Runs based on a token's contract address.
+- `SchemaParser`: Runs based on the shape of the token's metadata.
 
-Since, we're building a parser for ENS, we'll be building a `CollectionParser`.
+We're building a `CollectionParser` for ENS because it is the only NFT collection that uses this metadata schema.
+Collection parsers are great for one-off collections with unique metadata.
 
 ```python
 class ENSParser(CollectionParser):

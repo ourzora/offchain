@@ -1,23 +1,22 @@
 # Contributing a Schema Paser
 
-This guide will walk you through how to contribute a schema parser.
+A guide on how to contribute a schema parser.
 
-We'll learn how to build a parser for OpenSea Metadata and go over important considerations for building your own parser.
+We'll learn how to build a parser for NFTs that follow the [OpenSea Metadata Standard](https://docs.opensea.io/docs/metadata-standards#metadata-structure) and go over important considerations.
 
 ---
 
 ## Step 1: Determine the Type of Parser
 
-The first consideration is determining which type of parser to build.
-
 Before implementing your parser, familiarize yourself with the [BaseParser](../pipeline/parsers.md#baseparser), [CollectionParser](../pipeline/parsers.md#collectionparser), and [SchemaParser](../pipeline/parsers.md#schemaparser) base classes.
 
-Your parser will be one of the following:
+A parser will be one of the following:
 
-- `CollectionParser`: Determines if it should run on a token by looking at the token's collection address.
-- `SchemaParser`: Determines if it should run on a token by looking at the shape of the token's metadata.
+- `CollectionParser`: Runs based on a token's contract address.
+- `SchemaParser`: Runs based on the shape of the token's metadata.
 
-Since, we're building a parser for OpenSea Metada, we'll be building a `SchemaParser`.
+Since, we're building a parser for NFTs that follow the [OpenSea Metadata Standard](https://docs.opensea.io/docs/metadata-standards#metadata-structure), we'll use a `SchemaParser`.
+Schema parsers are used for metadata standards that will be used across many different NFT collections.
 
 ```python
 class OpenseaParser(SchemaParser):
@@ -29,24 +28,121 @@ class OpenseaParser(SchemaParser):
 
 The next step is to define your parser's selection criteria. This tells the pipeline which tokens to run your parser on.
 
-Since you're building a schema parser, you'll need to override the `should_parse_token()` method of `BaseParser` to implement custom selection logic based on the shape of the metadata. For instance, if the new metadata schema contains a unique field, checking for the existence of that field would qualify as selection criteria:
+For a schema parser you'll need to override the `should_parse_token()` method of `BaseParser` to implement custom selection logic based on the shape of the metadata.
+
+For instance, if the new metadata schema contains a unique field, checking for the existence of that field would qualify as selection criteria.
+In this case both `background_color` and `youtube_url` are criteria for checking if an NFT follows the [OpenSea Metadata Standard](https://docs.opensea.io/docs/metadata-standards#metadata-structure).
 
 ```python
-def should_parse_token(self, raw_data: Optional[dict], *args, **kwargs) -> bool:
-    return raw_data is not None and raw_data.get("unique_field") is not None
+def should_parse_token(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> bool:
+    """Return whether or not a collection parser should parse a given token.
+    Args:
+        token (Token): the token whose metadata needs to be parsed.
+        raw_data (dict): raw data returned from token uri.
+    Returns:
+        bool: whether or not the collection parser handles this token.
+    """
+    return (
+        raw_data is not None
+        and isinstance(raw_data, dict)
+        and (raw_data.get("background_color") is not None or raw_data.get("youtube_url") is not None)
+    )
 ```
 
 ---
 
 ## Step 3: Write the Parsing Implementation
 
-### Step 3a: Construct the Token URI
-
-The token uri is needed to tell the parser where to fetch the metadata from.
-
 If the token uri is not passed in as part of the input, the pipeline will attempt to fetch it from the `tokenURI(uint256)` function on the contract. Otherwise, it is expected that the parser will construct the token uri.
 
-Note, it is not uncommon for token uris to be base64 encoded data is stored entirely on chain e.g. Nouns, Zorbs.
+Let's use the Song a Day collection as an example:
+
+```python
+Token(
+    chain_identifier="ETHEREUM-MAINNET",
+    collection_address="0x19b703f65aa7e1e775bd06c2aa0d0d08c80f1c45",
+    token_id=1351,
+)
+```
+
+If we pass it into the parser, we'll get the following uri: `ipfs://Qmb9X7yBk5iKzgnS5pfAfReFT8FVaLcf7cJGxxUFWzRMyk/1351`, which returns metadata for token #1351.
+
+Once you have the token uri, we can use the `Fetcher` to fetch the raw JSON data from the token uri.
+By default, the parser is initialized with a `Fetcher` instance with an IPFS adapter.
+
+```python
+    raw_data = self.fetcher.fetch_content(token.uri)
+```
+
+This should return the following data from the IPFS Gateway:
+
+```json
+{
+  "name": "Obligatory Song About the iPhone 5",
+  "description": "A new song, everyday, forever. Song A Day is an ever-growing collection of unique songs created by Jonathan Mann, starting January 1st, 2009. Each NFT is a 1:1 representation of that days song, and grants access to SongADAO, the orgninzation that controls all the rights and revenue to the songs. Own a piece of the collection to help govern the future of music. http://songaday.world",
+  "token_id": 1351,
+  "image": "ipfs://QmX2ZdS13khEYqpC8Jz4nm7Ub3He3g5Ws22z3QhunC2k58/1351",
+  "animation_url": "ipfs://QmVHjFbGEqXfYuoPpJR4vmRacGM29KR5UenqbidJex8muB/1351",
+  "external_url": "https://songaday.world/song/1351",
+  "youtube_url": "https://www.youtube.com/watch?v=xBOaUo1GT0g",
+  "attributes": [
+    { "trait_type": "Date", "value": "2012-09-12" },
+    { "trait_type": "Location", "value": "Brooklyn Studio" },
+    { "trait_type": "Topic", "value": "Apple" },
+    { "trait_type": "Instrument", "value": "Electric Guitar" },
+    { "trait_type": "Mood", "value": "Bored" },
+    { "trait_type": "Beard", "value": "Shadow" },
+    { "trait_type": "Genre", "value": "Rock" },
+    { "trait_type": "Style", "value": "Fun" },
+    { "trait_type": "Length", "value": "0:47" },
+    { "trait_type": "Key", "value": "E" },
+    { "trait_type": "Tempo", "value": "90" },
+    { "trait_type": "Song A Day", "value": "1351" },
+    { "trait_type": "Year", "value": "2012" },
+    { "trait_type": "Instrument", "value": "Bass" },
+    { "trait_type": "Instrument", "value": "Drums" },
+    { "trait_type": "Style", "value": "Catchy" },
+    { "trait_type": "Proper Noun", "value": "iPhone" }
+  ]
+}
+```
+
+The next step is to convert the metadata into the [standardized metadata format](../models/metadata.md).
+
+Each field in the new metadata format should either map a field in the standardized metadata format or be added as an `MetadataField` under the `additional_fields` property.
+
+In the case of Song a Day, the metadata format has the following fields:
+
+```json
+{
+  "name": "NFT name",
+  "description": "More info about the NFT",
+  "attributes": "Custom traits",
+  "image": "Image media asset",
+  "animation_url": "Media asset for videos",
+  "external_url": "External linking",
+  "youtube_url": "Video on hosted on Youtube"
+}
+```
+
+Each of these fields can be mapped into the standard metadata format:
+
+| Standard Metadata Field | New Metadata Field        |
+| ----------------------- | ------------------------- |
+| token                   |                           |
+| raw_data                |                           |
+| standard                |                           |
+| attributes              | attributes                |
+| name                    | name                      |
+| description             | description               |
+| mime_type               |                           |
+| image                   | image                     |
+| content                 | animation_url             |
+| additional_fields       | external_url, youtube_url |
+
+---
+
+Code used for parsing collections that use the [OpenSea Metadata Standard](https://docs.opensea.io/docs/metadata-standards#metadata-structure):
 
 ```python
 def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:
@@ -89,217 +185,61 @@ def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Optio
         content=content,
         additional_fields=self.parse_additional_fields(raw_data),
     )
-```
 
-Let's use Azuki #40 as an example:
+# Helper Functions
+def parse_attribute(self, attribute_dict: dict) -> Attribute:
+    return Attribute(
+        trait_type=attribute_dict.get("trait_type"),
+        value=attribute_dict.get("value"),
+        display_type=attribute_dict.get("display_type"),
+    )
 
-```python
-Token(
-    chain_identifier="ETHEREUM-MAINNET",
-    collection_address="0xED5AF388653567Af2F388E6224dC7C4b3241C544",
-    token_id=40,
-)
-```
-
-If we pass it into the parser, we'll get the following uri: `https://ikzttp.mypinata.cloud/ipfs/QmQFkLSQysj94s5GvTHPyzTxrawwtjgiiYS2TBLgrvw8CW/40`, which returns metadata for Azuki #40.
-
-### Step 3b: Fetch Metadata From the Token URI
-
-Once you have the token uri, we can use the `Fetcher` to fetch the raw JSON data from the token uri.
-By default, the parser is initialized with a `Fetcher` instance with an HTTP adapter.
-
-```python
-    raw_data = self.fetcher.fetch_content(token.uri)
-```
-
-This should return the following data from the ENS metadata service:
-
-```json
-{
-  "is_normalized": true,
-  "name": "steev.eth",
-  "description": "steev.eth, an ENS name.",
-  "attributes": [
-    {
-      "trait_type": "Created Date",
-      "display_type": "date",
-      "value": 1633123738000
-    },
-    { "trait_type": "Length", "display_type": "number", "value": 5 },
-    { "trait_type": "Segment Length", "display_type": "number", "value": 5 },
-    {
-      "trait_type": "Character Set",
-      "display_type": "string",
-      "value": "letter"
-    },
-    {
-      "trait_type": "Registration Date",
-      "display_type": "date",
-      "value": 1633123738000
-    },
-    {
-      "trait_type": "Expiration Date",
-      "display_type": "date",
-      "value": 1822465450000
-    }
-  ],
-  "name_length": 5,
-  "segment_length": 5,
-  "url": "https://app.ens.domains/name/steev.eth",
-  "version": 0,
-  "background_image": "https://metadata.ens.domains/mainnet/avatar/steev.eth",
-  "image": "https://metadata.ens.domains/mainnet/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/0x165a16ce2915e51295772b6a67bfc8ceee2c1c7caa85591fba107af4ee24f704/image",
-  "image_url": "https://metadata.ens.domains/mainnet/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/0x165a16ce2915e51295772b6a67bfc8ceee2c1c7caa85591fba107af4ee24f704/image"
-}
-```
-
-### Step 3c: Standardize the New Metadata Format
-
-The next step is to convert the metadata into the [standardized metadata format](../models/metadata.md).
-
-Each field in the new metadata format should either map a field in the standardized metadata format or be added as an `MetadataField` under the `additional_fields` property.
-
-In the case of ENS, the metadata format has the following fields:
-
-```json
-{
-  "name": "ENS name",
-  "description": "Short ENS name description",
-  "attributes": "Custom traits about ENS",
-  "name_length": "Character length of ens name",
-  "url": "ENS App URL of the name",
-  "version": "ENS NFT version",
-  "background_image": "Origin URL of avatar image",
-  "image_url": "URL of ENS NFT image"
-}
-```
-
-Each of these fields can be mapped into the standard metadata format:
-
-| Standard Metadata Field | New Metadata Field        |
-| ----------------------- | ------------------------- |
-| token                   |                           |
-| raw_data                |                           |
-| standard                |                           |
-| attributes              | attributes                |
-| name                    | name                      |
-| description             | description               |
-| mime_type               |                           |
-| image                   | image_url                 |
-| content                 | background_image          |
-| additional_fields       | name_length, url, version |
-
----
-
-And this is how it would look programatically:
-
-```python
-class ENSParser(CollectionParser):
-    _COLLECTION_ADDRESSES: list[str] = ["0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85"]
-
-    @staticmethod
-    def make_ens_chain_name(chain_identifier: str):
-        try:
-            return chain_identifier.split("-")[1].lower()
-        except Exception:
-            logger.error(f"Received unexpected chain identifier: {chain_identifier}")
-            return "mainnet"
-
-    def get_additional_fields(self, raw_data: dict) -> list[MetadataField]:
-        additional_fields = []
-        if name_length := raw_data.get("name_length"):
-            additional_fields.append(
-                MetadataField(
-                    field_name="name_length",
-                    type=MetadataFieldType.TEXT,
-                    description="Character length of ens name",
-                    value=name_length,
-                )
+def parse_additional_fields(self, raw_data: dict) -> list[MetadataField]:
+    additional_fields = []
+    if (external_url := raw_data.get("external_url")) is not None:
+        additional_fields.append(
+            MetadataField(
+                field_name="external_url",
+                type=MetadataFieldType.TEXT,
+                description="This is the URL that will appear below the asset's image on OpenSea "
+                "and will allow users to leave OpenSea and view the item on your site.",
+                value=external_url,
             )
-        if version := raw_data.get("version"):
-            additional_fields.append(
-                MetadataField(
-                    field_name="version",
-                    type=MetadataFieldType.TEXT,
-                    description="ENS NFT version",
-                    value=version,
-                )
-            )
-        if url := raw_data.get("url"):
-            additional_fields.append(
-                MetadataField(
-                    field_name="url",
-                    type=MetadataFieldType.TEXT,
-                    description="ENS App URL of the name",
-                    value=url,
-                )
-            )
-        return additional_fields
-
-    def parse_attributes(self, raw_data: dict) -> Optional[list[Attribute]]:
-        attributes = raw_data.get("attributes")
-        if not attributes or not isinstance(attributes, list):
-            return
-
-        return [
-            Attribute(
-                trait_type=attribute_dict.get("trait_type"),
-                value=attribute_dict.get("value"),
-                display_type=attribute_dict.get("display_type"),
-            )
-            for attribute_dict in attributes
-        ]
-
-    def get_image(self, raw_data: dict) -> Optional[MediaDetails]:
-        image_uri = raw_data.get("image_url") or raw_data.get("image")
-        if image_uri:
-            image = MediaDetails(uri=image_uri, size=None, sha256=None, mime_type=None)
-            try:
-                content_type, size = self.fetcher.fetch_mime_type_and_size(image_uri)
-                image.mime_type = content_type
-                image.size = size
-                return image
-            except Exception:
-                pass
-
-    def get_background_image(self, raw_data: dict) -> Optional[MediaDetails]:
-        bg_image_uri = raw_data.get("background_image")
-        if bg_image_uri:
-            image = MediaDetails(uri=bg_image_uri, size=None, sha256=None, mime_type=None)
-            try:
-                content_type, size = self.fetcher.fetch_mime_type_and_size(bg_image_uri)
-                image.mime_type = content_type
-                image.size = size
-                return image
-            except Exception:
-                pass
-
-    def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:
-        ens_chain_name = self.make_ens_chain_name(token.chain_identifier)
-
-        token.uri = (
-            f"https://metadata.ens.domains/{ens_chain_name}/{token.collection_address.lower()}/{token.token_id}/"
         )
-        raw_data = self.fetcher.fetch_content(token.uri)
-        mime_type, _ = self.fetcher.fetch_mime_type_and_size(token.uri)
-
-        return Metadata(
-            token=token,
-            raw_data=raw_data,
-            attributes=self.parse_attributes(raw_data),
-            name=raw_data.get("name"),
-            description=raw_data.get("description"),
-            mime_type=mime_type,
-            image=self.get_image(raw_data=raw_data),
-            content=self.get_background_image(raw_data=raw_data),
-            additional_fields=self.get_additional_fields(raw_data=raw_data),
+    if (background_color := raw_data.get("background_color")) is not None:
+        additional_fields.append(
+            MetadataField(
+                field_name="background_color",
+                type=MetadataFieldType.TEXT,
+                description="Background color of the item on OpenSea. Must be a six-character "
+                "hexadecimal without a pre-pended #.",
+                value=background_color,
+            )
         )
-
+    if (animation_url := raw_data.get("animation_url")) is not None:
+        additional_fields.append(
+            MetadataField(
+                field_name="animation_url",
+                type=MetadataFieldType.TEXT,
+                description="A URL to a multi-media attachment for the item.",
+                value=animation_url,
+            )
+        )
+    if (youtube_url := raw_data.get("youtube_url")) is not None:
+        additional_fields.append(
+            MetadataField(
+                field_name="youtube_url",
+                type=MetadataFieldType.TEXT,
+                description="A URL to a YouTube video.",
+                value=youtube_url,
+            )
+        )
+    return additional_fields
 ```
 
 ---
 
-## Step 4: Registering your parser
+## Step 4: Registering a Parser
 
 After writing your custom metadata parser implementation, you'll want to register it to the `ParserRegistry`.
 
@@ -307,175 +247,111 @@ The `ParserRegistry` tracks all parsers and is used by the metadata pipeline to 
 
 ```python
 @ParserRegistry.register
-class ENSParser(CollectionParser):
+class OpenseaParser(SchemaParser):
     ...
 ```
 
 Note: in order to have the parser be registered, you'll also need to import it in `offchain/metadata/parsers/__init__.py`.
 
-If you're developing locally, you still need to import the `ParserRegistry` to register your parser. The parser must be registered in order for it to be run by default in the `MetadataPipeline`. In the example below, we register the `ENSParser` class locally and run `get_token_metadata()`, which leverages the `MetadataPipeline`.
-
-```python
-from offchain import get_token_metadata
-from offchain.metadata import CollectionParser
-from offchain.metadata.registries.parser_registry import ParserRegistry
-
-@ParserRegistry.register
-class ENSParser(CollectionParser):
-    ...
-
-get_token_metadata(
-    collection_address="0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85",
-    token_id=10110056301157368922112380646085332716736091604887080310048917803187113883396,
-    chain_identifier="ETHEREUM-MAINNET"
-)
-```
+If you're developing locally, you still need to import the `ParserRegistry` to register your parser. The parser must be registered in order for it to be run by default in the `MetadataPipeline`.
 
 ---
 
 ## Step 5: Testing the Parser
 
-### Step 5a: Write Unit Tests
-
-You'll want to write tests to verify that your parser works as expected. At minimum, the `should_parse_token()` and `parse_metadata()` functions should be tested because the pipeline will call those directly.
+Lastly, you'll want to write tests to verify that your parser works as expected. At minimum, the `should_parse_token()` and `parse_metadata()` functions should be tested because the pipeline will call those directly.
 
 It's important to verify that the `should_parse_token()` function returns `True` if and only if a token is meant to be parsed by that parser.
 
 Given a token, `parse_metadata()` should normalize the raw data into the standardized metadata format. Since making network requests can be flaky, it's preferable to mock the data that would be returned by the server that hosts the metadata information.
 
 ```python
-def test_ens_parser_should_parse_token(self):
+def test_opensea_parser_should_parse_token(self, raw_crypto_coven_metadata):
     fetcher = MetadataFetcher()
-    contract_caller = ContractCaller()
-    parser = ENSParser(fetcher=fetcher, contract_caller=contract_caller)
-    assert parser.should_parse_token(token=token) == True
+    ipfs_adapter = IPFSAdapter()
+    fetcher.register_adapter(ipfs_adapter, "ipfs://")
+    parser = OpenseaParser(fetcher=fetcher)
+    assert parser.should_parse_token(token=self.token, raw_data=raw_crypto_coven_metadata) == True
 
-def test_ens_parser_parses_metadata(self):
+def test_opensea_parser_parses_metadata(self, raw_crypto_coven_metadata):
     fetcher = MetadataFetcher()
-    contract_caller = ContractCaller()
-    fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", 41145))
-    fetcher.fetch_content = MagicMock(return_value=mocked_raw_data)
-    parser = ENSParser(fetcher=fetcher, contract_caller=contract_caller)
-    assert parser.parse_metadata(token=token, raw_data=None) == expected_metadata
+    ipfs_adapter = IPFSAdapter()
+    fetcher.register_adapter(ipfs_adapter, "ipfs://")
+    fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", "3095"))
+    parser = OpenseaParser(fetcher=fetcher)
+    metadata = parser.parse_metadata(token=self.token, raw_data=raw_crypto_coven_metadata)
+    assert metadata == Metadata(
+        token=self.token,
+        raw_data=raw_crypto_coven_metadata,
+        standard=None,
+        attributes=[
+            Attribute(trait_type="Background", value="Sepia", display_type=None),
+            Attribute(trait_type="Skin Tone", value="Dawn", display_type=None),
+            Attribute(trait_type="Body Shape", value="Lithe", display_type=None),
+            Attribute(trait_type="Top", value="Sheer Top (Black)", display_type=None),
+            Attribute(
+                trait_type="Eyebrows",
+                value="Medium Flat (Black)",
+                display_type=None,
+            ),
+            Attribute(trait_type="Eye Style", value="Nyx", display_type=None),
+            Attribute(trait_type="Eye Color", value="Cloud", display_type=None),
+            Attribute(trait_type="Mouth", value="Nyx (Mocha)", display_type=None),
+            Attribute(trait_type="Hair (Front)", value="Nyx", display_type=None),
+            Attribute(trait_type="Hair (Back)", value="Nyx Long", display_type=None),
+            Attribute(trait_type="Hair Color", value="Steel", display_type=None),
+            Attribute(trait_type="Hat", value="Witch (Black)", display_type=None),
+            Attribute(
+                trait_type="Necklace",
+                value="Moon Necklace (Silver)",
+                display_type=None,
+            ),
+            Attribute(
+                trait_type="Archetype of Power",
+                value="Witch of Woe",
+                display_type=None,
+            ),
+            Attribute(trait_type="Sun Sign", value="Taurus", display_type=None),
+            Attribute(trait_type="Moon Sign", value="Aquarius", display_type=None),
+            Attribute(trait_type="Rising Sign", value="Capricorn", display_type=None),
+            Attribute(trait_type="Will", value="9", display_type="number"),
+            Attribute(trait_type="Wisdom", value="9", display_type="number"),
+            Attribute(trait_type="Wonder", value="9", display_type="number"),
+            Attribute(trait_type="Woe", value="10", display_type="number"),
+            Attribute(trait_type="Wit", value="9", display_type="number"),
+            Attribute(trait_type="Wiles", value="9", display_type="number"),
+        ],
+        name="nyx",
+        description="You are a WITCH of the highest order. You are borne of chaos that gives the night shape. Your magic spawns from primordial darkness. You are called oracle by those wise enough to listen. ALL THEOLOGY STEMS FROM THE TERROR OF THE FIRMAMENT!",
+        mime_type="application/json",
+        image=MediaDetails(
+            size=3095,
+            sha256=None,
+            uri="https://cryptocoven.s3.amazonaws.com/nyx.png",
+            mime_type="application/json",
+        ),
+        content=None,
+        additional_fields=[
+            MetadataField(
+                field_name="external_url",
+                type=MetadataFieldType.TEXT,
+                description="This is the URL that will appear below the asset's image on OpenSea and will allow users to leave OpenSea and view the item on your site.",
+                value="https://www.cryptocoven.xyz/witches/1",
+            ),
+            MetadataField(
+                field_name="background_color",
+                type=MetadataFieldType.TEXT,
+                description="Background color of the item on OpenSea. Must be a six-character hexadecimal without a pre-pended #.",
+                value="",
+            ),
+        ],
+    )
 ```
 
 In addition to testing your parser, you'll need to verify that the parser has been registered and added to the pipeline correctly. The tests in `tests/metadata/registries/test_parser_registry.py` should break if the not modified to include your new parser class.
 
 ---
 
-### Step 5b: Testing Manually
+## OpenSea Schema Code
 
-It's always good practice to test manually as well. We can set up our pipeline using the example NFT from earlier:
-
-```python
-from offchain.metadata.pipelines.metadata_pipeline import MetadataPipeline
-from offchain.metadata.models.token import Token
-
-pipeline = MetadataPipeline()
-token = Token(
-    chain_identifier="ETHEREUM-MAINNET",
-    collection_address="0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85",
-    token_id=10110056301157368922112380646085332716736091604887080310048917803187113883396,
-)
-metadata = pipeline.run([token])[0]
-```
-
-This should give us the following standardized metadata:
-
-```python
-Metadata(
-    token=Token(
-        collection_address='0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85'
-        token_id=10110056301157368922112380646085332716736091604887080310048917803187113883396,
-        chain_identifier='ETHEREUM-MAINNET',
-        uri='https://metadata.ens.domains/mainnet/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/10110056301157368922112380646085332716736091604887080310048917803187113883396/'
-    ),
-    raw_data={
-        'is_normalized': True,
-        'name': 'steev.eth',
-        'description': 'steev.eth, an ENS name.',
-        'attributes': [
-            {
-                'trait_type': 'Created Date',
-                'display_type': 'date',
-                'value': 1633123738000
-            },
-            {
-                'trait_type': 'Length',
-                'display_type': 'number',
-                'value': 5
-            },
-            {
-                'trait_type': 'Segment Length',
-                'display_type': 'number',
-                'value': 5
-            },
-            {
-                'trait_type': 'Character Set',
-                'display_type': 'string',
-                'value': 'letter'
-            },
-            {
-                'trait_type': 'Registration Date',
-                'display_type': 'date',
-                'value': 1633123738000
-            },
-            {
-                'trait_type': 'Expiration Date',
-                'display_type': 'date',
-                'value': 1822465450000
-                }
-        ],
-        'name_length': 5,
-        'segment_length': 5,
-        'url': 'https://app.ens.domains/name/steev.eth',
-        'version': 0,
-        'background_image': 'https://metadata.ens.domains/mainnet/avatar/steev.eth',
-        'image': 'https://metadata.ens.domains/mainnet/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/0x165a16ce2915e51295772b6a67bfc8ceee2c1c7caa85591fba107af4ee24f704/image',
-        'image_url': 'https://metadata.ens.domains/mainnet/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/0x165a16ce2915e51295772b6a67bfc8ceee2c1c7caa85591fba107af4ee24f704/image'
-    },
-    attributes=[
-        Attribute(trait_type='Created Date', value='1633123738000', display_type='date'),
-        Attribute(trait_type='Length', value='5', display_type='number'),
-        Attribute(trait_type='Segment Length', value='5', display_type='number'),
-        Attribute(trait_type='Character Set', value='letter', display_type='string'),
-        Attribute(trait_type='Registration Date', value='1633123738000', display_type='date'),
-        Attribute(trait_type='Expiration Date', value='1822465450000', display_type='date')
-    ],
-    standard=COLLECTION_STANDARD,
-    name='steev.eth',
-    description='steev.eth, an ENS name.',
-    mime_type='application/json',
-    image=MediaDetails(
-        size=0,
-        sha256=None,
-        uri='https://metadata.ens.domains/mainnet/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/0x165a16ce2915e51295772b6a67bfc8ceee2c1c7caa85591fba107af4ee24f704/image',
-        mime_type='image/svg+xml'
-    ),
-    content=MediaDetails(
-        size=0,
-        sha256=None,
-        uri='https://metadata.ens.domains/mainnet/avatar/steev.eth',
-        mime_type=None
-    ),
-    additional_fields=[
-        MetadataField(
-            field_name='name_length',
-            type=TEXT,
-            description='Character length of ens name',
-            value=5
-        ),
-        MetadataField(
-            field_name='url',
-            type=TEXT,
-            description='ENS App URL of the name',
-            value='https://app.ens.domains/name/steev.eth'
-        )
-    ]
-)
-
-```
-
-## ENS collection parser source code
-
-::: offchain.metadata.parsers.collection.ens.ENSParser
+View the full source code for the OpenSea schema parser [here.](https://github.com/ourzora/offchain/blob/main/offchain/metadata/parsers/schema/opensea.py)

@@ -20,7 +20,6 @@ nav:
       - Guidelines: contributing/guidelines.md
       - Collection Parser: contributing/collection_parser.md
       - Schema Parser: contributing/schema_parser.md
-      - Adapter: contributing/adapter.md
   - Changelog: changelog.md
 theme:
   name: material
