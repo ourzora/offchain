@@ -2,10 +2,11 @@ site_name: offchain
 repo_url: https://github.com/ourzora/offchain
 repo_name: ourzora/offchain
 nav:
-  - Getting started: index.md
+  - Getting Started: index.md
+  - Core Concepts: concepts.md
   - Usage:
       - Overview: usage/overview.md
-      - Customizing the pipeline: usage/customize.md
+      - Customizing the Pipeline: usage/customize.md
   - Interfaces:
       - Token: models/token.md
       - Metadata: models/metadata.md
@@ -17,7 +18,8 @@ nav:
       - Parsers: pipeline/parsers.md
   - Contributing:
       - Guidelines: contributing/guidelines.md
-      - Adding a new metadata format: contributing/metadata_tutorial.md
+      - Collection Parser: contributing/collection_parser.md
+      - Schema Parser: contributing/schema_parser.md
   - Changelog: changelog.md
 theme:
   name: material

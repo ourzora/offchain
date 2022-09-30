@@ -2,9 +2,9 @@
 
 There are countless ways to customize the pipeline. The default `MetadataPipeline` can be constructed with any permutation of `Fetchers`, `Adapters`, `Parsers`, and `ContractCallers`. And you can even define your own custom `Pipeline` by extending the `BasePipeline` class.
 
-In this guide, we'll enumerate few ways you can customize the `MetadataPipeline` to best suit your needs.
+In this guide, we'll cover a few ways you can customize the `MetadataPipeline` to best suit your needs.
 
-## Using a Custom RPC Provider URL
+## Custom RPC Provider
 
 By default, the pipeline uses `https://cloudflare-eth.com` as the Ethereum JSON RPC url. This is a free Ethereum RPC provider, which means that it is very easy to exceed the rate-limit. If you have a custom RPC provider url you'd like to use, you can specify it like this:
 
@@ -18,7 +18,7 @@ contract_caller = ContractCaller(rpc=rpc)
 pipeline = MetadataPipeline(contract_caller=contract_caller)
 ```
 
-## Using Custom Parsers
+## Custom Parsers
 
 By default, the pipeline runs with all collection, schema, and catch-all parsers. That said, you may find that you're only interested in using a subset of the parsers. Let's say you're only interested in parsing metadata for a specific collection.
 
@@ -34,7 +34,7 @@ pipeline = MetadataPipeline(parsers=[ens_parser])
 
 View the full list of available parsers [here](https://github.com/ourzora/offchain/tree/main/offchain/metadata/parsers).
 
-## Using Custom Adapters
+## Custom Adapters
 
 By default, the pipeline is run with all available adapters. Each adapter has a default host prefix and is configured with the following args: `{"pool_connections": 100, "pool_maxsize": 1000, "max_retries": 0}`
 

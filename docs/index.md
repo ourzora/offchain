@@ -4,13 +4,13 @@ Documentation for version: **v0.1.3**
 
 ## Overview
 
-`offchain` is an open-source Python package for processing both **onchain and offchain** NFT metadata.
-The purpose of this project is to enable anyone to define and standardize the indexing of their own custom NFT metadata schemas.
+`offchain` is an open-source Python package that makes it easy to index both **onchain and offchain** NFT metadata.
+Now anyone can define and standardize the indexing of custom NFT metadata schemas.
 
-`offchain` powers the Zora Indexer, and any contributions to metadata parsing implementations will be reflected in the Zora API.
-Meaning an NFT with unique metadata properties can be indexed by the API by adding a contribution to this repo.
+`offchain` powers the Zora Indexer, meaning any contributions to metadata parsing implementations will be reflected in the Zora API.
+Check out the [`Contributing`](./contributing/guidelines.md) page to implement custom metadata.
 
-Check out the [`Contributing`](./contributing/guidelines.md) page if you'd like to add your own metadata parsing implementation.
+Lastly, please review the [`Core Concepts`](./concepts.md) page before reading the rest of the documentation.
 
 ## Installation
 
@@ -32,10 +32,4 @@ from repository:
 pip install git+https://github.com/ourzora/offchain.git
 ```
 
-## Pipeline Components
-
-- [Pipeline](./pipeline/pipeline.md): Orchestrates the metadata fetching and normalizing process for multiple tokens.
-- [Adapter](./pipeline/adapters.md): Parses the metadata url into an acceptable request format for the fetcher.
-- [Fetcher](./pipeline/fetchers.md): Makes network requests to a given uri to fetch data.
-- [Parser](./pipeline/parsers.md): Parses raw data into a standardized metadata format
-- ContractCaller: Makes RPC calls to NFT contracts to retrieve the uri if not provided.
+<br/>

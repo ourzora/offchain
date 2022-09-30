@@ -1,29 +1,20 @@
-# Adding a New Metadata Format
+# Contributing a Collection Parser
 
-To add support for a new metadata format, you'll need to add a new parser to the `offchain` repo.
-
-In this guide, we'll build a parser for the ENS collection from scratch and go over important considerations for building your own parser.
+A guide on how to contribute a collection parser.
 
 ---
 
 ## Step 1: Determine the Type of Parser
 
-The first consideration is determining which type of parser to build.
-
 Before implementing your parser, familiarize yourself with the [BaseParser](../pipeline/parsers.md#baseparser), [CollectionParser](../pipeline/parsers.md#collectionparser), and [SchemaParser](../pipeline/parsers.md#schemaparser) base classes.
 
-Your parser will be one of the following:
+A parser will be one of the following:
 
-- `CollectionParser`: determines if it should run on a token by looking at the token's collection address
-- `SchemaParser`: determines if it should run on a token by looking at the shape of the token's metadata
+- `CollectionParser`: Runs based on a token's contract address.
+- `SchemaParser`: Runs based on the shape of the token's metadata.
 
-As a general rule of thumb, you should only define a new schema parser if the answer to all of the following questions is `Yes`:
-
-1. Is there a way to uniquely identify tokens that have this new metadata format?
-2. Will there be new NFT collections that use this new metadata format?
-3. Does the default parser in the pipeline parse the this new metadata format incorrectly?
-
-Since, we're building a parser for the ENS collection, we'll be building a `CollectionParser`.
+We're building a `CollectionParser` for ENS because it is the only NFT collection that uses this metadata schema.
+Collection parsers are great for one-off collections with unique metadata.
 
 ```python
 class ENSParser(CollectionParser):
@@ -34,16 +25,10 @@ class ENSParser(CollectionParser):
 
 ## Step 2: Define the Selection Criteria
 
-The next step is to define your parser's selection criteria. This tells the pipeline which tokens to run your parser on.
+The next step is to define your parser's selection criteria.
+This tells the pipeline which tokens to run your parser on.
 
-If you're building a schema parser, you'll need to override the `should_parse_token()` method of `BaseParser` to implement custom selection logic based on the shape of the metadata. For instance, if the new metadata schema contains a unique field, checking for the existence of that field would qualify as selection criteria:
-
-```python
-def should_parse_token(self, raw_data: Optional[dict], *args, **kwargs) -> bool:
-    return raw_data is not None and raw_data.get("unique_field") is not None
-```
-
-If you're building a collection parser, the selection criteria is simply defined by a `_COLLECTION_ADDRESSES` class variable, which tells the parser which collection address(es) to run on. The ENS collection parser will only run on tokens with the ENS collection contract address (`0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85`).
+The selection criteria for a collection parser is defined by a `_COLLECTION_ADDRESSES` class variable, which tells the parser which collection address(es) to run on. The ENS collection parser will only run on tokens with the ENS contract address `0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85`.
 
 ```python
 class ENSParser(CollectionParser):
@@ -52,17 +37,18 @@ class ENSParser(CollectionParser):
 
 ---
 
-## Step 3: Write the Metadata Parsing Implementation
+## Step 3: Write the Parsing Implementation
 
 ### Step 3a: Construct the Token URI
 
 The token uri is needed to tell the parser where to fetch the metadata from.
+If the token uri is not passed in as part of the input, the pipeline will attempt to fetch it from the `tokenURI(uint256)` function on the contract.
 
-If the token uri is not passed in as part of the input, the pipeline will attempt to fetch it from a `tokenURI(uint256)` view function on the contract. Otherwise, it is expected that the parser will construct the token uri.
+Note, it is not uncommon for token uris to be base64 encoded data is stored entirely on chain e.g. Nouns, Zorbs.
 
-Note: it is not uncommon for token uris to be base64 encoded data is stored entirely on chain. This is the case for collections like Nouns or Zorbs.
+ENS hosts their own metadata service and token uris are constructed in the following format:
 
-ENS hosts their own metadata service and token uris are constructed in the following format: `https://metadata.ens.domains/<chain_name>/<collection_address>/<token_id>/`
+`https://metadata.ens.domains/<chain_name>/<collection_address>/<token_id>/`
 
 ```python
 class ENSParser(CollectionParser):
@@ -94,11 +80,13 @@ Token(
 )
 ```
 
-If we pass it into the parser, we'll get the following uri: `https://metadata.ens.domains/mainnet/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/10110056301157368922112380646085332716736091604887080310048917803187113883396`, which returns metadata information from the ENS metadata service.
+If we pass it into the parser, we'll get the following uri:
+`https://metadata.ens.domains/mainnet/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/10110056301157368922112380646085332716736091604887080310048917803187113883396`
 
 ### Step 3b: Fetch Metadata From the Token URI
 
-Once you have the token uri, we can use the `Fetcher` to fetch the raw JSON data from the token uri. By default, the parser is initialized with a `Fetcher` instance with an HTTP adapter.
+Now we can use the `Fetcher` to get the raw JSON data from the token uri.
+By default, the parser is initialized with a `Fetcher` instance with an HTTP adapter.
 
 ```python
     raw_data = self.fetcher.fetch_content(token.uri)
@@ -291,9 +279,9 @@ class ENSParser(CollectionParser):
 
 ---
 
-## Step 4: Registering your parser
+## Step 4: Registering a Parser
 
-After writing your custom metadata parser implementation, you'll want to register it to the `ParserRegistry`.
+After writing your custom parser, you'll want to register it to the `ParserRegistry`.
 
 The `ParserRegistry` tracks all parsers and is used by the metadata pipeline to know which parsers to run by default.
 
@@ -303,7 +291,7 @@ class ENSParser(CollectionParser):
     ...
 ```
 
-Note: in order to have the parser be registered, you'll also need to import it in `offchain/metadata/parsers/__init__.py`.
+Note, in order to have the parser be registered, you'll also need to import it in `offchain/metadata/parsers/__init__.py`.
 
 If you're developing locally, you still need to import the `ParserRegistry` to register your parser. The parser must be registered in order for it to be run by default in the `MetadataPipeline`. In the example below, we register the `ENSParser` class locally and run `get_token_metadata()`, which leverages the `MetadataPipeline`.
 
