@@ -1,0 +1,56 @@
+name: Create Release
+on:
+  push:
+    tags:
+      - "v*"
+jobs:
+  release:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Bump version if needed
+        continue-on-error: true
+        env:
+          REF: ${{ github.ref }}
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          git checkout -b ${REF:10}-update
+          git tag -d ${REF:10}
+          git push -d origin ${REF:10}
+
+          sed -i "s/version = \".*\"/version = \"${REF:11}\"/" pyproject.toml
+          git add pyproject.toml
+          git commit -m "bump version for release"
+
+          git tag -a ${REF:10} -m "${REF:10}"
+          git push -u origin HEAD:main ${REF:10}
+
+      - name: Create release branch and bump version
+        env:
+          REF: ${{ github.ref }}
+        run: |
+          BRANCH=release/${REF:10}
+          git checkout -b $BRANCH
+          git push -u origin $BRANCH
+
+      - name: Extract Changelog
+        id: extract_changelog
+        env:
+          REF: ${{ github.ref }}
+        run: |
+          sed -n "/^## ${REF:10}/,/^## /{/^## /b;p}" docs/changelog.md | sed -r '1d;$d' > ./RELEASE_CHANGELOG
+          echo ::set-output name=version_name::`sed -nr "s/^## (${REF:10}.*)$/\1/p" docs/changelog.md`
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ steps.extract_changelog.outputs.version_name }}
+          body_path: ./RELEASE_CHANGELOG
+          draft: true
