@@ -30,3 +30,9 @@ class Token(BaseModel):
             )
 
         return chain_identifier
+
+    @validator("uri")
+    def validate_uri(cls, uri: str, values, **kwargs):
+        if uri and "{id}" in uri and "token_id" in values:
+            uri = uri.replace("{id}", str(values["token_id"]))
+        return uri

@@ -27,3 +27,12 @@ class TestToken:
                 token_id=9559,
                 chain_identifier="aETHEREUM-MAINNETa",
             )
+
+    def test_token_modifies_uri(self):
+        token = Token(
+            collection_address="0x5180db8f5c931aae63c74266b211f580155ecac8",
+            token_id=9559,
+            chain_identifier="ETHEREUM-MAINNET",
+            uri="https://api.opensea.io/api/v1/metadata/0x5180db8f5c931aae63c74266b211f580155ecac8/0x{id}",
+        )
+        assert token.uri == "https://api.opensea.io/api/v1/metadata/0x5180db8f5c931aae63c74266b211f580155ecac8/0x9559"
