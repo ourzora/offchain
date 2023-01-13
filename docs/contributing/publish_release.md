@@ -18,7 +18,11 @@ If we're currently on version `0.0.1`, and this pull request is a patch release,
 to `0.0.2`.
 
 ???+ example
-`toml [tool.poetry] name = "offchain" version = "0.0.2" `
+    ```toml
+    [tool.poetry]
+    name = "offchain"
+    version = "0.0.2"
+    ```
 
 ### Create a Changelog Entry
 
@@ -44,7 +48,7 @@ Entries are formatted like:
 ```
 
 !!! tip
-Make sure the changelog file has a new line at the end.
+    Make sure the changelog file has a new line at the end.
 
 You can add as many elements as you'd like, but make sure the versions are separated by new lines in descending order and are appended with a `v` like shown in the above example.
 
@@ -60,7 +64,7 @@ When running the command below, this will create a tag for `v0.0.2` and sign it 
 Make sure your versions are appended with `v`. This will be the version published to PyPi later.
 
 !!! warning Sign Your Releases
-All releases must be made with a GPG signed tag. Don't create a tag without signing it.
+    All releases must be made with a GPG signed tag. Don't create a tag without signing it.
 
 ```bash
 git tag -asm "v0.0.2"
@@ -78,6 +82,6 @@ Once you've created and pushed the tag, you should notice a draft release on Git
 and the content should be from the changelog for that release.
 
 !!! success
-Validate that everything is correct and publish the release! This will automatically publish the release to PyPi.
+    Validate that everything is correct and publish the release! This will automatically publish the release to PyPi.
 
 And you're done, congratulations! You've successfully published a new version of the offchain library!
