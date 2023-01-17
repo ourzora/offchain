@@ -52,6 +52,15 @@ Entries are formatted like:
 
 You can add as many elements as you'd like, but make sure the versions are separated by new lines in descending order and are appended with a `v` like shown in the above example.
 
+### Update the Index Version
+You'll also want to update the version that's notated on the [index](https://ourzora.github.io/offchain/) page.
+Similarly to how the changelog version is formatted, make sure the version is appended with a `v`.
+
+???+ example
+    ```md
+    Documentation for version: **v0.0.2**
+    ```
+
 ---
 
 Once you've confirmed the version is correct, your changelog entry has been committed, and you have approval on
