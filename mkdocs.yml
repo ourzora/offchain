@@ -20,6 +20,7 @@ nav:
       - Guidelines: contributing/guidelines.md
       - Collection Parser: contributing/collection_parser.md
       - Schema Parser: contributing/schema_parser.md
+      - Publishing a Release: contributing/publish_release.md
   - Changelog: changelog.md
 theme:
   name: material
@@ -54,6 +55,9 @@ plugins:
             show_bases: false
             heading_level: 3
 markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
