@@ -29,7 +29,7 @@ class EthereumJSONRPC:
         self.sess.mount("https://", adapter)
         self.sess.mount("http://", adapter)
         self.sess.headers = {"Content-Type": "application/json"}
-        self.url = provider_url or RPCProvider.CLOUDFLARE_MAINNET
+        self.url = provider_url or RPCProvider.LLAMA_NODES_MAINNET
 
     def __payload_factory(self, method: str, params: list[Any], id: int) -> RPCPayload:
         return {"method": method, "params": params, "id": id, "jsonrpc": "2.0"}
