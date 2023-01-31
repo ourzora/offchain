@@ -78,16 +78,16 @@ class DefaultCatchallParser(CatchallParser):
         if not image_uri:
             return None
         details = MediaDetails(uri=image_uri, size=None, sha256=None, mime_type=None)
+        try:
+            content_type, size = self.fetcher.fetch_mime_type_and_size(image_uri)
+            details.size = size
+            details.mime_type = content_type
+        except Exception:
+            pass
+
         if isinstance(raw_data.get("image_details"), dict):
             details.size = raw_data["image_details"].get("size")
             details.sha256 = raw_data["image_details"].get("sha256")
-            return details
-        try:
-            content_type, size = self.fetcher.fetch_mime_type_and_size(image_uri)
-            details.mime_type = content_type
-            details.size = size
-        except Exception:
-            pass
         return details
 
     def get_content_uri(self, raw_data: dict):
@@ -102,17 +102,15 @@ class DefaultCatchallParser(CatchallParser):
         if not content_uri:
             return None
         details = MediaDetails(uri=content_uri, size=None, sha256=None, mime_type=None)
+        try:
+            content_type, size = self.fetcher.fetch_mime_type_and_size(content_uri)
+            details.size = size
+            details.mime_type = content_type
+        except Exception:
+            pass
         if isinstance(raw_data.get("animation_details"), dict):
             details.size = raw_data["animation_details"].get("size")
             details.sha256 = raw_data["animation_details"].get("sha256")
-            return details
-        try:
-            content_type, size = self.fetcher.fetch_mime_type_and_size(content_uri)
-            details.mime_type = content_type
-            details.size = size
-        except Exception:
-            pass
-
         return details
 
     def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:

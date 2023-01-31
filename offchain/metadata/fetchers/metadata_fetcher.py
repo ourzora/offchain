@@ -100,5 +100,6 @@ class MetadataFetcher(BaseFetcher):
                 return res.json()
             else:
                 return res.text
+
         except Exception as e:
             raise Exception(f"Don't know how to fetch metadata for {uri=}. {str(e)}")

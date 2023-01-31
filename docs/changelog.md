@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.1.4
+
+- bug fix: parse mime type for Manifold NFT metadata
+
 ## v0.1.3
 
 - bug fix: add a type check to `should_parse_token()` in `OpenseaParser` to validate that `raw_data` is a `dict`
