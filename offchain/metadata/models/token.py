@@ -1,5 +1,7 @@
 from pydantic import validator
 import re
+import json
+import base64
 from typing import Optional
 
 from offchain.base.base_model import BaseModel
@@ -30,3 +32,23 @@ class Token(BaseModel):
             )
 
         return chain_identifier
+
+    # There are cases where unicode characters (\xf0\x9f\x99\x82\\n\\) can appear in strings
+    # (ex: Edu Nouns) blindly using unicode_escape will cause the string to be escaped incorrectly
+    # only escape strings that can't be parsed as json.
+
+    # Some uri strings are escaped incorrectly because of unicode_escape being used to deal with
+    # unicode characters in the uri. This validator deals with those incorrectly escaped strings
+    @validator("uri")
+    def validate_token_uri(cls, uri):
+        prefix = "data:application/json;base64,"
+        if uri is not None and uri.startswith(prefix):
+            uri = uri[len(prefix) :]  # noqa
+            raw = base64.b64decode(uri)
+            try:
+                json.loads(raw)
+                return prefix + base64.b64encode(raw).decode("utf-8")
+            except Exception:
+                escaped = raw.decode("utf-8").encode("unicode_escape")
+                return prefix + base64.b64encode(escaped).decode("utf-8")
+        return uri
