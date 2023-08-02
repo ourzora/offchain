@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.1.5
+
+- bump web3 dependency to latest version
+
 ## v0.1.4
 
 - bug fix: parse mime type for Manifold NFT metadata
