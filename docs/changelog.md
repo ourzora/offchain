@@ -2,7 +2,6 @@
 
 ## v0.1.5
 
-- bump web3 dependency to latest version
 - fix zora legacy media parsing
 - update release docs
 
