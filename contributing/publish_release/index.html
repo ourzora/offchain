@@ -824,7 +824,7 @@ Make sure your versions are appended with <code>v</code>. This will be the versi
 <p class="admonition-title">Warning</p>
 <p>All releases must be made with a GPG signed tag. Don't create a tag without signing it.</p>
 </div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git tag -sm <span class="s2">&quot;v0.0.2&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git tag -a v0.0.2 -sm <span class="s2">&quot;v0.0.2&quot;</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>git push origin v0.0.2
 </code></pre></div>
 <p>When pushing the tag, the CI pipeline will validate that your tag matches the version defined in <code>pyproject.toml</code>.
