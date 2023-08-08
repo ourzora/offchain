@@ -76,7 +76,7 @@ Make sure your versions are appended with `v`. This will be the version publishe
     All releases must be made with a GPG signed tag. Don't create a tag without signing it.
 
 ```bash
-git tag -asm "v0.0.2"
+git tag -sm "v0.0.2"
 git push origin v0.0.2
 ```
 
