@@ -69,7 +69,7 @@ class ZoraParser(CollectionParser):
         return None
 
     def parse_metadata(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> Optional[Metadata]:
-        if token.uri is None or raw_data is None:
+        if token.uri is None or raw_data is None or not isinstance(raw_data, dict):
             token.uri = self.get_uri(token.token_id)
             raw_data = self.fetcher.fetch_content(token.uri)
 
