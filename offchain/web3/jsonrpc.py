@@ -105,7 +105,7 @@ class AsyncEthereumJSONRPC:
     ) -> None:
         self.sess = aiohttp.ClientSession()
         self.url = provider_url or RPCProvider.LLAMA_NODES_MAINNET
-        
+
     def __payload_factory(self, method: str, params: list[Any], id: int) -> RPCPayload:
         return {"method": method, "params": params, "id": id, "jsonrpc": "2.0"}
 
