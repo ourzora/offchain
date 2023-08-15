@@ -2,6 +2,8 @@ from typing import Optional, TypedDict, Any
 
 import requests
 import requests.adapters
+import asyncio
+import aiohttp
 
 from offchain.concurrency import parmap
 from offchain.constants.providers import RPCProvider
@@ -93,4 +95,75 @@ class EthereumJSONRPC:
             curr_offset = min(curr_offset + chunk_size, size)
 
         results = parmap(lambda chunk: self.call_batch(method, chunk), chunks)
+        return [i for res in results for i in res]
+
+
+class AsyncEthereumJSONRPC:
+    def __init__(
+        self,
+        provider_url: Optional[str] = None,
+    ) -> None:
+        self.sess = aiohttp.ClientSession()
+        self.url = provider_url or RPCProvider.LLAMA_NODES_MAINNET
+        
+    def __payload_factory(self, method: str, params: list[Any], id: int) -> RPCPayload:
+        return {"method": method, "params": params, "id": id, "jsonrpc": "2.0"}
+
+    @retry(
+        stop=stop_after_attempt(2),
+        wait=wait_exponential(multiplier=1, min=1, max=5),
+    )
+    async def call(self, method: str, params: list[dict]) -> dict:
+        try:
+            payload = self.__payload_factory(method, params, 1)
+            async with self.sess.post(self.url, json=payload) as resp:
+                resp.raise_for_status()
+                return await resp.json()
+        except Exception as e:
+            logger.error(
+                f"Caught exception while making rpc call. Method: {method}. Params: {params}. Retrying. Error: {e}"
+            )
+            raise
+
+    @retry(
+        stop=stop_after_attempt(2),
+        wait=wait_exponential(multiplier=1, min=1, max=5),
+    )
+    async def call_batch(self, method: str, params: list[list[Any]]) -> list[dict]:
+        try:
+            payload = [self.__payload_factory(method, param, i) for i, param in enumerate(params)]
+            async with self.sess.post(self.url, json=payload) as resp:
+                resp.raise_for_status()
+                return await resp.json()
+        except Exception as e:
+            logger.error(
+                f"Caught exception while making batch rpc call. "
+                f"Method: {method}. Params: {params}. Retrying. Error: {e}"
+                # noqa
+            )
+            raise
+
+    @retry(
+        stop=stop_after_attempt(2),
+        wait=wait_exponential(multiplier=1, min=1, max=5),
+    )
+    async def call_batch_chunked(
+        self,
+        method: str,
+        params: list[list[Any]],
+        chunk_size: Optional[int] = MAX_REQUEST_BATCH_SIZE,
+    ) -> list[dict]:
+        size = len(params)
+        if size < chunk_size:
+            return await self.call_batch(method, params)
+
+        prev_offset, curr_offset = 0, chunk_size
+
+        chunks = []
+        while prev_offset < size:
+            chunks.append(params[prev_offset:curr_offset])
+            prev_offset = curr_offset
+            curr_offset = min(curr_offset + chunk_size, size)
+
+        results = await asyncio.gather(*[self.call_batch(method, chunk) for chunk in chunks])
         return [i for res in results for i in res]
