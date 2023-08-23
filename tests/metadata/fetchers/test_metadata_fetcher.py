@@ -20,6 +20,7 @@ async def test_gen_fetch_data_adapter():
     )
     assert content is not None
 
+
 @pytest.mark.asyncio
 async def test_gen_fetch_ipfs_adapter():
     fetcher = MetadataFetcher()
@@ -28,6 +29,7 @@ async def test_gen_fetch_ipfs_adapter():
     )
     assert content is not None
 
+
 @pytest.mark.asyncio
 async def test_gen_fetch_arweave_adapter():
     fetcher = MetadataFetcher()
@@ -35,6 +37,7 @@ async def test_gen_fetch_arweave_adapter():
         "ar://-G92LjB-wFj-FCGx040NgniW_Ypy_Cbh3Jq1HUD6l7A"  # noqa
     )
     assert content is not None
+
 
 @pytest.mark.asyncio
 async def test_gen_fetch_base_adapter():

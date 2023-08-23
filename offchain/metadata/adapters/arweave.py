@@ -39,7 +39,7 @@ class ARWeaveAdapter(HTTPAdapter):
         self.secret = secret
         self.timeout = timeout
         super().__init__(*args, **kwargs)
-    
+
     def parse_ar_url(self, url: str) -> str:
         parsed = parse_url(url)
         if parsed.scheme == "ar":
