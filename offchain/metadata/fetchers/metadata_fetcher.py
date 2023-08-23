@@ -61,7 +61,7 @@ class MetadataFetcher(BaseFetcher):
     def _get(self, uri: str):
         return self.sess.get(uri, timeout=self.timeout, allow_redirects=True)
 
-    async def gen(self, uri: str) -> httpx.Response:
+    async def _gen(self, uri: str) -> httpx.Response:
         from offchain.metadata.pipelines.metadata_pipeline import (
             DEFAULT_ADAPTER_CONFIGS,
         )
@@ -121,7 +121,7 @@ class MetadataFetcher(BaseFetcher):
             raise Exception(f"Don't know how to fetch metadata for {uri=}. {str(e)}")
 
     async def gen_fetch_content(self, uri: str) -> Union[dict, str]:
-        """Fetch the content at a given uri
+        """Async fetch the content at a given uri
 
         Args:
             uri (str): uri from which to fetch content.
@@ -130,7 +130,7 @@ class MetadataFetcher(BaseFetcher):
             Union[dict, str]: content fetched from uri
         """
         try:
-            res = await self.gen(uri)
+            res = await self._gen(uri)
             res.raise_for_status()
             if res.text.startswith("{"):
                 return res.json()

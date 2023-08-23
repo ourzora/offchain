@@ -97,6 +97,15 @@ class IPFSAdapter(HTTPAdapter):
         return build_request_url(gateway=gateway, request_url=request_url)
 
     async def gen_send(self, url: str, sess: httpx.AsyncClient(), *args, **kwargs) -> httpx.Response:
+        """Format and send async request to IPFS host.
+
+        Args:
+            url (str): url to send request to
+            sess (httpx.AsyncClient()): async client session
+
+        Returns:
+            httpx.Response: response from IPFS host.
+        """
         return await sess.get(self.make_request_url(url), timeout=self.timeout)
 
     def send(self, request: PreparedRequest, *args, **kwargs) -> Response:

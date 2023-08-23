@@ -27,7 +27,15 @@ class DataURIAdapter(BaseAdapter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    async def gen_send(self, url: str, *args, **kwargs):
+    async def gen_send(self, url: str, *args, **kwargs) -> httpx.Response:
+        """Handle async data uri request.
+
+        Args:
+            url (str): url
+
+        Returns:
+            httpx.Response: encoded data uri response.
+        """
         response = httpx.Response(
             status_code=200,
             text=decode_data_url(url),

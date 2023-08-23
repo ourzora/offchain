@@ -41,6 +41,15 @@ class ARWeaveAdapter(HTTPAdapter):
         super().__init__(*args, **kwargs)
 
     def parse_ar_url(self, url: str) -> str:
+        """Format and send async request to ARWeave host.
+
+        Args:
+            url (str): url to send request to
+            sess (httpx.AsyncClient()): async client
+
+        Returns:
+            httpx.Response: response from ARWeave host.
+        """
         parsed = parse_url(url)
         if parsed.scheme == "ar":
             gateway = random.choice(self.host_prefixes)
@@ -51,6 +60,15 @@ class ARWeaveAdapter(HTTPAdapter):
         return url
 
     async def gen_send(self, url: str, sess: httpx.AsyncClient(), *args, **kwargs) -> httpx.Response:
+        """Format and send async request to ARWeave host.
+
+        Args:
+            url (str): url to send request to
+            sess (httpx.AsyncClient()): async client
+
+        Returns:
+            httpx.Response: response from ARWeave host.
+        """
         return await sess.get(self.parse_ar_url(url), timeout=self.timeout, follow_redirects=True)
 
     def send(self, request: PreparedRequest, *args, **kwargs) -> Response:

@@ -14,6 +14,14 @@ class BaseAdapter(RequestsBaseAdapter):
         super().__init__()
 
     async def gen_send(self, url: str, *args, **kwargs) -> httpx.Response:
+        """Format and send async request to url host.
+
+        Args:
+            url (str): url to send request to
+
+        Returns:
+            httpx.Response: response from host.
+        """
         raise NotImplementedError
 
 
@@ -32,6 +40,14 @@ class HTTPAdapter(RequestsHTTPAdapter):
         super().__init__(pool_connections, pool_maxsize, max_retries, pool_block)
 
     async def gen_send(self, url: str, sess: httpx.AsyncClient(), *args, **kwargs) -> httpx.Response:
+        """Format and send async request to url host.
+
+        Args:
+            url (str): url to send request to
+
+        Returns:
+            httpx.Response: response from host.
+        """
         return await sess.get(url)
 
 
