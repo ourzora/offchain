@@ -1,10 +1,9 @@
 from dataclasses import dataclass, field
 from typing import Optional, Type, Union
 
-from requests.adapters import (
-    BaseAdapter as RequestsBaseAdapter,
-    HTTPAdapter as RequestsHTTPAdapter,
-)
+import httpx
+from requests.adapters import BaseAdapter as RequestsBaseAdapter
+from requests.adapters import HTTPAdapter as RequestsHTTPAdapter
 from urllib3.util.retry import Retry
 
 
@@ -13,6 +12,9 @@ class BaseAdapter(RequestsBaseAdapter):
 
     def __init__(self, *args, **kwargs):
         super().__init__()
+
+    async def gen_send(self, url: str, *args, **kwargs) -> httpx.Response:
+        raise NotImplementedError
 
 
 class HTTPAdapter(RequestsHTTPAdapter):
@@ -28,6 +30,10 @@ class HTTPAdapter(RequestsHTTPAdapter):
         **kwargs
     ) -> None:
         super().__init__(pool_connections, pool_maxsize, max_retries, pool_block)
+
+    async def gen_send(self, url: str, *args, **kwargs) -> httpx.Response:
+        # TODO(Isabella): implement here
+        raise NotImplementedError
 
 
 Adapter = Union[BaseAdapter, HTTPAdapter]

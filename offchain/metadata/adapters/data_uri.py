@@ -1,8 +1,24 @@
+import base64
 from urllib.request import urlopen
+
+import httpx
 from requests import PreparedRequest, Response
 
 from offchain.metadata.adapters.base_adapter import BaseAdapter
 from offchain.metadata.registries.adapter_registry import AdapterRegistry
+
+
+def decode_data_url(data_url):
+    data_parts = data_url.split(",")
+    data = data_parts[1]
+
+    if ";base64" in data_parts[0]:
+        # media_type = data_parts[0].replace(";base64", "")
+        decoded_data = base64.b64decode(data)
+        decoded_text = decoded_data.decode("utf-8")
+        return decoded_text
+
+    return None
 
 
 @AdapterRegistry.register
@@ -11,6 +27,14 @@ class DataURIAdapter(BaseAdapter):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    async def gen_send(self, url: str, *args, **kwargs):
+        response = httpx.Response(
+            status_code=200,
+            text=decode_data_url(url),
+            request=httpx.Request(method="GET", url=url),
+        )
+        return response
 
     def send(self, request: PreparedRequest, *args, **kwargs):
         """Handle data uri request.
