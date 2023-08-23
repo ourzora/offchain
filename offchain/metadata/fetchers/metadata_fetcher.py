@@ -1,8 +1,10 @@
 import cgi
 import requests
+import aiohttp
+import httpx
 from typing import Tuple, Union
 
-from offchain.metadata.adapters.base_adapter import Adapter
+from offchain.metadata.adapters.base_adapter import Adapter, AdapterConfig
 from offchain.metadata.fetchers.base_fetcher import BaseFetcher
 from offchain.logger.logging import logger
 from offchain.metadata.registries.fetcher_registry import FetcherRegistry
@@ -26,6 +28,7 @@ class MetadataFetcher(BaseFetcher):
         self.timeout = timeout
         self.max_retries = max_retries
         self.sess = requests.Session()
+        self.async_sess = httpx.AsyncClient()
 
     def register_adapter(self, adapter: Adapter, url_prefix: str):
         """Register an adapter to a url prefix.
@@ -57,6 +60,9 @@ class MetadataFetcher(BaseFetcher):
 
     def _get(self, uri: str):
         return self.sess.get(uri, timeout=self.timeout, allow_redirects=True)
+    
+    async def gen_get(self, uri: str):
+        return await self.async_sess.get(uri, timeout=self.timeout)
 
     def fetch_mime_type_and_size(self, uri: str) -> Tuple[str, int]:
         """Fetch the mime type and size of the content at a given uri.
@@ -100,6 +106,27 @@ class MetadataFetcher(BaseFetcher):
                 return res.json()
             else:
                 return res.text
+
+        except Exception as e:
+            raise Exception(f"Don't know how to fetch metadata for {uri=}. {str(e)}")
+
+    async def gen_fetch_content(self, uri: str) -> Union[dict, str]:
+        """Fetch the content at a given uri
+
+        Args:
+            uri (str): uri from which to fetch content.
+
+        Returns:
+            Union[dict, str]: content fetched from uri
+        """
+        try:
+            res = await self.gen_get(uri)
+            async with res:
+                res.raise_for_status()
+                if res.text.startswith("{"):
+                    return res.json()
+                else:
+                    return res.text
 
         except Exception as e:
             raise Exception(f"Don't know how to fetch metadata for {uri=}. {str(e)}")
