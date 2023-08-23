@@ -1,5 +1,7 @@
 import random
 from typing import Optional
+
+import httpx
 from requests import PreparedRequest, Response
 from urllib3.util import parse_url
 
@@ -27,15 +29,20 @@ class ARWeaveAdapter(HTTPAdapter):
         *args,
         **kwargs,
     ):
-
         self.host_prefixes = host_prefixes or ["https://arweave.net/"]
 
-        assert all([g.endswith("/") for g in self.host_prefixes]), "gateways should have trailing slashes"
+        assert all(
+            [g.endswith("/") for g in self.host_prefixes]
+        ), "gateways should have trailing slashes"
 
         self.key = key
         self.secret = secret
         self.timeout = timeout
         super().__init__(*args, **kwargs)
+
+    async def gen_send(self, url: str, *args, **kwargs) -> httpx.Response:
+        # TODO(Isabella): implement here
+        raise NotImplementedError
 
     def send(self, request: PreparedRequest, *args, **kwargs) -> Response:
         """Format and send request to ARWeave host.

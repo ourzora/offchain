@@ -1,6 +1,8 @@
 import random
-from requests import PreparedRequest, Response
 from typing import Optional
+
+import httpx
+from requests import PreparedRequest, Response
 from urllib3.util import parse_url
 
 from offchain.metadata.adapters.base_adapter import HTTPAdapter
@@ -69,10 +71,11 @@ class IPFSAdapter(HTTPAdapter):
         *args,
         **kwargs,
     ):
-
         self.host_prefixes = host_prefixes or ["https://gateway.pinata.cloud/ipfs/"]
 
-        assert all([g.endswith("/") for g in self.host_prefixes]), "gateways should have trailing slashes"
+        assert all(
+            [g.endswith("/") for g in self.host_prefixes]
+        ), "gateways should have trailing slashes"
 
         self.key = key
         self.secret = secret
@@ -92,6 +95,10 @@ class IPFSAdapter(HTTPAdapter):
 
         gateway = gateway or random.choice(self.host_prefixes)
         return build_request_url(gateway=gateway, request_url=request_url)
+
+    async def gen_send(self, url: str, *args, **kwargs) -> httpx.Response:
+        # TODO(Isabella): implement here
+        raise NotImplementedError
 
     def send(self, request: PreparedRequest, *args, **kwargs) -> Response:
         """For IPFS hashes, query pinata cloud gateway

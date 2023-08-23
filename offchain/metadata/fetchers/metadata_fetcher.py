@@ -1,12 +1,13 @@
 import cgi
-import requests
-import aiohttp
-import httpx
 from typing import Tuple, Union
 
+import aiohttp
+import httpx
+import requests
+
+from offchain.logger.logging import logger
 from offchain.metadata.adapters.base_adapter import Adapter, AdapterConfig
 from offchain.metadata.fetchers.base_fetcher import BaseFetcher
-from offchain.logger.logging import logger
 from offchain.metadata.registries.fetcher_registry import FetcherRegistry
 
 
@@ -60,8 +61,16 @@ class MetadataFetcher(BaseFetcher):
 
     def _get(self, uri: str):
         return self.sess.get(uri, timeout=self.timeout, allow_redirects=True)
-    
-    async def gen_get(self, uri: str):
+
+    async def gen(self, uri: str) -> httpx.Response:
+        from offchain.metadata.pipelines.metadata_pipeline import (
+            DEFAULT_ADAPTER_CONFIGS,
+        )
+
+        for adapter_config in DEFAULT_ADAPTER_CONFIGS:
+            if any(uri.startswith(prefix) for prefix in adapter_config.mount_prefixes):
+                adapter = adapter_config.adapter_cls(**adapter_config.kwargs)
+                return await adapter.gen_send(url=uri, timeout=self.timeout)
         return await self.async_sess.get(uri, timeout=self.timeout)
 
     def fetch_mime_type_and_size(self, uri: str) -> Tuple[str, int]:
@@ -87,7 +96,9 @@ class MetadataFetcher(BaseFetcher):
 
             return content_type, size
         except Exception as e:
-            logger.error(f"Failed to fetch content-type and size from uri {uri}. Error: {e}")
+            logger.error(
+                f"Failed to fetch content-type and size from uri {uri}. Error: {e}"
+            )
             raise
 
     def fetch_content(self, uri: str) -> Union[dict, str]:
@@ -120,13 +131,12 @@ class MetadataFetcher(BaseFetcher):
             Union[dict, str]: content fetched from uri
         """
         try:
-            res = await self.gen_get(uri)
-            async with res:
-                res.raise_for_status()
-                if res.text.startswith("{"):
-                    return res.json()
-                else:
-                    return res.text
+            res = await self.gen(uri)
+            res.raise_for_status()
+            if res.text.startswith("{"):
+                return res.json()
+            else:
+                return res.text
 
         except Exception as e:
             raise Exception(f"Don't know how to fetch metadata for {uri=}. {str(e)}")
