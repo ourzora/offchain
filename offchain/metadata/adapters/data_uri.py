@@ -13,7 +13,6 @@ def decode_data_url(data_url):
     data = data_parts[1]
 
     if ";base64" in data_parts[0]:
-        # media_type = data_parts[0].replace(";base64", "")
         decoded_data = base64.b64decode(data)
         decoded_text = decoded_data.decode("utf-8")
         return decoded_text

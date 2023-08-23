@@ -39,10 +39,19 @@ class ARWeaveAdapter(HTTPAdapter):
         self.secret = secret
         self.timeout = timeout
         super().__init__(*args, **kwargs)
+    
+    def parse_ar_url(self, url: str) -> str:
+        parsed = parse_url(url)
+        if parsed.scheme == "ar":
+            gateway = random.choice(self.host_prefixes)
+            new_url = f"{gateway}{parsed.host}"
+            if parsed.path is not None:
+                new_url += parsed.path
+            url = new_url
+        return url
 
-    async def gen_send(self, url: str, *args, **kwargs) -> httpx.Response:
-        # TODO(Isabella): implement here
-        raise NotImplementedError
+    async def gen_send(self, url: str, sess: httpx.AsyncClient(), *args, **kwargs) -> httpx.Response:
+        return await sess.get(self.parse_ar_url(url), timeout=self.timeout, follow_redirects=True)
 
     def send(self, request: PreparedRequest, *args, **kwargs) -> Response:
         """Format and send request to ARWeave host.
@@ -53,12 +62,6 @@ class ARWeaveAdapter(HTTPAdapter):
         Returns:
             Response: response from ARWeave host.
         """
-        parsed = parse_url(request.url)
-        if parsed.scheme == "ar":
-            gateway = random.choice(self.host_prefixes)
-            url = f"{gateway}{parsed.host}"
-            if parsed.path is not None:
-                url += parsed.path
-            request.url = url
+        request.url = self.parse_ar_url(request.url)
         kwargs["timeout"] = self.timeout
         return super().send(request, *args, **kwargs)

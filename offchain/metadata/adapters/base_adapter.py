@@ -31,9 +31,8 @@ class HTTPAdapter(RequestsHTTPAdapter):
     ) -> None:
         super().__init__(pool_connections, pool_maxsize, max_retries, pool_block)
 
-    async def gen_send(self, url: str, *args, **kwargs) -> httpx.Response:
-        # TODO(Isabella): implement here
-        raise NotImplementedError
+    async def gen_send(self, url: str, sess: httpx.AsyncClient(), *args, **kwargs) -> httpx.Response:
+        return await sess.get(url)
 
 
 Adapter = Union[BaseAdapter, HTTPAdapter]

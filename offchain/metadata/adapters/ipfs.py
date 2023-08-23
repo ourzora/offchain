@@ -96,9 +96,8 @@ class IPFSAdapter(HTTPAdapter):
         gateway = gateway or random.choice(self.host_prefixes)
         return build_request_url(gateway=gateway, request_url=request_url)
 
-    async def gen_send(self, url: str, *args, **kwargs) -> httpx.Response:
-        # TODO(Isabella): implement here
-        raise NotImplementedError
+    async def gen_send(self, url: str, sess: httpx.AsyncClient(), *args, **kwargs) -> httpx.Response:
+        return await sess.get(self.make_request_url(url), timeout=self.timeout)
 
     def send(self, request: PreparedRequest, *args, **kwargs) -> Response:
         """For IPFS hashes, query pinata cloud gateway

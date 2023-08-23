@@ -1,12 +1,11 @@
 import cgi
 from typing import Tuple, Union
 
-import aiohttp
 import httpx
 import requests
 
 from offchain.logger.logging import logger
-from offchain.metadata.adapters.base_adapter import Adapter, AdapterConfig
+from offchain.metadata.adapters.base_adapter import Adapter
 from offchain.metadata.fetchers.base_fetcher import BaseFetcher
 from offchain.metadata.registries.fetcher_registry import FetcherRegistry
 
@@ -70,7 +69,7 @@ class MetadataFetcher(BaseFetcher):
         for adapter_config in DEFAULT_ADAPTER_CONFIGS:
             if any(uri.startswith(prefix) for prefix in adapter_config.mount_prefixes):
                 adapter = adapter_config.adapter_cls(**adapter_config.kwargs)
-                return await adapter.gen_send(url=uri, timeout=self.timeout)
+                return await adapter.gen_send(url=uri, timeout=self.timeout, sess=self.async_sess)
         return await self.async_sess.get(uri, timeout=self.timeout)
 
     def fetch_mime_type_and_size(self, uri: str) -> Tuple[str, int]:
