@@ -1,10 +1,12 @@
 import cgi
-import requests
 from typing import Tuple, Union
 
+import httpx
+import requests
+
+from offchain.logger.logging import logger
 from offchain.metadata.adapters.base_adapter import Adapter
 from offchain.metadata.fetchers.base_fetcher import BaseFetcher
-from offchain.logger.logging import logger
 from offchain.metadata.registries.fetcher_registry import FetcherRegistry
 
 
@@ -26,6 +28,7 @@ class MetadataFetcher(BaseFetcher):
         self.timeout = timeout
         self.max_retries = max_retries
         self.sess = requests.Session()
+        self.async_sess = httpx.AsyncClient()
 
     def register_adapter(self, adapter: Adapter, url_prefix: str):
         """Register an adapter to a url prefix.
@@ -58,6 +61,17 @@ class MetadataFetcher(BaseFetcher):
     def _get(self, uri: str):
         return self.sess.get(uri, timeout=self.timeout, allow_redirects=True)
 
+    async def _gen(self, uri: str) -> httpx.Response:
+        from offchain.metadata.pipelines.metadata_pipeline import (
+            DEFAULT_ADAPTER_CONFIGS,
+        )
+
+        for adapter_config in DEFAULT_ADAPTER_CONFIGS:
+            if any(uri.startswith(prefix) for prefix in adapter_config.mount_prefixes):
+                adapter = adapter_config.adapter_cls(**adapter_config.kwargs)
+                return await adapter.gen_send(url=uri, timeout=self.timeout, sess=self.async_sess)
+        return await self.async_sess.get(uri, timeout=self.timeout)
+
     def fetch_mime_type_and_size(self, uri: str) -> Tuple[str, int]:
         """Fetch the mime type and size of the content at a given uri.
 
@@ -81,7 +95,9 @@ class MetadataFetcher(BaseFetcher):
 
             return content_type, size
         except Exception as e:
-            logger.error(f"Failed to fetch content-type and size from uri {uri}. Error: {e}")
+            logger.error(
+                f"Failed to fetch content-type and size from uri {uri}. Error: {e}"
+            )
             raise
 
     def fetch_content(self, uri: str) -> Union[dict, str]:
@@ -95,6 +111,26 @@ class MetadataFetcher(BaseFetcher):
         """
         try:
             res = self._get(uri)
+            res.raise_for_status()
+            if res.text.startswith("{"):
+                return res.json()
+            else:
+                return res.text
+
+        except Exception as e:
+            raise Exception(f"Don't know how to fetch metadata for {uri=}. {str(e)}")
+
+    async def gen_fetch_content(self, uri: str) -> Union[dict, str]:
+        """Async fetch the content at a given uri
+
+        Args:
+            uri (str): uri from which to fetch content.
+
+        Returns:
+            Union[dict, str]: content fetched from uri
+        """
+        try:
+            res = await self._gen(uri)
             res.raise_for_status()
             if res.text.startswith("{"):
                 return res.json()

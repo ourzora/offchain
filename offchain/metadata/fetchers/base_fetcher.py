@@ -63,3 +63,14 @@ class BaseFetcher(Protocol):
             Union[dict, str]: content fetched from uri
         """
         pass
+
+    async def gen_fetch_content(self, uri: str) -> Union[dict, str]:
+        """Async fetch the content at a given uri
+
+        Args:
+            uri (str): uri from which to fetch content.
+
+        Returns:
+            Union[dict, str]: content fetched from uri
+        """
+        pass
