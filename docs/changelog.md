@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.0
+- Add async support for MetadataPipeline
+
 ## v0.1.5
 
 - fix zora legacy media parsing
