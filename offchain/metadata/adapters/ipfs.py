@@ -106,7 +106,7 @@ class IPFSAdapter(HTTPAdapter):
         Returns:
             httpx.Response: response from IPFS host.
         """
-        return await sess.get(self.make_request_url(url), timeout=self.timeout)
+        return await sess.get(self.make_request_url(url), timeout=self.timeout, follow_redirects=True)
 
     def send(self, request: PreparedRequest, *args, **kwargs) -> Response:
         """For IPFS hashes, query pinata cloud gateway

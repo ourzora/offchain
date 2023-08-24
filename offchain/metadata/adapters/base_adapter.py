@@ -48,7 +48,7 @@ class HTTPAdapter(RequestsHTTPAdapter):
         Returns:
             httpx.Response: response from host.
         """
-        return await sess.get(url)
+        return await sess.get(url, follow_redirects=True)
 
 
 Adapter = Union[BaseAdapter, HTTPAdapter]
