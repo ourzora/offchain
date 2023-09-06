@@ -247,6 +247,19 @@ class TestMetadataPipeline:
         fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", "3095"))
 
         pipeline = MetadataPipeline(fetcher=fetcher)
+        pipeline.mount_adapter(
+        adapter=IPFSAdapter(
+            host_prefixes=["https://gateway.pinata.cloud/"],
+            pool_connections=100,
+            pool_maxsize=1000,
+            max_retries=0,
+        ),
+        url_prefixes=[
+            "ipfs://",
+            "https://ipfs.io/",
+        ],
+    )
+
         assert await pipeline.async_run(tokens=[token]) == [
             Metadata(
                 token=token,

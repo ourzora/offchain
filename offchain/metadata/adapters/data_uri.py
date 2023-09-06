@@ -68,3 +68,19 @@ class DataURIAdapter(BaseAdapter):
 
     def close(self):
         self.response.close()
+
+    async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
+        """Handle async data uri request.
+
+        Args:
+            request (httpx.Request): httpx request
+
+        Returns:
+            Response: encoded data uri response.
+        """
+        response = httpx.Response(
+            status_code=200,
+            text=decode_data_url(request.url.path),
+            request=httpx.Request(method="GET", url=request.url),
+        )
+        return response

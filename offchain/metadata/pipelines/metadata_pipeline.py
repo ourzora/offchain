@@ -105,8 +105,12 @@ class MetadataPipeline(BasePipeline):
             adapter (Adapter): Adapter instance
             url_prefixes (list[str]): list of url prefixes to which to mount the adapter.
         """
+        async_adapters_config = {}
         for prefix in url_prefixes:
             self.fetcher.register_adapter(adapter, prefix)
+            async_adapters_config[prefix] = adapter
+        
+        self.fetcher.register_async_adapter(async_adapters_config)
 
     def fetch_token_uri(
         self, token: Token, function_signature: str = "tokenURI(uint256)"

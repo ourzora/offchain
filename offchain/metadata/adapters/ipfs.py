@@ -121,3 +121,16 @@ class IPFSAdapter(HTTPAdapter):
 
         kwargs["timeout"] = self.timeout
         return super().send(request, *args, **kwargs)
+
+    async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
+        """Format and send async request to IPFS host.
+
+        Args:
+            request (httpx.Request): httpx request
+
+        Returns:
+            httpx.Response: response from IPFS host.
+        """
+        host = request.url.host.replace(request.url.host, self.host_prefixes[0])
+        request.url = httpx.URL(host[:-1] + request.url.path)
+        return await httpx.AsyncClient(timeout=self.timeout).send(request, follow_redirects=True)

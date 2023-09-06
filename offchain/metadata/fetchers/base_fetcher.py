@@ -42,6 +42,14 @@ class BaseFetcher(Protocol):
         """
         pass
 
+    def register_async_adapter(self, async_adapters: dict):
+        """Register adapters to a url prefix for async session.
+
+        Args:
+            async_adapters (dict): dictionary of adapters and prefixes to register
+        """
+        pass
+
     def fetch_mime_type_and_size(self, uri: str) -> tuple[str, int]:
         """Fetch the mime type and size of the content at a given uri.
 

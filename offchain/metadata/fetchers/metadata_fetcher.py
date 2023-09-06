@@ -38,6 +38,15 @@ class MetadataFetcher(BaseFetcher):
             url_prefix (str): the url prefix to which the adapter should be registered.
         """
         self.sess.mount(url_prefix, adapter)
+        self.async_sess = httpx.AsyncClient(mounts={url_prefix: adapter})
+    
+    def register_async_adapter(self, async_adapters: dict):
+        """Register adapters to a url prefix for async session.
+
+        Args:
+            async_adapters (dict): dictionary of adapters and prefixes to register
+        """
+        self.async_sess = httpx.AsyncClient(mounts=async_adapters)
 
     def set_max_retries(self, max_retries: int):
         """Setter function for max retries

@@ -49,6 +49,17 @@ class HTTPAdapter(RequestsHTTPAdapter):
             httpx.Response: response from host.
         """
         return await sess.get(url, follow_redirects=True)
+    
+    async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
+        """Format and send async request to host.
+
+        Args:
+            request (httpx.Request): httpx request
+
+        Returns:
+            httpx.Response: response from host.
+        """
+        return await httpx.AsyncClient().send(request)
 
 
 Adapter = Union[BaseAdapter, HTTPAdapter]
