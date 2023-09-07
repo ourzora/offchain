@@ -1,11 +1,11 @@
 import cgi
-from typing import Tuple, Union
+from typing import Optional, Tuple, Union
 
 import httpx
 import requests
 
 from offchain.logger.logging import logger
-from offchain.metadata.adapters.base_adapter import Adapter
+from offchain.metadata.adapters.base_adapter import Adapter, AdapterConfig
 from offchain.metadata.fetchers.base_fetcher import BaseFetcher
 from offchain.metadata.registries.fetcher_registry import FetcherRegistry
 
@@ -24,11 +24,13 @@ class MetadataFetcher(BaseFetcher):
         self,
         timeout: int = 30,
         max_retries: int = 0,
+        async_adapter_configs: Optional[list[AdapterConfig]] = None,
     ) -> None:
         self.timeout = timeout
         self.max_retries = max_retries
         self.sess = requests.Session()
         self.async_sess = httpx.AsyncClient()
+        self.async_adapter_configs = async_adapter_configs
 
     def register_adapter(self, adapter: Adapter, url_prefix: str):
         """Register an adapter to a url prefix.
@@ -65,8 +67,12 @@ class MetadataFetcher(BaseFetcher):
         from offchain.metadata.pipelines.metadata_pipeline import (
             DEFAULT_ADAPTER_CONFIGS,
         )
+        configs = DEFAULT_ADAPTER_CONFIGS
 
-        for adapter_config in DEFAULT_ADAPTER_CONFIGS:
+        if self.async_adapter_configs:
+            configs = self.async_adapter_configs
+
+        for adapter_config in configs:
             if any(uri.startswith(prefix) for prefix in adapter_config.mount_prefixes):
                 adapter = adapter_config.adapter_cls(**adapter_config.kwargs)
                 return await adapter.gen_send(url=uri, timeout=self.timeout, sess=self.async_sess)
