@@ -74,7 +74,7 @@ class MetadataFetcher(BaseFetcher):
 
         for adapter_config in configs:
             if any(uri.startswith(prefix) for prefix in adapter_config.mount_prefixes):
-                adapter = adapter_config.adapter_cls(**adapter_config.kwargs)
+                adapter = adapter_config.adapter_cls(host_prefixes=adapter_config.host_prefixes, **adapter_config.kwargs)
                 return await adapter.gen_send(url=uri, timeout=self.timeout, sess=self.async_sess)
         return await self.async_sess.get(uri, timeout=self.timeout)
 
