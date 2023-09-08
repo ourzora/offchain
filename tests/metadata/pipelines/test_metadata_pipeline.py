@@ -335,7 +335,6 @@ class TestMetadataPipeline:
                         "ipfs://",
                         "https://gateway.pinata.cloud/",
                         "https://ipfs.io/",
-                        "https://ipfs.decentralized-content.com/",
                     ],
                     host_prefixes=["https://gateway.pinata.cloud/"],
                     kwargs={"pool_connections": 100, "pool_maxsize": 1000, "max_retries": 0},
