@@ -67,6 +67,7 @@ class MetadataFetcher(BaseFetcher):
         from offchain.metadata.pipelines.metadata_pipeline import (
             DEFAULT_ADAPTER_CONFIGS,
         )
+
         configs = DEFAULT_ADAPTER_CONFIGS
 
         if self.async_adapter_configs:
@@ -74,8 +75,12 @@ class MetadataFetcher(BaseFetcher):
 
         for adapter_config in configs:
             if any(uri.startswith(prefix) for prefix in adapter_config.mount_prefixes):
-                adapter = adapter_config.adapter_cls(host_prefixes=adapter_config.host_prefixes, **adapter_config.kwargs)
-                return await adapter.gen_send(url=uri, timeout=self.timeout, sess=self.async_sess)
+                adapter = adapter_config.adapter_cls(
+                    host_prefixes=adapter_config.host_prefixes, **adapter_config.kwargs
+                )
+                return await adapter.gen_send(
+                    url=uri, timeout=self.timeout, sess=self.async_sess
+                )
         return await self.async_sess.get(uri, timeout=self.timeout)
 
     def fetch_mime_type_and_size(self, uri: str) -> Tuple[str, int]:

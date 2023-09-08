@@ -15,7 +15,12 @@ class BaseFetcher(Protocol):
     max_retries: int
     async_adapter_configs: Optional[list[AdapterConfig]] = None
 
-    def __init__(self, timeout: int, max_retries: int, async_adapter_configs: Optional[list[AdapterConfig]] = None) -> None:
+    def __init__(
+        self,
+        timeout: int,
+        max_retries: int,
+        async_adapter_configs: Optional[list[AdapterConfig]] = None,
+    ) -> None:
         pass
 
     def set_timeout(self, new_timeout: int):
