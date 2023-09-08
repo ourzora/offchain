@@ -1,6 +1,6 @@
-from typing import Protocol, Union
+from typing import Optional, Protocol, Union
 
-from offchain.metadata.adapters.base_adapter import Adapter
+from offchain.metadata.adapters.base_adapter import Adapter, AdapterConfig
 
 
 class BaseFetcher(Protocol):
@@ -13,8 +13,14 @@ class BaseFetcher(Protocol):
 
     timeout: int
     max_retries: int
+    async_adapter_configs: Optional[list[AdapterConfig]] = None
 
-    def __init__(self, timeout: int, max_retries: int) -> None:
+    def __init__(
+        self,
+        timeout: int,
+        max_retries: int,
+        async_adapter_configs: Optional[list[AdapterConfig]] = None,
+    ) -> None:
         pass
 
     def set_timeout(self, new_timeout: int):

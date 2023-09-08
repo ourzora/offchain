@@ -20,7 +20,6 @@ from offchain.metadata.pipelines.metadata_pipeline import (
     MetadataPipeline,
 )
 
-
 class TestMetadataPipeline:
     def test_metadata_pipeline_mounts_adapters(self):
         pipeline = MetadataPipeline(
@@ -315,6 +314,33 @@ class TestMetadataPipeline:
                 ],
             )
         ]
+    
+
+    @pytest.mark.asyncio
+    async def test_metadata_pipeline_async_run_with_custom_adapters(self, raw_crypto_coven_metadata):
+        token = Token(
+            chain_identifier="ETHEREUM-MAINNET",
+            collection_address="0x5180db8f5c931aae63c74266b211f580155ecac8",
+            token_id="1",
+            uri="ipfs://QmSr3vdMuP2fSxWD7S26KzzBWcAN1eNhm4hk1qaR3x3vmj/1.json",
+        )
+
+        fetcher = MetadataFetcher()
+        fetcher.async_fetch_content = AsyncMock(return_value=raw_crypto_coven_metadata)
+        fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", "3095"))
+
+        pipeline = MetadataPipeline(fetcher=fetcher, adapter_configs=[AdapterConfig(
+                    adapter_cls=IPFSAdapter,
+                    mount_prefixes=[
+                        "ipfs://",
+                        "https://gateway.pinata.cloud/",
+                        "https://ipfs.io/",
+                    ],
+                    host_prefixes=["https://gateway.pinata.cloud/"],
+                    kwargs={"pool_connections": 100, "pool_maxsize": 1000, "max_retries": 0},
+                )])
+        metadata = await pipeline.async_run(tokens=[token])
+        assert metadata[0].token == token 
 
     def test_metadata_pipeline_errors_with_no_parser(self):
         token = Token(

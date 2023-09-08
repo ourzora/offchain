@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.1
+
+- Add async support for custom adapters
+
 ## v0.2.0
 
 - Add async support for MetadataPipeline

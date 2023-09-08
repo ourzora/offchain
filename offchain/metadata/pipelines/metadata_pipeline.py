@@ -75,7 +75,7 @@ class MetadataPipeline(BasePipeline):
         adapter_configs: Optional[list[AdapterConfig]] = None,
     ) -> None:
         self.contract_caller = contract_caller or ContractCaller()
-        self.fetcher = fetcher or MetadataFetcher()
+        self.fetcher = fetcher or MetadataFetcher(async_adapter_configs=adapter_configs)
         if adapter_configs is None:
             adapter_configs = DEFAULT_ADAPTER_CONFIGS
         for adapter_config in adapter_configs:
