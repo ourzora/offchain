@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.2
+
+- Go deep on making things as async as they possibly can
+
 ## v0.2.1
 
 - Add async support for custom adapters
