@@ -1,13 +1,15 @@
 # flake8: noqa: E501
-from unittest.mock import MagicMock, Mock
+from unittest.mock import AsyncMock, MagicMock, Mock
+
+import pytest
 
 from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 from offchain.metadata.models.metadata import (
+    Attribute,
     MediaDetails,
     Metadata,
     MetadataField,
     MetadataFieldType,
-    Attribute,
 )
 from offchain.metadata.models.token import Token
 from offchain.metadata.parsers.collection.artblocks import ArtblocksParser
@@ -331,3 +333,13 @@ class TestArtblocksParser:
                 ),
             ],
         )
+
+    @pytest.mark.asyncio
+    async def test_artblocks_parser_gen_parses_metadata(self):  # type: ignore[no-untyped-def]
+        fetcher = MetadataFetcher()
+        contract_caller = ContractCaller()
+        parser = ArtblocksParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
+        metadata = await parser.gen_parse_metadata(
+            token=self.token, raw_data=self.raw_data
+        )
+        assert metadata

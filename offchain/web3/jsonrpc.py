@@ -1,13 +1,13 @@
-from typing import Optional, TypedDict, Any
+from typing import Any, Optional, TypedDict
 
 import requests
 import requests.adapters
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 from offchain.concurrency import parmap
 from offchain.constants.providers import RPCProvider
-from tenacity import retry, stop_after_attempt, wait_exponential
-
 from offchain.logger.logging import logger
+from offchain.web3.read_async import AsyncContractReader
 
 MAX_REQUEST_BATCH_SIZE = 100
 
@@ -32,6 +32,7 @@ class EthereumJSONRPC:
         self.sess.mount("http://", adapter)
         self.sess.headers = {"Content-Type": "application/json"}
         self.url = provider_url or RPCProvider.LLAMA_NODES_MAINNET
+        self.async_reader = AsyncContractReader(rpc_url=self.url)
 
     def __payload_factory(self, method: str, params: list[Any], id: int) -> RPCPayload:
         return {"method": method, "params": params, "id": id, "jsonrpc": "2.0"}

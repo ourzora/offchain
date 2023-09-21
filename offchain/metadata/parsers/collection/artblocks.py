@@ -1,3 +1,4 @@
+import asyncio
 from typing import Optional
 
 from offchain.constants.addresses import CollectionAddress
@@ -247,6 +248,41 @@ class ArtblocksParser(CollectionParser):
                 return image
             except Exception:
                 pass
+
+    async def gen_image(self, raw_data: dict) -> Optional[MediaDetails]:  # type: ignore[return, type-arg]  # noqa: E501
+        image_uri = raw_data.get("image")
+        if image_uri:
+            image = MediaDetails(uri=image_uri, size=None, sha256=None, mime_type=None)
+            try:
+                content_type, size = await self.fetcher.gen_fetch_mime_type_and_size(
+                    image_uri
+                )
+                image.mime_type = content_type
+                image.size = size
+                return image
+            except Exception:
+                pass
+
+    async def _gen_parse_metadata_impl(
+        self, token: Token, raw_data: dict, *args, **kwargs
+    ):
+        token.uri = f"https://api.artblocks.io/token/{token.token_id}"
+        raw_data, mime_type_and_size = await asyncio.gather(
+            self.fetcher.gen_fetch_content(token.uri),
+            self.fetcher.gen_fetch_mime_type_and_size(token.uri),
+        )
+        mime_type, _ = mime_type_and_size
+        image = await self.gen_image(raw_data=raw_data)
+        return Metadata(
+            token=token,
+            raw_data=raw_data,
+            attributes=self.parse_traits(raw_data),
+            name=raw_data.get("name"),
+            description=raw_data.get("description"),
+            mime_type=mime_type,
+            image=image,
+            additional_fields=self.get_additional_fields(raw_data=raw_data),
+        )
 
     def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
         token.uri = f"https://api.artblocks.io/token/{token.token_id}"

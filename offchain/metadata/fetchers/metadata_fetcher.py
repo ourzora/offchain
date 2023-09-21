@@ -63,11 +63,6 @@ class MetadataFetcher(BaseFetcher):
     def _get(self, uri: str):  # type: ignore[no-untyped-def]
         return self.sess.get(uri, timeout=self.timeout, allow_redirects=True)
 
-    async def _gen_head(self, uri: str):  # type: ignore[no-untyped-def]
-        return await self.async_sess.head(
-            uri, timeout=self.timeout, follow_redirects=True
-        )
-
     async def _gen(self, uri: str) -> httpx.Response:
         from offchain.metadata.pipelines.metadata_pipeline import (
             DEFAULT_ADAPTER_CONFIGS,
@@ -86,7 +81,9 @@ class MetadataFetcher(BaseFetcher):
                 return await adapter.gen_send(
                     url=uri, timeout=self.timeout, sess=self.async_sess
                 )
-        return await self.async_sess.get(uri, timeout=self.timeout)
+        return await self.async_sess.get(
+            uri, timeout=self.timeout, follow_redirects=True
+        )
 
     def fetch_mime_type_and_size(self, uri: str) -> Tuple[str, int]:
         """Fetch the mime type and size of the content at a given uri.
@@ -126,10 +123,11 @@ class MetadataFetcher(BaseFetcher):
             tuple[str, int]: mime type and size
         """
         try:
-            res = await self._gen_head(uri)
-            # For any error status, try a get
-            if 300 <= res.status_code < 600:
-                res = self._gen(uri)
+            # try skip head request
+            # res = await self._gen_head(uri)
+            # # For any error status, try a get
+            # if 300 <= res.status_code < 600:
+            res = await self._gen(uri)
             res.raise_for_status()
             headers = res.headers
             size = headers.get("content-length", 0)

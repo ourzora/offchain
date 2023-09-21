@@ -1,12 +1,10 @@
 # flake8: noqa: E501
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
-from offchain.metadata.models.metadata import (
-    MediaDetails,
-    Metadata,
-    Attribute,
-)
+from offchain.metadata.models.metadata import Attribute, MediaDetails, Metadata
 from offchain.metadata.models.token import Token
 from offchain.metadata.parsers import ChainRunnersParser  # type: ignore[attr-defined]
 from offchain.web3.contract_caller import ContractCaller
@@ -108,3 +106,15 @@ class TestChainRunnersParser:
             ),
             additional_fields=[],
         )
+
+    @pytest.mark.asyncio
+    async def test_chainrunners_parser_gen_parses_metadata(self):  # type: ignore[no-untyped-def]
+        fetcher = MetadataFetcher()
+        contract_caller = ContractCaller()
+        fetcher.gen_fetch_mime_type_and_size = AsyncMock(return_value=("application/json", 0))  # type: ignore[assignment]
+        fetcher.gen_fetch_content = AsyncMock(return_value=self.raw_data)  # type: ignore[assignment]
+        parser = ChainRunnersParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
+        metadata = await parser.gen_parse_metadata(
+            token=self.token, raw_data=self.raw_data
+        )
+        assert metadata

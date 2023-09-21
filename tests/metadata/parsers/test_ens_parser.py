@@ -2,6 +2,8 @@
 
 from unittest.mock import MagicMock
 
+import pytest
+
 from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 from offchain.metadata.models.metadata import (
     Attribute,
@@ -174,3 +176,11 @@ class TestENSParser:
                 ),
             ],
         )
+
+    @pytest.mark.asyncio
+    async def test_ens_parser_gen_parses_metadata(self):  # type: ignore[no-untyped-def]
+        fetcher = MetadataFetcher()
+        contract_caller = ContractCaller()
+        parser = ENSParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
+        metadata = await parser.gen_parse_metadata(token=self.token, raw_data=None)  # type: ignore[arg-type]
+        assert metadata

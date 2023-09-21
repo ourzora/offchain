@@ -1,12 +1,10 @@
 # flake8: noqa: E501
 from unittest.mock import MagicMock, Mock
 
+import pytest
+
 from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
-from offchain.metadata.models.metadata import (
-    MediaDetails,
-    Metadata,
-    Attribute,
-)
+from offchain.metadata.models.metadata import Attribute, MediaDetails, Metadata
 from offchain.metadata.models.token import Token
 from offchain.metadata.parsers.collection.loot import LootParser
 from offchain.web3.contract_caller import ContractCaller
@@ -100,3 +98,13 @@ class TestLootParser:
                 mime_type="image/svg+xml",
             ),
         )
+
+    @pytest.mark.asyncio
+    async def test_loot_parser_gen_parses_metadata(self):  # type: ignore[no-untyped-def]
+        fetcher = MetadataFetcher()
+        contract_caller = ContractCaller()
+        parser = LootParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
+        metadata = await parser.gen_parse_metadata(
+            token=self.token, raw_data=self.raw_data
+        )
+        assert metadata

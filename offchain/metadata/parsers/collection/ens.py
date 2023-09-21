@@ -1,3 +1,4 @@
+import asyncio
 from typing import Optional
 
 from offchain.constants.addresses import CollectionAddress
@@ -113,5 +114,60 @@ class ENSParser(CollectionParser):
             mime_type=mime_type,
             image=self.get_image(raw_data=raw_data),
             content=self.get_background_image(raw_data=raw_data),
+            additional_fields=self.get_additional_fields(raw_data=raw_data),
+        )
+
+    async def gen_image(self, raw_data: dict) -> Optional[MediaDetails]:  # type: ignore[return, type-arg]  # noqa: E501
+        image_uri = raw_data.get("image_url") or raw_data.get("image")
+        if image_uri:
+            image = MediaDetails(uri=image_uri, size=None, sha256=None, mime_type=None)
+            try:
+                content_type, size = await self.fetcher.gen_fetch_mime_type_and_size(
+                    image_uri
+                )
+                image.mime_type = content_type
+                image.size = size
+                return image
+            except Exception:
+                pass
+
+    async def gen_background_image(self, raw_data: dict) -> Optional[MediaDetails]:  # type: ignore[return, type-arg]  # noqa: E501
+        bg_image_uri = raw_data.get("background_image")
+        if bg_image_uri:
+            image = MediaDetails(
+                uri=bg_image_uri, size=None, sha256=None, mime_type=None
+            )  # noqa: E501
+            try:
+                content_type, size = await self.fetcher.gen_fetch_mime_type_and_size(
+                    bg_image_uri
+                )
+                image.mime_type = content_type
+                image.size = size
+                return image
+            except Exception:
+                pass
+
+    async def _gen_parse_metadata_impl(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
+        ens_chain_name = self.make_ens_chain_name(token.chain_identifier)
+
+        token.uri = f"https://metadata.ens.domains/{ens_chain_name}/{token.collection_address.lower()}/{token.token_id}/"
+        raw_data, mime_type_and_size = await asyncio.gather(
+            self.fetcher.gen_fetch_content(token.uri),
+            self.fetcher.gen_fetch_mime_type_and_size(token.uri),
+        )
+        mime_type, _ = mime_type_and_size
+        image, background_image = await asyncio.gather(
+            self.gen_image(raw_data=raw_data),
+            self.gen_background_image(raw_data=raw_data),
+        )
+        return Metadata(
+            token=token,
+            raw_data=raw_data,
+            attributes=self.parse_attributes(raw_data),
+            name=raw_data.get("name"),
+            description=raw_data.get("description"),
+            mime_type=mime_type,
+            image=image,
+            content=background_image,
             additional_fields=self.get_additional_fields(raw_data=raw_data),
         )

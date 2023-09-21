@@ -1,13 +1,15 @@
 # flake8: noqa: E501
 from unittest.mock import MagicMock
 
+import pytest
+
 from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 from offchain.metadata.models.metadata import (
+    Attribute,
     MediaDetails,
     Metadata,
     MetadataField,
     MetadataFieldType,
-    Attribute,
 )
 from offchain.metadata.models.token import Token
 from offchain.metadata.parsers.collection.autoglyphs import AutoglyphsParser
@@ -93,3 +95,13 @@ class TestAutoglyphsParser:
                 ),
             ],
         )
+
+    @pytest.mark.asyncio
+    async def test_autoglyphs_parser_gen_parses_metadata(self):  # type: ignore[no-untyped-def]
+        fetcher = MetadataFetcher()
+        contract_caller = ContractCaller()
+        parser = AutoglyphsParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
+        metadata = await parser.gen_parse_metadata(
+            token=self.token, raw_data=self.raw_data
+        )
+        assert metadata

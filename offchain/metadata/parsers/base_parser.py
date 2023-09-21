@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from typing import Optional, Protocol
 
 import pytest
@@ -52,6 +53,7 @@ class BaseParser(Protocol):
         """
         pass
 
+    @abstractmethod
     async def _gen_parse_metadata_impl(  # type: ignore[no-untyped-def]
         self, token: Token, raw_data: dict, *args, **kwargs  # type: ignore[type-arg]
     ):
