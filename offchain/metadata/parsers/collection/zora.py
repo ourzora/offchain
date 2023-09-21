@@ -1,9 +1,10 @@
+import asyncio
 from typing import Optional
 
 from offchain.constants.addresses import CollectionAddress
 from offchain.metadata.models.metadata import (
-    Metadata,
     MediaDetails,
+    Metadata,
     MetadataField,
     MetadataFieldType,
 )
@@ -46,8 +47,34 @@ class ZoraParser(CollectionParser):
 
         return results[0]
 
+    async def gen_uri(self, token_id: int) -> Optional[str]:
+        results = await self.contract_caller.rpc.async_reader.gen_call_single_function_single_address_many_args(
+            ADDRESS,
+            function_sig="tokenMetadataURI(uint256)",
+            return_type=["string"],
+            args=[[token_id]],
+        )
+
+        if len(results) < 1:
+            return None
+
+        return results[0]
+
     def get_content_uri(self, token_id: int) -> Optional[str]:
         results = self.contract_caller.single_address_single_fn_many_args(
+            ADDRESS,
+            function_sig="tokenURI(uint256)",
+            return_type=["string"],
+            args=[[token_id]],
+        )
+
+        if len(results) < 1:
+            return None
+
+        return results[0]
+
+    async def gen_content_uri(self, token_id: int) -> Optional[str]:
+        results = await self.contract_caller.rpc.async_reader.gen_call_single_function_single_address_many_args(
             ADDRESS,
             function_sig="tokenURI(uint256)",
             return_type=["string"],
@@ -68,6 +95,15 @@ class ZoraParser(CollectionParser):
 
         return None
 
+    async def gen_content_details(self, uri: str) -> Optional[MediaDetails]:
+        try:
+            content_type, size = await self.fetcher.gen_fetch_mime_type_and_size(uri)
+            return MediaDetails(uri=uri, size=size, sha256=None, mime_type=content_type)
+        except Exception:
+            pass
+
+        return None
+
     def parse_metadata(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
         if token.uri is None or raw_data is None or not isinstance(raw_data, dict):
             token.uri = self.get_uri(token.token_id)
@@ -77,6 +113,32 @@ class ZoraParser(CollectionParser):
 
         content_uri = self.get_content_uri(token.token_id)
         content = self.get_content_details(content_uri)  # type: ignore[arg-type]
+
+        # if we have an image, make sure we set
+        # the image field, otherwise fallback to content
+        if content.mime_type.startswith("image"):  # type: ignore[union-attr]
+            metadata.image = content  # type: ignore[union-attr]
+        else:
+            metadata.content = content  # type: ignore[union-attr]
+
+        metadata.additional_fields = self.parse_additional_fields(raw_data)  # type: ignore[arg-type, union-attr]  # noqa: E501
+        metadata.mime_type = "application/json"  # type: ignore[union-attr]
+
+        return metadata
+
+    async def _gen_parse_metadata_impl(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
+        if token.uri is None:
+            token.uri = await self.gen_uri(token.token_id)
+        if raw_data is None or not isinstance(raw_data, dict):
+            raw_data = await self.fetcher.gen_fetch_content(  # type:ignore[assignment]
+                token.uri  # type:ignore[arg-type]
+            )
+
+        metadata, content_uri = await asyncio.gather(
+            DefaultCatchallParser(self.fetcher).gen_parse_metadata(token=token, raw_data=raw_data),  # type: ignore[arg-type]  # noqa: E501
+            self.gen_content_uri(token.token_id),
+        )
+        content = await self.gen_content_details(content_uri)  # type: ignore[arg-type]
 
         # if we have an image, make sure we set
         # the image field, otherwise fallback to content

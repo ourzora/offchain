@@ -121,6 +121,61 @@ class OpenseaParser(SchemaParser):
             additional_fields=self.parse_additional_fields(raw_data),
         )
 
+    async def _gen_parse_metadata_impl(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
+        """Given a token and raw data returned from the token uri, return a normalized Metadata object.
+
+        Args:
+            token (Token): token to process metadata for.
+            raw_data (dict): raw data returned from token uri.
+
+        Returns:
+            Optional[Metadata]: normalized metadata object, if successfully parsed.
+        """  # noqa: E501
+        mime, _ = await self.fetcher.gen_fetch_mime_type_and_size(token.uri)  # type: ignore[arg-type]  # noqa: E501
+
+        attributes = [
+            self.parse_attribute(attribute)
+            for attribute in raw_data.get("attributes", [])
+        ]  # noqa: E501
+        image = None
+        image_uri = raw_data.get("image") or raw_data.get("image_data")
+        if image_uri:
+            image_mime, image_size = await self.fetcher.gen_fetch_mime_type_and_size(
+                image_uri
+            )
+            image = MediaDetails(size=image_size, uri=image_uri, mime_type=image_mime)
+
+        content = None
+        content_uri = raw_data.get("animation_url")
+        if content_uri:
+            (
+                content_mime,
+                content_size,
+            ) = await self.fetcher.gen_fetch_mime_type_and_size(
+                content_uri
+            )  # noqa: E501
+            content = MediaDetails(
+                uri=content_uri, size=content_size, mime_type=content_mime
+            )  # noqa: E501
+
+        if image and image.mime_type:
+            mime = image.mime_type
+
+        if content and content.mime_type:
+            mime = content.mime_type
+
+        return Metadata(
+            token=token,
+            raw_data=raw_data,
+            attributes=attributes,
+            name=raw_data.get("name"),
+            description=raw_data.get("description"),
+            mime_type=mime,
+            image=image,
+            content=content,
+            additional_fields=self.parse_additional_fields(raw_data),
+        )
+
     def should_parse_token(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> bool:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
         """Return whether or not a collection parser should parse a given token.
 

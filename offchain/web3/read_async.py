@@ -9,7 +9,6 @@ from eth_utils import to_hex
 from web3 import Web3
 from web3.eth import AsyncEth
 
-from offchain.utils.utils import safe_async_runner
 from offchain.web3.contract_utils import function_signature_to_sighash
 
 
@@ -194,7 +193,6 @@ class AsyncContractReader:
             params=[contract_address],
         )
 
-    @safe_async_runner(attempt=3, timeout=2, silent=True)
     async def _request(
         self,
         method: str,

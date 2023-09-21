@@ -2,6 +2,8 @@
 
 from unittest.mock import MagicMock
 
+import pytest
+
 from offchain.metadata.adapters.ipfs import IPFSAdapter
 from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 from offchain.metadata.models.metadata import (
@@ -218,3 +220,12 @@ class TestOpenseaParser:
                 ),
             ],
         )
+
+    @pytest.mark.asyncio
+    async def test_opensea_parser_gen_parses_metadata(self, raw_crypto_coven_metadata):  # type: ignore[no-untyped-def]
+        fetcher = MetadataFetcher()
+        parser = OpenseaParser(fetcher=fetcher)  # type: ignore[abstract]
+        metadata = await parser.gen_parse_metadata(
+            token=self.token, raw_data=raw_crypto_coven_metadata
+        )
+        assert metadata

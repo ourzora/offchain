@@ -117,7 +117,7 @@ class HashmasksParser(CollectionParser):
             additional_fields=self.get_additional_fields(raw_data=raw_data),
         )
 
-    async def gen_parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
+    async def _gen_parse_metadata_impl(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
         token.uri = f"https://hashmap.azurewebsites.net/getMask/{token.token_id}"
 
         raw_data, mime_type_and_size, name, image = await asyncio.gather(

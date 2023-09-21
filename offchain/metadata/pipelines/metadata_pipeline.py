@@ -131,6 +131,27 @@ class MetadataPipeline(BasePipeline):
         )
         return res[0] if res and len(res) > 0 else None
 
+    async def gen_fetch_token_uri(
+        self, token: Token, function_signature: str = "tokenURI(uint256)"
+    ) -> Optional[str]:
+        """Given a token, fetch the token uri from the contract using a specified function signature.
+
+        Args:
+            token (Token): token whose uri we want to fetch.
+            function_signature (str, optional): token uri contract function signature. Defaults to "tokenURI(uint256)".
+
+        Returns:
+            Optional[str]: the token uri, if found.
+        """  # noqa: E501
+
+        res = await self.contract_caller.rpc.async_reader.gen_call_single_function_single_address_many_args(
+            address=token.collection_address,
+            function_sig=function_signature,
+            return_type=["string"],
+            args=[[token.token_id]],
+        )
+        return res[0] if res and len(res) > 0 else None
+
     def fetch_token_metadata(
         self,
         token: Token,
@@ -208,7 +229,7 @@ class MetadataPipeline(BasePipeline):
             return metadata_selector_fn(possible_metadatas_or_errors)  # type: ignore[no-any-return]  # noqa: E501
         return possible_metadatas_or_errors[0]
 
-    async def async_fetch_token_metadata(
+    async def gen_fetch_token_metadata(
         self,
         token: Token,
         metadata_selector_fn: Optional[Callable] = None,  # type: ignore[type-arg]
@@ -225,39 +246,33 @@ class MetadataPipeline(BasePipeline):
             Union[Metadata, MetadataProcessingError]: returns either a Metadata
                 or a MetadataProcessingError if unable to parse.
         """
-        possible_metadatas_or_errors = []
+        possible_metadatas_or_errors: list[
+            Union[Metadata, MetadataProcessingError]
+        ] = []
 
-        # If no token uri is passed in, try to fetch the token uri from the contract
-        if token.uri is None:
-            try:
-                token.uri = self.fetch_token_uri(token)
-            except Exception as e:
-                error_message = f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) Failed to fetch token uri. {str(e)}"  # noqa: E501
-                logger.error(error_message)
-                possible_metadatas_or_errors.append(
-                    MetadataProcessingError.from_token_and_error(
-                        token=token, e=Exception(error_message)
-                    )
-                )
+        if not token.uri:
+            return MetadataProcessingError.from_token_and_error(
+                token=token, e=Exception("Token has not uri")
+            )
 
         raw_data = None
 
-        # Try to fetch the raw data from the token uri
-        if token.uri is not None:
-            try:
-                raw_data = await self.fetcher.gen_fetch_content(token.uri)
-            except Exception as e:
-                error_message = f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) Failed to parse token uri: {token.uri}. {str(e)}"  # noqa: E501
-                logger.error(error_message)
-                possible_metadatas_or_errors.append(
-                    MetadataProcessingError.from_token_and_error(
-                        token=token, e=Exception(error_message)
-                    )
+        try:
+            raw_data = await self.fetcher.gen_fetch_content(token.uri)
+        except Exception as e:
+            error_message = f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) Failed to parse token uri: {token.uri}. {str(e)}"  # noqa: E501
+            logger.error(error_message)
+            possible_metadatas_or_errors.append(
+                MetadataProcessingError.from_token_and_error(
+                    token=token, e=Exception(error_message)
                 )
+            )
 
-        for parser in self.parsers:
+        async def gen_parse_metadata(
+            parser: BaseParser,
+        ) -> Optional[Union[Metadata, MetadataProcessingError]]:
             if not parser.should_parse_token(token=token, raw_data=raw_data):  # type: ignore[arg-type]  # noqa: E501
-                continue
+                return None
             try:
                 metadata_or_error = parser.parse_metadata(
                     token=token, raw_data=raw_data  # type: ignore[arg-type]
@@ -270,7 +285,16 @@ class MetadataPipeline(BasePipeline):
                 metadata_or_error = MetadataProcessingError.from_token_and_error(  # type: ignore[assignment]  # noqa: E501
                     token=token, e=e
                 )
-            possible_metadatas_or_errors.append(metadata_or_error)  # type: ignore[arg-type]  # noqa: E501
+            return metadata_or_error
+
+        nullable_possible_metadatas_or_errors: list[
+            Optional[Union[Metadata, MetadataProcessingError]]
+        ] = await asyncio.gather(
+            *(gen_parse_metadata(parser) for parser in self.parsers)
+        )
+        possible_metadatas_or_errors += filter(
+            None, nullable_possible_metadatas_or_errors
+        )
         if len(possible_metadatas_or_errors) == 0:
             possible_metadatas_or_errors.append(
                 MetadataProcessingError.from_token_and_error(
@@ -341,8 +365,7 @@ class MetadataPipeline(BasePipeline):
         if len(tokens) == 0:
             return []
         tasks = [
-            self.async_fetch_token_metadata(token, select_metadata_fn)
-            for token in tokens
+            self.gen_fetch_token_metadata(token, select_metadata_fn) for token in tokens
         ]
 
         metadatas_or_errors = await asyncio.gather(*tasks)
