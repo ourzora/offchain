@@ -27,18 +27,18 @@ class TestZoraParser:
         "version": "zora-20210101",
     }
 
-    def test_zora_parser_should_parse_token(self):
+    def test_zora_parser_should_parse_token(self):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         contract_caller = ContractCaller()
-        parser = ZoraParser(fetcher=fetcher, contract_caller=contract_caller)
+        parser = ZoraParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
         assert parser.should_parse_token(token=self.token)
 
-    def test_zora_parser_parses_metadata(self):
+    def test_zora_parser_parses_metadata(self):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         contract_caller = ContractCaller()
-        fetcher.fetch_mime_type_and_size = Mock(side_effect=[("application/json", 0), ("image/jpeg", 13548199)])
-        fetcher.fetch_content = MagicMock(return_value=self.raw_data)
-        parser = ZoraParser(fetcher=fetcher, contract_caller=contract_caller)
+        fetcher.fetch_mime_type_and_size = Mock(side_effect=[("application/json", 0), ("image/jpeg", 13548199)])  # type: ignore[assignment]
+        fetcher.fetch_content = MagicMock(return_value=self.raw_data)  # type: ignore[assignment]
+        parser = ZoraParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
         metadata = parser.parse_metadata(token=self.token, raw_data=self.raw_data)
         assert metadata == Metadata(
             token=Token(

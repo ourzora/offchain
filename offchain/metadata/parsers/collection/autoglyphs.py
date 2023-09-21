@@ -21,13 +21,13 @@ class AutoglyphsParser(CollectionParser):
     _COLLECTION_ADDRESSES: list[str] = [ADDRESS]
 
     @staticmethod
-    def create_raw_data(token_id: int) -> dict:
+    def create_raw_data(token_id: int) -> dict:  # type: ignore[type-arg]
         return {
             "title": f"Autoglyph #{token_id}",
             "name": f"Autoglyph #{token_id}",
             "image": f"https://www.larvalabs.com/autoglyphs/glyphimage?index={token_id}",
-            "description": 'Autoglyphs are the first "on-chain" generative art on the Ethereum blockchain. A '
-            "completely self-contained mechanism for the creation and ownership of an artwork.",
+            "description": 'Autoglyphs are the first "on-chain" generative art on the Ethereum blockchain. A '  # noqa: E501
+            "completely self-contained mechanism for the creation and ownership of an artwork.",  # noqa: E501
             "external_url": f"https://www.larvalabs.com/autoglyphs/glyph?index={token_id}",
         }
 
@@ -62,11 +62,11 @@ class AutoglyphsParser(CollectionParser):
 
         return results[0]
 
-    def get_image_details(self, raw_data: dict) -> Optional[MediaDetails]:
+    def get_image_details(self, raw_data: dict) -> Optional[MediaDetails]:  # type: ignore[type-arg]  # noqa: E501
         image_uri = raw_data.get("image")
         details = MediaDetails(uri=image_uri, size=None, sha256=None, mime_type=None)
         try:
-            content_type, size = self.fetcher.fetch_mime_type_and_size(image_uri)
+            content_type, size = self.fetcher.fetch_mime_type_and_size(image_uri)  # type: ignore[arg-type]  # noqa: E501
             details.mime_type = content_type
             details.size = size
         except Exception:
@@ -75,17 +75,19 @@ class AutoglyphsParser(CollectionParser):
 
     def get_content_details(self, index: int) -> Optional[MediaDetails]:
         raw_uri = self.get_raw_content(index)
-        content_uri = self.encode_uri_data(raw_uri)
-        return MediaDetails(uri=content_uri, size=None, sha256=None, mime_type="text/plain")
+        content_uri = self.encode_uri_data(raw_uri)  # type: ignore[arg-type]
+        return MediaDetails(
+            uri=content_uri, size=None, sha256=None, mime_type="text/plain"
+        )  # noqa: E501
 
-    def parse_additional_fields(self, raw_data: dict) -> list[MetadataField]:
+    def parse_additional_fields(self, raw_data: dict) -> list[MetadataField]:  # type: ignore[type-arg]  # noqa: E501
         additional_fields = []
         if (external_url := raw_data.get("external_url")) is not None:
             additional_fields.append(
                 MetadataField(
                     field_name="external_url",
                     type=MetadataFieldType.TEXT,
-                    description="This property defines an optional external URL that can reference a webpage or "
+                    description="This property defines an optional external URL that can reference a webpage or "  # noqa: E501
                     "external asset for the NFT",
                     value=external_url,
                 )
@@ -104,7 +106,7 @@ class AutoglyphsParser(CollectionParser):
     def parse_attributes(self, token_id: int) -> list[Attribute]:
         attributes = []
 
-        scheme = get_symbol_by_index(self.get_symbol_scheme(token_id))
+        scheme = get_symbol_by_index(self.get_symbol_scheme(token_id))  # type: ignore[arg-type]  # noqa: E501
         if scheme is None:
             scheme = "Unknown"
 
@@ -117,7 +119,7 @@ class AutoglyphsParser(CollectionParser):
 
         return attributes
 
-    def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Metadata:
+    def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Metadata:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
         raw_data = self.create_raw_data(token.token_id)
 
         return Metadata(

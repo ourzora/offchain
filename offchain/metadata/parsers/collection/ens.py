@@ -19,14 +19,14 @@ class ENSParser(CollectionParser):
     _COLLECTION_ADDRESSES: list[str] = [CollectionAddress.ENS]
 
     @staticmethod
-    def make_ens_chain_name(chain_identifier: str):
+    def make_ens_chain_name(chain_identifier: str):  # type: ignore[no-untyped-def]
         try:
             return chain_identifier.split("-")[1].lower()
         except Exception:
             logger.error(f"Received unexpected chain identifier: {chain_identifier}")
             return "mainnet"
 
-    def get_additional_fields(self, raw_data: dict) -> list[MetadataField]:
+    def get_additional_fields(self, raw_data: dict) -> list[MetadataField]:  # type: ignore[type-arg]  # noqa: E501
         additional_fields = []
         if name_length := raw_data.get("name_length"):
             additional_fields.append(
@@ -57,10 +57,10 @@ class ENSParser(CollectionParser):
             )
         return additional_fields
 
-    def parse_attributes(self, raw_data: dict) -> Optional[list[Attribute]]:
+    def parse_attributes(self, raw_data: dict) -> Optional[list[Attribute]]:  # type: ignore[type-arg]  # noqa: E501
         attributes = raw_data.get("attributes")
         if not attributes or not isinstance(attributes, list):
-            return
+            return  # type: ignore[return-value]
 
         return [
             Attribute(
@@ -71,7 +71,7 @@ class ENSParser(CollectionParser):
             for attribute_dict in attributes
         ]
 
-    def get_image(self, raw_data: dict) -> Optional[MediaDetails]:
+    def get_image(self, raw_data: dict) -> Optional[MediaDetails]:  # type: ignore[return, type-arg]  # noqa: E501
         image_uri = raw_data.get("image_url") or raw_data.get("image")
         if image_uri:
             image = MediaDetails(uri=image_uri, size=None, sha256=None, mime_type=None)
@@ -83,10 +83,12 @@ class ENSParser(CollectionParser):
             except Exception:
                 pass
 
-    def get_background_image(self, raw_data: dict) -> Optional[MediaDetails]:
+    def get_background_image(self, raw_data: dict) -> Optional[MediaDetails]:  # type: ignore[return, type-arg]  # noqa: E501
         bg_image_uri = raw_data.get("background_image")
         if bg_image_uri:
-            image = MediaDetails(uri=bg_image_uri, size=None, sha256=None, mime_type=None)
+            image = MediaDetails(
+                uri=bg_image_uri, size=None, sha256=None, mime_type=None
+            )  # noqa: E501
             try:
                 content_type, size = self.fetcher.fetch_mime_type_and_size(bg_image_uri)
                 image.mime_type = content_type
@@ -95,13 +97,11 @@ class ENSParser(CollectionParser):
             except Exception:
                 pass
 
-    def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:
+    def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
         ens_chain_name = self.make_ens_chain_name(token.chain_identifier)
 
-        token.uri = (
-            f"https://metadata.ens.domains/{ens_chain_name}/{token.collection_address.lower()}/{token.token_id}/"
-        )
-        raw_data = self.fetcher.fetch_content(token.uri)
+        token.uri = f"https://metadata.ens.domains/{ens_chain_name}/{token.collection_address.lower()}/{token.token_id}/"
+        raw_data = self.fetcher.fetch_content(token.uri)  # type: ignore[assignment]
         mime_type, _ = self.fetcher.fetch_mime_type_and_size(token.uri)
 
         return Metadata(

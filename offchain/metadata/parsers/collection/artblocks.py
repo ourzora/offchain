@@ -17,7 +17,7 @@ from offchain.metadata.registries.parser_registry import ParserRegistry
 class ArtblocksParser(CollectionParser):
     _COLLECTION_ADDRESSES: list[str] = [CollectionAddress.ARTBLOCKS]
 
-    def get_additional_fields(self, raw_data: dict) -> list[MetadataField]:
+    def get_additional_fields(self, raw_data: dict) -> list[MetadataField]:  # type: ignore[type-arg]  # noqa: E501
         additional_fields = []
         if (platform := raw_data.get("platform")) is not None:
             additional_fields.append(
@@ -54,7 +54,7 @@ class ArtblocksParser(CollectionParser):
                 MetadataField(
                     field_name="aspect_ratio",
                     type=MetadataFieldType.NUMBER,
-                    description="This property defines the aspect ratio for the NFT asset",
+                    description="This property defines the aspect ratio for the NFT asset",  # noqa: E501
                     value=aspect_ratio,
                 )
             )
@@ -64,7 +64,7 @@ class ArtblocksParser(CollectionParser):
                 MetadataField(
                     field_name="payout_address",
                     type=MetadataFieldType.TEXT,
-                    description="This property defines the payout address for the NFT asset",
+                    description="This property defines the payout address for the NFT asset",  # noqa: E501
                     value=payout_address,
                 )
             )
@@ -74,7 +74,7 @@ class ArtblocksParser(CollectionParser):
                 MetadataField(
                     field_name="minted",
                     type=MetadataFieldType.BOOLEAN,
-                    description="This property defines the minted state for the NFT asset",
+                    description="This property defines the minted state for the NFT asset",  # noqa: E501
                     value=minted,
                 )
             )
@@ -94,7 +94,7 @@ class ArtblocksParser(CollectionParser):
                 MetadataField(
                     field_name="script_type",
                     type=MetadataFieldType.TEXT,
-                    description="This property defines the script type for the NFT asset",
+                    description="This property defines the script type for the NFT asset",  # noqa: E501
                     value=script_type,
                 )
             )
@@ -104,7 +104,7 @@ class ArtblocksParser(CollectionParser):
                 MetadataField(
                     field_name="project_id",
                     type=MetadataFieldType.TEXT,
-                    description="This property defines the project ID for the NFT asset",
+                    description="This property defines the project ID for the NFT asset",  # noqa: E501
                     value=project_id,
                 )
             )
@@ -114,7 +114,7 @@ class ArtblocksParser(CollectionParser):
                 MetadataField(
                     field_name="curation_status",
                     type=MetadataFieldType.TEXT,
-                    description="This property defines the curation status for the NFT asset",
+                    description="This property defines the curation status for the NFT asset",  # noqa: E501
                     value=curation_status,
                 )
             )
@@ -124,7 +124,7 @@ class ArtblocksParser(CollectionParser):
                 MetadataField(
                     field_name="generator_url",
                     type=MetadataFieldType.TEXT,
-                    description="This property defines the generator URL for the NFT asset",
+                    description="This property defines the generator URL for the NFT asset",  # noqa: E501
                     value=generator_url,
                 )
             )
@@ -134,7 +134,7 @@ class ArtblocksParser(CollectionParser):
                 MetadataField(
                     field_name="animation_url",
                     type=MetadataFieldType.TEXT,
-                    description="This property defines the animation URL for the NFT asset",
+                    description="This property defines the animation URL for the NFT asset",  # noqa: E501
                     value=animation_url,
                 )
             )
@@ -144,7 +144,7 @@ class ArtblocksParser(CollectionParser):
                 MetadataField(
                     field_name="royaltyInfo",
                     type=MetadataFieldType.OBJECT,
-                    description="This property defines the royalty information for the NFT asset",
+                    description="This property defines the royalty information for the NFT asset",  # noqa: E501
                     value=royaltyInfo,
                 )
             )
@@ -154,7 +154,7 @@ class ArtblocksParser(CollectionParser):
                 MetadataField(
                     field_name="collection_name",
                     type=MetadataFieldType.TEXT,
-                    description="This property defines the collection name for the NFT asset",
+                    description="This property defines the collection name for the NFT asset",  # noqa: E501
                     value=collection_name,
                 )
             )
@@ -174,7 +174,7 @@ class ArtblocksParser(CollectionParser):
                 MetadataField(
                     field_name="token_hash",
                     type=MetadataFieldType.TEXT,
-                    description="This property defines the token hash for the NFT asset",
+                    description="This property defines the token hash for the NFT asset",  # noqa: E501
                     value=token_hash,
                 )
             )
@@ -184,7 +184,7 @@ class ArtblocksParser(CollectionParser):
                 MetadataField(
                     field_name="external_url",
                     type=MetadataFieldType.TEXT,
-                    description="This property defines an optional external URL that can reference a webpage or "
+                    description="This property defines an optional external URL that can reference a webpage or "  # noqa: E501
                     "external asset for the NFT",
                     value=external_url,
                 )
@@ -205,7 +205,7 @@ class ArtblocksParser(CollectionParser):
                 MetadataField(
                     field_name="is_static",
                     type=MetadataFieldType.BOOLEAN,
-                    description="This property defines the static state for the NFT asset",
+                    description="This property defines the static state for the NFT asset",  # noqa: E501
                     value=is_static,
                 )
             )
@@ -222,10 +222,10 @@ class ArtblocksParser(CollectionParser):
 
         return additional_fields
 
-    def parse_traits(self, raw_data: dict) -> Optional[list[Attribute]]:
+    def parse_traits(self, raw_data: dict) -> Optional[list[Attribute]]:  # type: ignore[type-arg]  # noqa: E501
         traits = raw_data.get("traits")
         if not traits or not isinstance(traits, list):
-            return
+            return  # type: ignore[return-value]
 
         return [
             Attribute(
@@ -236,7 +236,7 @@ class ArtblocksParser(CollectionParser):
             for trait_dict in traits
         ]
 
-    def get_image(self, raw_data: dict) -> Optional[MediaDetails]:
+    def get_image(self, raw_data: dict) -> Optional[MediaDetails]:  # type: ignore[return, type-arg]  # noqa: E501
         image_uri = raw_data.get("image")
         if image_uri:
             image = MediaDetails(uri=image_uri, size=None, sha256=None, mime_type=None)
@@ -248,10 +248,10 @@ class ArtblocksParser(CollectionParser):
             except Exception:
                 pass
 
-    def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:
+    def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
         token.uri = f"https://api.artblocks.io/token/{token.token_id}"
 
-        raw_data = self.fetcher.fetch_content(token.uri)
+        raw_data = self.fetcher.fetch_content(token.uri)  # type: ignore[assignment]
         mime_type, _ = self.fetcher.fetch_mime_type_and_size(token.uri)
 
         return Metadata(

@@ -15,7 +15,7 @@ class BaseRegistry:
         raise NotImplementedError
 
     @staticmethod
-    def add(model_cls: Type[T], *args, **kwargs):
+    def add(model_cls: Type[T], *args, **kwargs):  # type: ignore[no-untyped-def]
         """Add a class to the registry
 
         Args:
@@ -27,7 +27,7 @@ class BaseRegistry:
         raise NotImplementedError
 
     @staticmethod
-    def validate(model_cls: Type[T], *args, **kwargs):
+    def validate(model_cls: Type[T], *args, **kwargs):  # type: ignore[no-untyped-def]
         """Validate a class before it is added to the registry.
 
         Args:
@@ -46,13 +46,13 @@ class BaseRegistry:
             Type[T]: registered class.
         """
 
-        def wrap(model_cls: T = model_cls):
+        def wrap(model_cls: T = model_cls):  # type: ignore[assignment, no-untyped-def]
             assert model_cls is not None, "Invalid usage, expect a class"
-            cls.validate(model_cls)
-            cls.add(model_cls)
+            cls.validate(model_cls)  # type: ignore[arg-type]
+            cls.add(model_cls)  # type: ignore[arg-type]
             return model_cls
 
         if model_cls is None:
             return wrap
 
-        return wrap()
+        return wrap()  # type: ignore[no-any-return]

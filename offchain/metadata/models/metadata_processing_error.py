@@ -1,4 +1,4 @@
-from offchain.base.base_model import BaseModel
+from offchain.base.base_model import BaseModel  # type: ignore[attr-defined]
 from offchain.metadata.models.token import Token
 
 
@@ -9,7 +9,7 @@ class MetadataProcessingError(BaseModel):
         token (Token): a Token interface with all information required to uniquely identify an NFT
         error_type (str): the class of caught exception.
         error_message (str): the error message of the caught exception.
-    """
+    """  # noqa: E501
 
     token: Token
 

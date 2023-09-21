@@ -42,9 +42,9 @@ class LootParser(CollectionParser):
             args=[[token_id] for _ in sigs],
         )
 
-        return results
+        return results  # type: ignore[return-value]
 
-    def parse_attributes(self, attributes: dict) -> Optional[list[Attribute]]:
+    def parse_attributes(self, attributes: dict) -> Optional[list[Attribute]]:  # type: ignore[type-arg]  # noqa: E501
         return [
             Attribute(
                 trait_type=self.normalize_name(item),
@@ -67,24 +67,26 @@ class LootParser(CollectionParser):
 
         return results[0]
 
-    def get_image(self, raw_data: dict) -> Optional[MediaDetails]:
+    def get_image(self, raw_data: dict) -> Optional[MediaDetails]:  # type: ignore[type-arg]  # noqa: E501
         raw_image_uri = raw_data.get("image")
-        image_uri = quote(self.fetcher.fetch_content(raw_image_uri))
+        image_uri = quote(self.fetcher.fetch_content(raw_image_uri))  # type: ignore[arg-type]  # noqa: E501
 
-        return MediaDetails(uri=image_uri, size=None, sha256=None, mime_type="image/svg+xml")
+        return MediaDetails(
+            uri=image_uri, size=None, sha256=None, mime_type="image/svg+xml"
+        )  # noqa: E501
 
-    def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Metadata:
+    def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Metadata:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
         token.uri = self.get_uri(token.token_id)
 
-        raw_data = self.fetcher.fetch_content(token.uri)
-        mime_type, _ = self.fetcher.fetch_mime_type_and_size(token.uri)
+        raw_data = self.fetcher.fetch_content(token.uri)  # type: ignore[arg-type, assignment]  # noqa: E501
+        mime_type, _ = self.fetcher.fetch_mime_type_and_size(token.uri)  # type: ignore[arg-type]  # noqa: E501
 
         attributes = self.get_attributes(token.token_id)
 
         return Metadata(
             token=token,
             raw_data=raw_data,
-            attributes=self.parse_attributes(attributes),
+            attributes=self.parse_attributes(attributes),  # type: ignore[arg-type]
             name=raw_data.get("name"),
             description=raw_data.get("description"),
             mime_type=mime_type,

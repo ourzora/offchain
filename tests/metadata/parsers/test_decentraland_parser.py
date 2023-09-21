@@ -35,18 +35,18 @@ class TestDecentralandParser:
         "name": "Dream land",
     }
 
-    def test_decentraland_parser_should_parse_token(self):
+    def test_decentraland_parser_should_parse_token(self):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         contract_caller = ContractCaller()
-        parser = DecentralandParser(fetcher=fetcher, contract_caller=contract_caller)
+        parser = DecentralandParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
         assert parser.should_parse_token(token=self.token)
 
-    def test_decentraland_parser_parses_metadata(self):
+    def test_decentraland_parser_parses_metadata(self):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         contract_caller = ContractCaller()
-        fetcher.fetch_mime_type_and_size = Mock(side_effect=[("application/json", 0), ("image/png", 0)])
-        fetcher.fetch_content = MagicMock(return_value=self.raw_data)
-        parser = DecentralandParser(fetcher=fetcher, contract_caller=contract_caller)
+        fetcher.fetch_mime_type_and_size = Mock(side_effect=[("application/json", 0), ("image/png", 0)])  # type: ignore[assignment]
+        fetcher.fetch_content = MagicMock(return_value=self.raw_data)  # type: ignore[assignment]
+        parser = DecentralandParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
         metadata = parser.parse_metadata(token=self.token, raw_data=self.raw_data)
         assert metadata == Metadata(
             token=Token(
@@ -75,7 +75,9 @@ class TestDecentralandParser:
             attributes=[
                 Attribute(trait_type="X", value="42", display_type="number"),
                 Attribute(trait_type="Y", value="-14", display_type="number"),
-                Attribute(trait_type="Distance to Road", value="6", display_type="number"),
+                Attribute(
+                    trait_type="Distance to Road", value="6", display_type="number"
+                ),
             ],
             standard=None,
             name="Dream land",

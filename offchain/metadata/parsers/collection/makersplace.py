@@ -28,12 +28,15 @@ class MakersPlaceParser(CollectionParser):
 
         return results[0]
 
-    def get_content_details(self, raw_data: dict) -> Optional[MediaDetails]:
+    def get_content_details(self, raw_data: dict) -> Optional[MediaDetails]:  # type: ignore[type-arg]  # noqa: E501
         properties = raw_data.get("properties", None)
         if properties is None:
             return None
 
-        if "preview_media_file2" not in properties and "preview_media_file2_type" not in properties:
+        if (
+            "preview_media_file2" not in properties
+            and "preview_media_file2_type" not in properties
+        ):  # noqa: E501
             return None
 
         if properties.get("preview_media_file2_type").get("description") != "mp4":
@@ -50,17 +53,17 @@ class MakersPlaceParser(CollectionParser):
 
         return details
 
-    def parse_metadata(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> Optional[Metadata]:
+    def parse_metadata(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
         if token.uri is None or raw_data is None:
             token.uri = build_request_url(
                 gateway="https://ipfsgateway.makersplace.com/ipfs",
-                request_url=self.get_uri(token.token_id),
+                request_url=self.get_uri(token.token_id),  # type: ignore[arg-type]
             )
-            raw_data = self.fetcher.fetch_content(token.uri)
+            raw_data = self.fetcher.fetch_content(token.uri)  # type: ignore[assignment]
 
-        metadata = DefaultCatchallParser(self.fetcher).parse_metadata(token=token, raw_data=raw_data)
-        metadata.content = self.get_content_details(raw_data)
-        metadata.mime_type = "application/json"
-        metadata.standard = None
+        metadata = DefaultCatchallParser(self.fetcher).parse_metadata(token=token, raw_data=raw_data)  # type: ignore[arg-type]  # noqa: E501
+        metadata.content = self.get_content_details(raw_data)  # type: ignore[arg-type, union-attr]  # noqa: E501
+        metadata.mime_type = "application/json"  # type: ignore[union-attr]
+        metadata.standard = None  # type: ignore[union-attr]
 
         return metadata

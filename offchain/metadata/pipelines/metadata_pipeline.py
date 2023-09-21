@@ -3,7 +3,7 @@ from typing import Callable, Optional, Union
 
 from offchain.concurrency import batched_parmap
 from offchain.logger.logging import logger
-from offchain.metadata.adapters import (
+from offchain.metadata.adapters import (  # type: ignore[attr-defined]
     ARWeaveAdapter,
     DataURIAdapter,
     HTTPAdapter,
@@ -15,11 +15,13 @@ from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 from offchain.metadata.models.metadata import Metadata
 from offchain.metadata.models.metadata_processing_error import MetadataProcessingError
 from offchain.metadata.models.token import Token
-from offchain.metadata.parsers import BaseParser, DefaultCatchallParser
+from offchain.metadata.parsers import (  # type: ignore[attr-defined]  # noqa: E501
+    BaseParser,
+    DefaultCatchallParser,
+)
 from offchain.metadata.pipelines.base_pipeline import BasePipeline
 from offchain.metadata.registries.parser_registry import ParserRegistry
 from offchain.web3.contract_caller import ContractCaller
-
 
 DEFAULT_ADAPTER_CONFIGS: list[AdapterConfig] = [
     AdapterConfig(
@@ -65,7 +67,7 @@ class MetadataPipeline(BasePipeline):
         parsers (list[BaseParser], optional): a list of parser instances for parsing token metadata.
         adapter_configs: (list[AdapterConfig], optional): a list of adapter configs used to register adapters
             to specified url prefixes.
-    """
+    """  # noqa: E501
 
     def __init__(
         self,
@@ -92,7 +94,7 @@ class MetadataPipeline(BasePipeline):
             ]
         self.parsers = parsers
 
-    def mount_adapter(
+    def mount_adapter(  # type: ignore[no-untyped-def]
         self,
         adapter: Adapter,
         url_prefixes: list[str],
@@ -104,7 +106,7 @@ class MetadataPipeline(BasePipeline):
         Args:
             adapter (Adapter): Adapter instance
             url_prefixes (list[str]): list of url prefixes to which to mount the adapter.
-        """
+        """  # noqa: E501
         for prefix in url_prefixes:
             self.fetcher.register_adapter(adapter, prefix)
 
@@ -119,7 +121,7 @@ class MetadataPipeline(BasePipeline):
 
         Returns:
             Optional[str]: the token uri, if found.
-        """
+        """  # noqa: E501
 
         res = self.contract_caller.single_address_single_fn_many_args(
             address=token.collection_address,
@@ -132,7 +134,7 @@ class MetadataPipeline(BasePipeline):
     def fetch_token_metadata(
         self,
         token: Token,
-        metadata_selector_fn: Optional[Callable] = None,
+        metadata_selector_fn: Optional[Callable] = None,  # type: ignore[type-arg]
     ) -> Union[Metadata, MetadataProcessingError]:
         """Fetch metadata for a single token
 
@@ -177,39 +179,39 @@ class MetadataPipeline(BasePipeline):
                 )
 
         for parser in self.parsers:
-            if not parser.should_parse_token(token=token, raw_data=raw_data):
+            if not parser.should_parse_token(token=token, raw_data=raw_data):  # type: ignore[arg-type]  # noqa: E501
                 continue
             try:
                 metadata_or_error = parser.parse_metadata(
-                    token=token, raw_data=raw_data
+                    token=token, raw_data=raw_data  # type: ignore[arg-type]
                 )
                 if isinstance(metadata_or_error, Metadata):
                     metadata_or_error.standard = parser._METADATA_STANDARD
                     if metadata_selector_fn is None:
                         return metadata_or_error
             except Exception as e:
-                metadata_or_error = MetadataProcessingError.from_token_and_error(
+                metadata_or_error = MetadataProcessingError.from_token_and_error(  # type: ignore[assignment]  # noqa: E501
                     token=token, e=e
                 )
-            possible_metadatas_or_errors.append(metadata_or_error)
+            possible_metadatas_or_errors.append(metadata_or_error)  # type: ignore[arg-type]  # noqa: E501
         if len(possible_metadatas_or_errors) == 0:
             possible_metadatas_or_errors.append(
                 MetadataProcessingError.from_token_and_error(
                     token=token,
                     e=Exception(
-                        f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) No parsers found."
+                        f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) No parsers found."  # noqa: E501
                     ),
                 )
             )
 
         if metadata_selector_fn:
-            return metadata_selector_fn(possible_metadatas_or_errors)
+            return metadata_selector_fn(possible_metadatas_or_errors)  # type: ignore[no-any-return]  # noqa: E501
         return possible_metadatas_or_errors[0]
 
     async def async_fetch_token_metadata(
         self,
         token: Token,
-        metadata_selector_fn: Optional[Callable] = None,
+        metadata_selector_fn: Optional[Callable] = None,  # type: ignore[type-arg]
     ) -> Union[Metadata, MetadataProcessingError]:
         """Fetch metadata for a single token
 
@@ -254,40 +256,40 @@ class MetadataPipeline(BasePipeline):
                 )
 
         for parser in self.parsers:
-            if not parser.should_parse_token(token=token, raw_data=raw_data):
+            if not parser.should_parse_token(token=token, raw_data=raw_data):  # type: ignore[arg-type]  # noqa: E501
                 continue
             try:
                 metadata_or_error = parser.parse_metadata(
-                    token=token, raw_data=raw_data
+                    token=token, raw_data=raw_data  # type: ignore[arg-type]
                 )
                 if isinstance(metadata_or_error, Metadata):
                     metadata_or_error.standard = parser._METADATA_STANDARD
                     if metadata_selector_fn is None:
                         return metadata_or_error
             except Exception as e:
-                metadata_or_error = MetadataProcessingError.from_token_and_error(
+                metadata_or_error = MetadataProcessingError.from_token_and_error(  # type: ignore[assignment]  # noqa: E501
                     token=token, e=e
                 )
-            possible_metadatas_or_errors.append(metadata_or_error)
+            possible_metadatas_or_errors.append(metadata_or_error)  # type: ignore[arg-type]  # noqa: E501
         if len(possible_metadatas_or_errors) == 0:
             possible_metadatas_or_errors.append(
                 MetadataProcessingError.from_token_and_error(
                     token=token,
                     e=Exception(
-                        f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) No parsers found."
+                        f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) No parsers found."  # noqa: E501
                     ),
                 )
             )
 
         if metadata_selector_fn:
-            return metadata_selector_fn(possible_metadatas_or_errors)
+            return metadata_selector_fn(possible_metadatas_or_errors)  # type: ignore[no-any-return]  # noqa: E501
         return possible_metadatas_or_errors[0]
 
-    def run(
+    def run(  # type: ignore[no-untyped-def, override]
         self,
         tokens: list[Token],
         parallelize: bool = True,
-        select_metadata_fn: Optional[Callable] = None,
+        select_metadata_fn: Optional[Callable] = None,  # type: ignore[type-arg]
         *args,
         **kwargs,
     ) -> list[Union[Metadata, MetadataProcessingError]]:
@@ -303,7 +305,7 @@ class MetadataPipeline(BasePipeline):
         Returns:
             list[Union[Metadata, MetadataProcessingError]]: returns a list of Metadatas
                 or MetadataProcessingErrors that map 1:1 to the tokens passed in.
-        """
+        """  # noqa: E501
         if len(tokens) == 0:
             return []
 
@@ -318,10 +320,10 @@ class MetadataPipeline(BasePipeline):
 
         return metadatas_or_errors
 
-    async def async_run(
+    async def async_run(  # type: ignore[no-untyped-def]
         self,
         tokens: list[Token],
-        select_metadata_fn: Optional[Callable] = None,
+        select_metadata_fn: Optional[Callable] = None,  # type: ignore[type-arg]
         *args,
         **kwargs,
     ) -> list[Union[Metadata, MetadataProcessingError]]:
@@ -335,7 +337,7 @@ class MetadataPipeline(BasePipeline):
         Returns:
             list[Union[Metadata, MetadataProcessingError]]: returns a list of Metadatas
                 or MetadataProcessingErrors that map 1:1 to the tokens passed in.
-        """
+        """  # noqa: E501
         if len(tokens) == 0:
             return []
         tasks = [

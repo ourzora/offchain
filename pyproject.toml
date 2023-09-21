@@ -19,6 +19,8 @@ httpx = "^0.24.1"
 types-requests = "^2.31.0.2"
 pytest-asyncio = "^0.21.1"
 pytest-async = "^0.1.1"
+mypy-upgrade = "^0.0.1b5"
+ruff = "^0.0.290"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.20.0"

@@ -19,7 +19,7 @@ ADDRESS = CollectionAddress.ZORA_MEDIA
 class ZoraParser(CollectionParser):
     _COLLECTION_ADDRESSES: list[str] = [ADDRESS]
 
-    def parse_additional_fields(self, raw_data: dict) -> list[MetadataField]:
+    def parse_additional_fields(self, raw_data: dict) -> list[MetadataField]:  # type: ignore[type-arg]  # noqa: E501
         additional_fields = []
         if version := raw_data.get("version"):
             additional_fields.append(
@@ -68,24 +68,24 @@ class ZoraParser(CollectionParser):
 
         return None
 
-    def parse_metadata(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> Optional[Metadata]:
+    def parse_metadata(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
         if token.uri is None or raw_data is None or not isinstance(raw_data, dict):
             token.uri = self.get_uri(token.token_id)
-            raw_data = self.fetcher.fetch_content(token.uri)
+            raw_data = self.fetcher.fetch_content(token.uri)  # type: ignore[arg-type, assignment]  # noqa: E501
 
-        metadata = DefaultCatchallParser(self.fetcher).parse_metadata(token=token, raw_data=raw_data)
+        metadata = DefaultCatchallParser(self.fetcher).parse_metadata(token=token, raw_data=raw_data)  # type: ignore[arg-type]  # noqa: E501
 
         content_uri = self.get_content_uri(token.token_id)
-        content = self.get_content_details(content_uri)
+        content = self.get_content_details(content_uri)  # type: ignore[arg-type]
 
         # if we have an image, make sure we set
         # the image field, otherwise fallback to content
-        if content.mime_type.startswith("image"):
-            metadata.image = content
+        if content.mime_type.startswith("image"):  # type: ignore[union-attr]
+            metadata.image = content  # type: ignore[union-attr]
         else:
-            metadata.content = content
+            metadata.content = content  # type: ignore[union-attr]
 
-        metadata.additional_fields = self.parse_additional_fields(raw_data)
-        metadata.mime_type = "application/json"
+        metadata.additional_fields = self.parse_additional_fields(raw_data)  # type: ignore[arg-type, union-attr]  # noqa: E501
+        metadata.mime_type = "application/json"  # type: ignore[union-attr]
 
         return metadata

@@ -38,17 +38,19 @@ class PunksParser(CollectionParser):
 
     def get_image(self, index: int) -> Optional[MediaDetails]:
         raw_uri = self.make_call(index, "punkImageSvg(uint16)")
-        image_uri = self.encode_uri_data(raw_uri)
-        return MediaDetails(uri=image_uri, size=None, sha256=None, mime_type="image/svg+xml")
+        image_uri = self.encode_uri_data(raw_uri)  # type: ignore[arg-type]
+        return MediaDetails(
+            uri=image_uri, size=None, sha256=None, mime_type="image/svg+xml"
+        )  # noqa: E501
 
-    def parse_additional_fields(self, raw_data: dict) -> list[MetadataField]:
+    def parse_additional_fields(self, raw_data: dict) -> list[MetadataField]:  # type: ignore[type-arg]  # noqa: E501
         additional_fields = []
         if (external_url := raw_data.get("external_url")) is not None:
             additional_fields.append(
                 MetadataField(
                     field_name="external_url",
                     type=MetadataFieldType.TEXT,
-                    description="This property defines an optional external URL that can reference a webpage or "
+                    description="This property defines an optional external URL that can reference a webpage or "  # noqa: E501
                     "external asset for the NFT",
                     value=external_url,
                 )
@@ -67,7 +69,7 @@ class PunksParser(CollectionParser):
     def parse_attributes(self, token_id: int) -> list[Attribute]:
         attributes = []
 
-        punk_attributes = self.make_call(token_id, "punkAttributes(uint16)").split(", ")
+        punk_attributes = self.make_call(token_id, "punkAttributes(uint16)").split(", ")  # type: ignore[union-attr]  # noqa: E501
 
         type_attribute = Attribute(
             trait_type="Type",
@@ -86,7 +88,7 @@ class PunksParser(CollectionParser):
 
         return attributes
 
-    def parse_metadata(self, token: Token, *args, **kwargs) -> Metadata:
+    def parse_metadata(self, token: Token, *args, **kwargs) -> Metadata:  # type: ignore[no-untyped-def]  # noqa: E501
         token.uri = f"https://api.wrappedpunks.com/api/punks/metadata/{token.token_id}"
         raw_data = self.fetcher.fetch_content(token.uri)
         mime, _ = self.fetcher.fetch_mime_type_and_size(token.uri)
@@ -97,9 +99,9 @@ class PunksParser(CollectionParser):
             token=token,
             raw_data=raw_data,
             attributes=self.parse_attributes(token.token_id),
-            name=raw_data.get("name"),
-            description=raw_data.get("description"),
+            name=raw_data.get("name"),  # type: ignore[union-attr]
+            description=raw_data.get("description"),  # type: ignore[union-attr]
             mime_type=mime,
             image=image,
-            additional_fields=self.parse_additional_fields(raw_data),
+            additional_fields=self.parse_additional_fields(raw_data),  # type: ignore[arg-type]  # noqa: E501
         )

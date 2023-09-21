@@ -40,27 +40,34 @@ class TestOpenseaParser:
         "edition": 996,
     }
 
-    def test_opensea_parser_should_parse_token(self, raw_crypto_coven_metadata):
+    def test_opensea_parser_should_parse_token(self, raw_crypto_coven_metadata):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         ipfs_adapter = IPFSAdapter()
         fetcher.register_adapter(ipfs_adapter, "ipfs://")
-        parser = OpenseaParser(fetcher=fetcher)
-        assert parser.should_parse_token(token=self.token, raw_data=raw_crypto_coven_metadata) == True
+        parser = OpenseaParser(fetcher=fetcher)  # type: ignore[abstract]
+        assert (
+            parser.should_parse_token(
+                token=self.token, raw_data=raw_crypto_coven_metadata
+            )
+            == True
+        )
 
-    def test_opensea_parser_should_parse_token_raw_data_string(self):
+    def test_opensea_parser_should_parse_token_raw_data_string(self):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         ipfs_adapter = IPFSAdapter()
         fetcher.register_adapter(ipfs_adapter, "ipfs://")
-        parser = OpenseaParser(fetcher=fetcher)
-        assert parser.should_parse_token(token=self.token, raw_data="test") == False
+        parser = OpenseaParser(fetcher=fetcher)  # type: ignore[abstract]
+        assert parser.should_parse_token(token=self.token, raw_data="test") == False  # type: ignore[arg-type]
 
-    def test_opensea_parser_parses_metadata(self, raw_crypto_coven_metadata):
+    def test_opensea_parser_parses_metadata(self, raw_crypto_coven_metadata):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         ipfs_adapter = IPFSAdapter()
         fetcher.register_adapter(ipfs_adapter, "ipfs://")
-        fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", "3095"))
-        parser = OpenseaParser(fetcher=fetcher)
-        metadata = parser.parse_metadata(token=self.token, raw_data=raw_crypto_coven_metadata)
+        fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", "3095"))  # type: ignore[assignment]
+        parser = OpenseaParser(fetcher=fetcher)  # type: ignore[abstract]
+        metadata = parser.parse_metadata(
+            token=self.token, raw_data=raw_crypto_coven_metadata
+        )
         assert metadata == Metadata(
             token=self.token,
             raw_data=raw_crypto_coven_metadata,
@@ -69,7 +76,9 @@ class TestOpenseaParser:
                 Attribute(trait_type="Background", value="Sepia", display_type=None),
                 Attribute(trait_type="Skin Tone", value="Dawn", display_type=None),
                 Attribute(trait_type="Body Shape", value="Lithe", display_type=None),
-                Attribute(trait_type="Top", value="Sheer Top (Black)", display_type=None),
+                Attribute(
+                    trait_type="Top", value="Sheer Top (Black)", display_type=None
+                ),
                 Attribute(
                     trait_type="Eyebrows",
                     value="Medium Flat (Black)",
@@ -79,7 +88,9 @@ class TestOpenseaParser:
                 Attribute(trait_type="Eye Color", value="Cloud", display_type=None),
                 Attribute(trait_type="Mouth", value="Nyx (Mocha)", display_type=None),
                 Attribute(trait_type="Hair (Front)", value="Nyx", display_type=None),
-                Attribute(trait_type="Hair (Back)", value="Nyx Long", display_type=None),
+                Attribute(
+                    trait_type="Hair (Back)", value="Nyx Long", display_type=None
+                ),
                 Attribute(trait_type="Hair Color", value="Steel", display_type=None),
                 Attribute(trait_type="Hat", value="Witch (Black)", display_type=None),
                 Attribute(
@@ -94,7 +105,9 @@ class TestOpenseaParser:
                 ),
                 Attribute(trait_type="Sun Sign", value="Taurus", display_type=None),
                 Attribute(trait_type="Moon Sign", value="Aquarius", display_type=None),
-                Attribute(trait_type="Rising Sign", value="Capricorn", display_type=None),
+                Attribute(
+                    trait_type="Rising Sign", value="Capricorn", display_type=None
+                ),
                 Attribute(trait_type="Will", value="9", display_type="number"),
                 Attribute(trait_type="Wisdom", value="9", display_type="number"),
                 Attribute(trait_type="Wonder", value="9", display_type="number"),
@@ -128,19 +141,21 @@ class TestOpenseaParser:
             ],
         )
 
-    def test_opensea_parser_parses_metadata_with_content(self):
+    def test_opensea_parser_parses_metadata_with_content(self):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         ipfs_adapter = IPFSAdapter()
         fetcher.register_adapter(ipfs_adapter, "ipfs://")
-        fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", "3095"))
-        parser = OpenseaParser(fetcher=fetcher)
+        fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", "3095"))  # type: ignore[assignment]
+        parser = OpenseaParser(fetcher=fetcher)  # type: ignore[abstract]
         token = Token(
             chain_identifier="ETHEREUM-MAINNET",
             collection_address="0x719c6d392fc659f4fe9b0576cbc46e18939687a7",
             token_id=996,
             uri="ipfs://bafybeighjepdqehd2jq3i3q7363r3o24zcoam62ki5bmp6ddsvzwhnktyu/996",
         )
-        metadata = parser.parse_metadata(token=token, raw_data=self.metadata_with_content_raw)
+        metadata = parser.parse_metadata(
+            token=token, raw_data=self.metadata_with_content_raw
+        )
         assert metadata == Metadata(
             token=Token(
                 chain_identifier="ETHEREUM-MAINNET",
@@ -168,7 +183,9 @@ class TestOpenseaParser:
                 Attribute(trait_type="Rings", value="None", display_type=None),
                 Attribute(trait_type="Antenna", value="In", display_type=None),
                 Attribute(trait_type="Butterfly", value="Green", display_type=None),
-                Attribute(trait_type="Track", value="Chasing Paradise", display_type=None),
+                Attribute(
+                    trait_type="Track", value="Chasing Paradise", display_type=None
+                ),
             ],
             standard=None,
             name="Glass House #996",

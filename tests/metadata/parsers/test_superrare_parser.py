@@ -10,7 +10,7 @@ from offchain.metadata.models.metadata import (
     MetadataFieldType,
 )
 from offchain.metadata.models.token import Token
-from offchain.metadata.parsers import SuperRareParser
+from offchain.metadata.parsers import SuperRareParser  # type: ignore[attr-defined]
 from offchain.web3.contract_caller import ContractCaller
 
 
@@ -51,18 +51,18 @@ class TestSuperRareParser:
         ],
     }
 
-    def test_superrare_parser_should_parse_token(self):
+    def test_superrare_parser_should_parse_token(self):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         contract_caller = ContractCaller()
-        parser = SuperRareParser(fetcher=fetcher, contract_caller=contract_caller)
+        parser = SuperRareParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
         assert parser.should_parse_token(token=self.token) == True
 
-    def test_superrare_parser_parses_metadata(self):
+    def test_superrare_parser_parses_metadata(self):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         contract_caller = ContractCaller()
-        fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", 0))
-        fetcher.fetch_content = MagicMock(return_value=self.raw_data)
-        parser = SuperRareParser(fetcher=fetcher, contract_caller=contract_caller)
+        fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", 0))  # type: ignore[assignment]
+        fetcher.fetch_content = MagicMock(return_value=self.raw_data)  # type: ignore[assignment]
+        parser = SuperRareParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
         metadata = parser.parse_metadata(token=self.token, raw_data=self.raw_data)
         assert metadata == Metadata(
             token=self.token,

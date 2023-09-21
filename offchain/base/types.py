@@ -7,7 +7,7 @@ class StringEnum(str, Enum):
     def __repr__(self) -> str:
         return str(self.value)
 
-    def __str__(self):
+    def __str__(self):  # type: ignore[no-untyped-def]
         return str(self.value)
 
     @classmethod

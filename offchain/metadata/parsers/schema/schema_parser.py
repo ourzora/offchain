@@ -12,7 +12,7 @@ class SchemaParser(BaseParser):
 
     Attributes:
         fetcher (BaseFetcher, optional): a fetcher instance for making network requests
-    """
+    """  # noqa: E501
 
-    def __init__(self, fetcher: Optional[BaseFetcher] = None, *args, **kwargs) -> None:
+    def __init__(self, fetcher: Optional[BaseFetcher] = None, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]  # noqa: E501
         self.fetcher = fetcher or MetadataFetcher()

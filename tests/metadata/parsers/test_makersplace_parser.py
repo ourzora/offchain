@@ -9,7 +9,7 @@ from offchain.metadata.models.metadata import (
     Attribute,
 )
 from offchain.metadata.models.token import Token
-from offchain.metadata.parsers import MakersPlaceParser
+from offchain.metadata.parsers import MakersPlaceParser  # type: ignore[attr-defined]
 from offchain.web3.contract_caller import ContractCaller
 
 
@@ -60,16 +60,16 @@ class TestMakersPlaceParser:
         "type": "object",
     }
 
-    def test_makersplace_parser_should_parse_token(self):
+    def test_makersplace_parser_should_parse_token(self):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         contract_caller = ContractCaller()
-        parser = MakersPlaceParser(fetcher=fetcher, contract_caller=contract_caller)
+        parser = MakersPlaceParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
         assert parser.should_parse_token(token=self.token) == True
 
-    def test_makersplace_parser_parses_metadata(self):
+    def test_makersplace_parser_parses_metadata(self):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         contract_caller = ContractCaller()
-        fetcher.fetch_mime_type_and_size = Mock(
+        fetcher.fetch_mime_type_and_size = Mock(  # type: ignore[assignment]
             side_effect=[
                 ("application/json", 0),
                 ("image/jpeg", 1605069),
@@ -78,7 +78,7 @@ class TestMakersPlaceParser:
         )
         # fix this test later
         # fetcher.fetch_content = MagicMock(return_value=self.raw_data)
-        parser = MakersPlaceParser(fetcher=fetcher, contract_caller=contract_caller)
+        parser = MakersPlaceParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
         metadata = parser.parse_metadata(token=self.token, raw_data=self.raw_data)
         assert metadata == Metadata(
             token=Token(
@@ -129,7 +129,9 @@ class TestMakersPlaceParser:
                 },
             },
             attributes=[
-                Attribute(trait_type="name", value="Infinite library", display_type="string"),
+                Attribute(
+                    trait_type="name", value="Infinite library", display_type="string"
+                ),
                 Attribute(
                     trait_type="description",
                     value="using python in cinema 4d",
@@ -171,7 +173,9 @@ class TestMakersPlaceParser:
                     value="mp4",
                     display_type="string",
                 ),
-                Attribute(trait_type="Creator", value="Tyrone Doyle", display_type=None),
+                Attribute(
+                    trait_type="Creator", value="Tyrone Doyle", display_type=None
+                ),
             ],
             standard=None,
             name="Infinite library",

@@ -32,7 +32,7 @@ class MetadataFetcher(BaseFetcher):
         self.async_sess = httpx.AsyncClient()
         self.async_adapter_configs = async_adapter_configs
 
-    def register_adapter(self, adapter: Adapter, url_prefix: str):
+    def register_adapter(self, adapter: Adapter, url_prefix: str):  # type: ignore[no-untyped-def]  # noqa: E501
         """Register an adapter to a url prefix.
 
         Args:
@@ -41,7 +41,7 @@ class MetadataFetcher(BaseFetcher):
         """
         self.sess.mount(url_prefix, adapter)
 
-    def set_max_retries(self, max_retries: int):
+    def set_max_retries(self, max_retries: int):  # type: ignore[no-untyped-def]
         """Setter function for max retries
 
         Args:
@@ -49,7 +49,7 @@ class MetadataFetcher(BaseFetcher):
         """
         self.max_retries = max_retries
 
-    def set_timeout(self, timeout: int):
+    def set_timeout(self, timeout: int):  # type: ignore[no-untyped-def]
         """Setter function for timeout
 
         Args:
@@ -57,11 +57,16 @@ class MetadataFetcher(BaseFetcher):
         """
         self.timeout = timeout
 
-    def _head(self, uri: str):
+    def _head(self, uri: str):  # type: ignore[no-untyped-def]
         return self.sess.head(uri, timeout=self.timeout, allow_redirects=True)
 
-    def _get(self, uri: str):
+    def _get(self, uri: str):  # type: ignore[no-untyped-def]
         return self.sess.get(uri, timeout=self.timeout, allow_redirects=True)
+
+    async def _gen_head(self, uri: str):  # type: ignore[no-untyped-def]
+        return await self.async_sess.head(
+            uri, timeout=self.timeout, follow_redirects=True
+        )
 
     async def _gen(self, uri: str) -> httpx.Response:
         from offchain.metadata.pipelines.metadata_pipeline import (
@@ -111,7 +116,35 @@ class MetadataFetcher(BaseFetcher):
             )
             raise
 
-    def fetch_content(self, uri: str) -> Union[dict, str]:
+    async def gen_fetch_mime_type_and_size(self, uri: str) -> Tuple[str, int]:
+        """Fetch the mime type and size of the content at a given uri.
+
+        Args:
+            uri (str): uri from which to fetch content mime type and size.
+
+        Returns:
+            tuple[str, int]: mime type and size
+        """
+        try:
+            res = await self._gen_head(uri)
+            # For any error status, try a get
+            if 300 <= res.status_code < 600:
+                res = self._gen(uri)
+            res.raise_for_status()
+            headers = res.headers
+            size = headers.get("content-length", 0)
+            content_type = headers.get("content-type") or headers.get("Content-Type")
+            if content_type is not None:
+                content_type, _ = cgi.parse_header(content_type)
+
+            return content_type, size
+        except Exception as e:
+            logger.error(
+                f"Failed to fetch content-type and size from uri {uri}. Error: {e}"
+            )
+            raise
+
+    def fetch_content(self, uri: str) -> Union[dict, str]:  # type: ignore[type-arg]
         """Fetch the content at a given uri
 
         Args:
@@ -124,14 +157,14 @@ class MetadataFetcher(BaseFetcher):
             res = self._get(uri)
             res.raise_for_status()
             if res.text.startswith("{"):
-                return res.json()
+                return res.json()  # type: ignore[no-any-return]
             else:
-                return res.text
+                return res.text  # type: ignore[no-any-return]
 
         except Exception as e:
             raise Exception(f"Don't know how to fetch metadata for {uri=}. {str(e)}")
 
-    async def gen_fetch_content(self, uri: str) -> Union[dict, str]:
+    async def gen_fetch_content(self, uri: str) -> Union[dict, str]:  # type: ignore[type-arg]  # noqa: E501
         """Async fetch the content at a given uri
 
         Args:
@@ -144,7 +177,7 @@ class MetadataFetcher(BaseFetcher):
             res = await self._gen(uri)
             res.raise_for_status()
             if res.text.startswith("{"):
-                return res.json()
+                return res.json()  # type: ignore[no-any-return]
             else:
                 return res.text
 

@@ -15,14 +15,14 @@ class DecentralandParser(CollectionParser):
         CollectionAddress.DECENTRALAND_ESTATE,
     ]
 
-    def parse_additional_fields(self, raw_data: dict) -> list[MetadataField]:
+    def parse_additional_fields(self, raw_data: dict) -> list[MetadataField]:  # type: ignore[type-arg]  # noqa: E501
         additional_fields = []
         if (external_url := raw_data.get("external_url")) is not None:
             additional_fields.append(
                 MetadataField(
                     field_name="external_url",
                     type=MetadataFieldType.TEXT,
-                    description="This property defines an optional external URL that can reference a webpage or "
+                    description="This property defines an optional external URL that can reference a webpage or "  # noqa: E501
                     "external asset for the NFT",
                     value=external_url,
                 )
@@ -42,21 +42,19 @@ class DecentralandParser(CollectionParser):
                 MetadataField(
                     field_name="background_color",
                     type=MetadataFieldType.TEXT,
-                    description="This property defines the background color for the NFT asset",
+                    description="This property defines the background color for the NFT asset",  # noqa: E501
                     value=background_color,
                 )
             )
         return additional_fields
 
-    def parse_metadata(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> Optional[Metadata]:
+    def parse_metadata(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
         if token.uri is None or raw_data is None:
-            token.uri = (
-                f"https://api.decentraland.org/v2/contracts/{token.collection_address.lower()}/tokens/{token.token_id}"
-            )
-            raw_data = self.fetcher.fetch_content(token.uri)
+            token.uri = f"https://api.decentraland.org/v2/contracts/{token.collection_address.lower()}/tokens/{token.token_id}"
+            raw_data = self.fetcher.fetch_content(token.uri)  # type: ignore[assignment]
 
-        metadata = DefaultCatchallParser(self.fetcher).parse_metadata(token=token, raw_data=raw_data)
-        metadata.additional_fields = self.parse_additional_fields(raw_data)
-        metadata.mime_type = "application/json"
+        metadata = DefaultCatchallParser(self.fetcher).parse_metadata(token=token, raw_data=raw_data)  # type: ignore[arg-type]  # noqa: E501
+        metadata.additional_fields = self.parse_additional_fields(raw_data)  # type: ignore[arg-type, union-attr]  # noqa: E501
+        metadata.mime_type = "application/json"  # type: ignore[union-attr]
 
         return metadata

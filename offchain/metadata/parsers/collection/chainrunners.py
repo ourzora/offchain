@@ -27,10 +27,10 @@ class ChainRunnersParser(CollectionParser):
 
         return results[0]
 
-    def parse_metadata(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> Optional[Metadata]:
+    def parse_metadata(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
         if token.uri is None or raw_data is None:
             dna = self.get_dna(token.token_id)
             token.uri = f"https://api.chainrunners.xyz/tokens/metadata/{token.token_id}?dna={dna}"
-            raw_data = self.fetcher.fetch_content(token.uri)
+            raw_data = self.fetcher.fetch_content(token.uri)  # type: ignore[assignment]
 
-        return DefaultCatchallParser(self.fetcher).parse_metadata(token=token, raw_data=raw_data)
+        return DefaultCatchallParser(self.fetcher).parse_metadata(token=token, raw_data=raw_data)  # type: ignore[arg-type]  # noqa: E501

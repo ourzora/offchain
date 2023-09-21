@@ -19,7 +19,7 @@ class Seeds:
     glasses: str
 
     @classmethod
-    def from_raw(
+    def from_raw(  # type: ignore[no-untyped-def]
         cls,
         background_index: int,
         body_index: int,
@@ -43,11 +43,13 @@ class NounsParser(CollectionParser):
         CollectionAddress.LIL_NOUNS,
     ]
 
-    def get_image(self, raw_data: dict) -> Optional[MediaDetails]:
+    def get_image(self, raw_data: dict) -> Optional[MediaDetails]:  # type: ignore[type-arg]  # noqa: E501
         raw_image_uri = raw_data.get("image")
-        image_uri = quote(self.fetcher.fetch_content(raw_image_uri))
+        image_uri = quote(self.fetcher.fetch_content(raw_image_uri))  # type: ignore[arg-type]  # noqa: E501
 
-        return MediaDetails(uri=image_uri, size=None, sha256=None, mime_type="image/svg+xml")
+        return MediaDetails(
+            uri=image_uri, size=None, sha256=None, mime_type="image/svg+xml"
+        )  # noqa: E501
 
     def seeds(self, token: Token) -> Optional[Seeds]:
         results = self.contract_caller.single_address_single_fn_many_args(
@@ -63,14 +65,14 @@ class NounsParser(CollectionParser):
         result = results[0]
 
         seeds = Seeds.from_raw(
-            background_index=result[0],
-            body_index=result[1],
-            accessory_index=result[2],
-            head_index=result[3],
-            glasses_index=result[4],
+            background_index=result[0],  # type: ignore[index]
+            body_index=result[1],  # type: ignore[index]
+            accessory_index=result[2],  # type: ignore[index]
+            head_index=result[3],  # type: ignore[index]
+            glasses_index=result[4],  # type: ignore[index]
         )
 
-        return seeds
+        return seeds  # type: ignore[no-any-return]
 
     def get_uri(self, token: Token) -> Optional[str]:
         results = self.contract_caller.single_address_single_fn_many_args(
@@ -100,11 +102,11 @@ class NounsParser(CollectionParser):
             for trait, value in seeds.__dict__.items()
         ]
 
-    def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Metadata:
+    def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Metadata:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
         token.uri = self.get_uri(token)
 
-        raw_data = self.fetcher.fetch_content(token.uri)
-        mime_type, _ = self.fetcher.fetch_mime_type_and_size(token.uri)
+        raw_data = self.fetcher.fetch_content(token.uri)  # type: ignore[arg-type, assignment]  # noqa: E501
+        mime_type, _ = self.fetcher.fetch_mime_type_and_size(token.uri)  # type: ignore[arg-type]  # noqa: E501
 
         return Metadata(
             token=token,

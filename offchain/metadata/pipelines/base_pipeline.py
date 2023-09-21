@@ -7,6 +7,6 @@ class BasePipeline(Protocol):
     def __init__(self) -> None:
         pass
 
-    def run(self):
+    def run(self):  # type: ignore[no-untyped-def]
         """Runs the pipeline"""
         pass

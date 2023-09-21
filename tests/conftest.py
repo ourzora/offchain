@@ -4,7 +4,7 @@ import pytest
 
 
 @pytest.fixture
-def raw_crypto_coven_metadata():
+def raw_crypto_coven_metadata():  # type: ignore[no-untyped-def]
     return {
         "description": "You are a WITCH of the highest order. You are borne of chaos that gives the night shape. Your magic spawns from primordial darkness. You are called oracle by those wise enough to listen. ALL THEOLOGY STEMS FROM THE TERROR OF THE FIRMAMENT!",
         "external_url": "https://www.cryptocoven.xyz/witches/1",

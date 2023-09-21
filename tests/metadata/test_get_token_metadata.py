@@ -1,7 +1,7 @@
 # flake8: noqa: E501
 
 from unittest import mock
-from offchain import Metadata, Token
+from offchain import Metadata, Token  # type: ignore[attr-defined]
 from offchain.metadata.get_token_metadata import get_token_metadata
 from offchain.metadata.models.metadata import (
     Attribute,
@@ -12,9 +12,11 @@ from offchain.metadata.models.metadata import (
 )
 
 
-@mock.patch("offchain.metadata.fetchers.metadata_fetcher.MetadataFetcher.fetch_mime_type_and_size")
+@mock.patch(
+    "offchain.metadata.fetchers.metadata_fetcher.MetadataFetcher.fetch_mime_type_and_size"
+)
 @mock.patch("offchain.metadata.fetchers.metadata_fetcher.MetadataFetcher.fetch_content")
-def test_get_token_metadata(mock_fetch_content, mock_fetch_mime_type_and_size, raw_crypto_coven_metadata):
+def test_get_token_metadata(mock_fetch_content, mock_fetch_mime_type_and_size, raw_crypto_coven_metadata):  # type: ignore[no-untyped-def]
     mock_fetch_content.return_value = raw_crypto_coven_metadata
     mock_fetch_mime_type_and_size.return_value = ("application/json", "3095")
     assert get_token_metadata(

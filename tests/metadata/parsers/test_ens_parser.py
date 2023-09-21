@@ -11,7 +11,7 @@ from offchain.metadata.models.metadata import (
     MetadataFieldType,
 )
 from offchain.metadata.models.token import Token
-from offchain.metadata.parsers import ENSParser
+from offchain.metadata.parsers import ENSParser  # type: ignore[attr-defined]
 from offchain.web3.contract_caller import ContractCaller
 
 
@@ -59,19 +59,19 @@ class TestENSParser:
         "image_url": "https://metadata.ens.domains/mainnet/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/0x165a16ce2915e51295772b6a67bfc8ceee2c1c7caa85591fba107af4ee24f704/image",
     }
 
-    def test_ens_parser_should_parse_token(self):
+    def test_ens_parser_should_parse_token(self):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         contract_caller = ContractCaller()
-        parser = ENSParser(fetcher=fetcher, contract_caller=contract_caller)
+        parser = ENSParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
         assert parser.should_parse_token(token=self.token) == True
 
-    def test_ens_parser_parses_metadata(self):
+    def test_ens_parser_parses_metadata(self):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         contract_caller = ContractCaller()
-        fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", 0))
-        fetcher.fetch_content = MagicMock(return_value=self.raw_data)
-        parser = ENSParser(fetcher=fetcher, contract_caller=contract_caller)
-        metadata = parser.parse_metadata(token=self.token, raw_data=None)
+        fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", 0))  # type: ignore[assignment]
+        fetcher.fetch_content = MagicMock(return_value=self.raw_data)  # type: ignore[assignment]
+        parser = ENSParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
+        metadata = parser.parse_metadata(token=self.token, raw_data=None)  # type: ignore[arg-type]
         assert metadata == Metadata(
             token=Token(
                 chain_identifier="ETHEREUM-MAINNET",
@@ -126,8 +126,12 @@ class TestENSParser:
                     display_type="date",
                 ),
                 Attribute(trait_type="Length", value="5", display_type="number"),
-                Attribute(trait_type="Segment Length", value="5", display_type="number"),
-                Attribute(trait_type="Character Set", value="letter", display_type="string"),
+                Attribute(
+                    trait_type="Segment Length", value="5", display_type="number"
+                ),
+                Attribute(
+                    trait_type="Character Set", value="letter", display_type="string"
+                ),
                 Attribute(
                     trait_type="Registration Date",
                     value="1633123738000",

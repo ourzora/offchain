@@ -32,18 +32,18 @@ class TestLootParser:
 
     image_uri = '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 350 350"><style>.base { fill: white; font-family: serif; font-size: 14px; }</style><rect width="100%" height="100%" fill="black" /><text x="10" y="20" class="base">Quarterstaff</text><text x="10" y="40" class="base">Hard Leather Armor of Brilliance</text><text x="10" y="60" class="base">Linen Hood of Perfection</text><text x="10" y="80" class="base">Ornate Belt</text><text x="10" y="100" class="base">Leather Boots of Skill</text><text x="10" y="120" class="base">Dragonskin Gloves of Anger</text><text x="10" y="140" class="base">Necklace</text><text x="10" y="160" class="base">Titanium Ring</text></svg>'
 
-    def test_loot_parser_should_parse_token(self):
+    def test_loot_parser_should_parse_token(self):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         contract_caller = ContractCaller()
-        parser = LootParser(fetcher=fetcher, contract_caller=contract_caller)
+        parser = LootParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
         assert parser.should_parse_token(token=self.token) == True
 
-    def test_loot_parser_parses_metadata(self):
+    def test_loot_parser_parses_metadata(self):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         contract_caller = ContractCaller()
-        fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", 0))
-        fetcher.fetch_content = Mock(side_effect=[self.raw_data, self.image_uri])
-        parser = LootParser(fetcher=fetcher, contract_caller=contract_caller)
+        fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", 0))  # type: ignore[assignment]
+        fetcher.fetch_content = Mock(side_effect=[self.raw_data, self.image_uri])  # type: ignore[assignment]
+        parser = LootParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
         metadata = parser.parse_metadata(token=self.token, raw_data=self.raw_data)
         assert metadata == Metadata(
             token=Token(
@@ -67,7 +67,9 @@ class TestLootParser:
                     value="Hard Leather Armor of Brilliance",
                     display_type=None,
                 ),
-                Attribute(trait_type="Foot", value="Leather Boots of Skill", display_type=None),
+                Attribute(
+                    trait_type="Foot", value="Leather Boots of Skill", display_type=None
+                ),
                 Attribute(
                     trait_type="Hand",
                     value="Dragonskin Gloves of Anger",
