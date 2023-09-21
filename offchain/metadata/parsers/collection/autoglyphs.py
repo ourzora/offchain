@@ -2,6 +2,7 @@ import asyncio
 from typing import Optional
 
 from offchain.constants.addresses import CollectionAddress
+from offchain.logger.logging import logger
 from offchain.metadata.constants.autoglyphs import get_symbol_by_index
 from offchain.metadata.models.metadata import (
     Attribute,
@@ -107,8 +108,10 @@ class AutoglyphsParser(CollectionParser):
             content_type, size = await self.fetcher.gen_fetch_mime_type_and_size(image_uri)  # type: ignore[arg-type]  # noqa: E501
             details.mime_type = content_type
             details.size = size
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(
+                f"{self.__class__.__name__} fail to fetch image details {image_uri=}. {str(e)}"
+            )
         return details
 
     def get_content_details(self, index: int) -> Optional[MediaDetails]:

@@ -131,8 +131,10 @@ class ENSParser(CollectionParser):
                 image.mime_type = content_type
                 image.size = size
                 return image
-            except Exception:
-                pass
+            except Exception as e:
+                logger.error(
+                    f"{self.__class__.__name__} fail to fetch image {image_uri=}. {str(e)}"
+                )
 
     async def gen_background_image(self, raw_data: dict) -> Optional[MediaDetails]:  # type: ignore[return, type-arg]  # noqa: E501
         bg_image_uri = raw_data.get("background_image")
@@ -147,8 +149,10 @@ class ENSParser(CollectionParser):
                 image.mime_type = content_type
                 image.size = size
                 return image
-            except Exception:
-                pass
+            except Exception as e:
+                logger.error(
+                    f"{self.__class__.__name__} fail to fetch background image {bg_image_uri=}. {str(e)}"
+                )
 
     async def _gen_parse_metadata_impl(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
         ens_chain_name = self.make_ens_chain_name(token.chain_identifier)

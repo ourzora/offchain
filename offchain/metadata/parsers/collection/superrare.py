@@ -2,6 +2,7 @@ import asyncio
 from typing import Optional
 
 from offchain.constants.addresses import CollectionAddress
+from offchain.logger.logging import logger
 from offchain.metadata.models.metadata import (
     MediaDetails,
     Metadata,
@@ -41,8 +42,10 @@ class SuperRareParser(CollectionParser):
             )
             details.mime_type = content_type
             details.size = size
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(
+                f"{self.__class__.__name__} fail to fetch image {image_uri=}. {str(e)}"
+            )
         return details
 
     def get_content_details(self, raw_data: dict) -> Optional[MediaDetails]:  # type: ignore[type-arg]  # noqa: E501
@@ -88,8 +91,11 @@ class SuperRareParser(CollectionParser):
                 )
                 details.mime_type = content_type
                 details.size = size
-            except Exception:
-                pass
+            except Exception as e:
+                logger.error(
+                    f"{self.__class__.__name__} fail to fetch content type and size "
+                    f"{content_uri=}. {str(e)}"
+                )
 
         return details
 

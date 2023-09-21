@@ -2,6 +2,7 @@ import asyncio
 from typing import Optional
 
 from offchain.constants.addresses import CollectionAddress
+from offchain.logger.logging import logger
 from offchain.metadata.models.metadata import (
     Attribute,
     MediaDetails,
@@ -260,8 +261,10 @@ class ArtblocksParser(CollectionParser):
                 image.mime_type = content_type
                 image.size = size
                 return image
-            except Exception:
-                pass
+            except Exception as e:
+                logger.error(
+                    f"{self.__class__.__name__} fail to fetch image {image_uri=}. {str(e)}"
+                )
 
     async def _gen_parse_metadata_impl(
         self, token: Token, raw_data: dict, *args, **kwargs

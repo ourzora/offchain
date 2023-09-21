@@ -1,6 +1,7 @@
 import asyncio
 from typing import Optional
 
+from offchain.logger.logging import logger
 from offchain.metadata.models.metadata import Attribute, MediaDetails, Metadata
 from offchain.metadata.models.token import Token
 from offchain.metadata.parsers.catchall.catchall_parser import CatchallParser
@@ -100,8 +101,10 @@ class DefaultCatchallParser(CatchallParser):
             )
             details.size = size
             details.mime_type = content_type
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(
+                f"{self.__class__.__name__} fail to fetch image {image_uri=}. {str(e)}"
+            )
 
         if isinstance(raw_data.get("image_details"), dict):
             details.size = raw_data["image_details"].get("size")
@@ -142,8 +145,11 @@ class DefaultCatchallParser(CatchallParser):
             )
             details.size = size
             details.mime_type = content_type
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(
+                f"{self.__class__.__name__} fail to fetch mime_type_and_size "
+                f"{content_uri=}. {str(e)}"
+            )
         if isinstance(raw_data.get("animation_details"), dict):
             details.size = raw_data["animation_details"].get("size")
             details.sha256 = raw_data["animation_details"].get("sha256")

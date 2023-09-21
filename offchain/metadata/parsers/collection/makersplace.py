@@ -1,6 +1,7 @@
 from typing import Optional
 
 from offchain.constants.addresses import CollectionAddress
+from offchain.logger.logging import logger
 from offchain.metadata.adapters.ipfs import build_request_url
 from offchain.metadata.models.metadata import MediaDetails, Metadata
 from offchain.metadata.models.token import Token
@@ -86,8 +87,10 @@ class MakersPlaceParser(CollectionParser):
             content_type, size = await self.fetcher.gen_fetch_mime_type_and_size(url)
             details.mime_type = content_type
             details.size = size
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(
+                f"{self.__class__.__name__} fail to fetch content detail {url=}. {str(e)}"
+            )
 
         return details
 

@@ -2,6 +2,7 @@ import asyncio
 from typing import Optional
 
 from offchain.constants.addresses import CollectionAddress
+from offchain.logger.logging import logger
 from offchain.metadata.models.metadata import (
     Attribute,
     MediaDetails,
@@ -97,8 +98,10 @@ class HashmasksParser(CollectionParser):
                 image.mime_type = content_type
                 image.size = size
                 return image
-            except Exception:
-                pass
+            except Exception as e:
+                logger.error(
+                    f"{self.__class__.__name__} fail to fetch image {image_uri=}. {str(e)}"
+                )
 
     def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
         token.uri = f"https://hashmap.azurewebsites.net/getMask/{token.token_id}"

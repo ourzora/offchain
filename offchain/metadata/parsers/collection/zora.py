@@ -2,6 +2,7 @@ import asyncio
 from typing import Optional
 
 from offchain.constants.addresses import CollectionAddress
+from offchain.logger.logging import logger
 from offchain.metadata.models.metadata import (
     MediaDetails,
     Metadata,
@@ -99,8 +100,8 @@ class ZoraParser(CollectionParser):
         try:
             content_type, size = await self.fetcher.gen_fetch_mime_type_and_size(uri)
             return MediaDetails(uri=uri, size=size, sha256=None, mime_type=content_type)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"{self.__class__.__name__} fail to content {uri=}. {str(e)}")
 
         return None
 
