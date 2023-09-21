@@ -23,7 +23,7 @@ class BaseFetcher(Protocol):
     ) -> None:
         pass
 
-    def set_timeout(self, new_timeout: int):
+    def set_timeout(self, new_timeout: int):  # type: ignore[no-untyped-def]
         """Setter function for timeout
 
         Args:
@@ -31,7 +31,7 @@ class BaseFetcher(Protocol):
         """
         pass
 
-    def set_max_retries(self, new_max_retries: int):
+    def set_max_retries(self, new_max_retries: int):  # type: ignore[no-untyped-def]
         """Setter function for max retries
 
         Args:
@@ -39,7 +39,7 @@ class BaseFetcher(Protocol):
         """
         pass
 
-    def register_adapter(self, adapter: Adapter, url_prefix: str):
+    def register_adapter(self, adapter: Adapter, url_prefix: str):  # type: ignore[no-untyped-def]  # noqa: E501
         """Register an adapter to a url prefix.
 
         Args:
@@ -59,7 +59,18 @@ class BaseFetcher(Protocol):
         """
         pass
 
-    def fetch_content(self, uri: str) -> Union[dict, str]:
+    async def gen_fetch_mime_type_and_size(self, uri: str) -> tuple[str, int]:
+        """Fetch the mime type and size of the content at a given uri.
+
+        Args:
+            uri (str): uri from which to fetch content mime type and size.
+
+        Returns:
+            tuple[str, int]: mime type and size
+        """
+        pass
+
+    def fetch_content(self, uri: str) -> Union[dict, str]:  # type: ignore[type-arg]
         """Fetch the content at a given uri
 
         Args:
@@ -70,7 +81,7 @@ class BaseFetcher(Protocol):
         """
         pass
 
-    async def gen_fetch_content(self, uri: str) -> Union[dict, str]:
+    async def gen_fetch_content(self, uri: str) -> Union[dict, str]:  # type: ignore[type-arg]  # noqa: E501
         """Async fetch the content at a given uri
 
         Args:

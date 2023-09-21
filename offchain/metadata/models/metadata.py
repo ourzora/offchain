@@ -1,7 +1,7 @@
 from typing import Any, Optional
 
 from offchain.base.types import StringEnum
-from offchain.base.base_model import BaseModel
+from offchain.base.base_model import BaseModel  # type: ignore[attr-defined]
 from offchain.metadata.models.token import Token
 
 
@@ -64,7 +64,7 @@ class MetadataField(BaseModel):
         type (MetadataFieldType): metadata field type.
         description (str, optional): a description of what this metadata field represents.
         value (any): the value of the metadata field.
-    """
+    """  # noqa: E501
 
     field_name: str
     type: MetadataFieldType
@@ -94,11 +94,11 @@ class Metadata(BaseModel):
         additional_fields (list[MetadataField], optional): any additional metadata fields
             that don't fit in the defined schema.
 
-    """
+    """  # noqa: E501
 
     token: Token
 
-    raw_data: dict
+    raw_data: dict  # type: ignore[type-arg]
     attributes: list[Attribute]
     standard: Optional[MetadataStandard] = None
     name: Optional[str] = None

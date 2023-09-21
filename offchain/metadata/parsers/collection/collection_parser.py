@@ -20,18 +20,22 @@ class CollectionParser(BaseParser):
             Defaults to MetadataStandard.COLLECTION_STANDARD.
         fetcher (BaseFetcher, optional): a fetcher instance for making network requests.
         contract_caller (ContractCaller, optional): a contract caller instance for fetching data from contracts.
-    """
+    """  # noqa: E501
 
     _COLLECTION_ADDRESSES: list[str]
     _METADATA_STANDARD: MetadataStandard = MetadataStandard.COLLECTION_STANDARD
 
-    def __init__(
-        self, fetcher: Optional[BaseFetcher] = None, contract_caller: Optional[ContractCaller] = None, *args, **kwargs
+    def __init__(  # type: ignore[no-untyped-def]
+        self,
+        fetcher: Optional[BaseFetcher] = None,
+        contract_caller: Optional[ContractCaller] = None,
+        *args,
+        **kwargs  # noqa: E501
     ) -> None:
         self.contract_caller = contract_caller or ContractCaller()
         self.fetcher = fetcher or MetadataFetcher()
 
-    def should_parse_token(self, token: Token, *args, **kwargs) -> bool:
+    def should_parse_token(self, token: Token, *args, **kwargs) -> bool:  # type: ignore[no-untyped-def]  # noqa: E501
         """Return whether or not a collection parser should parse a given token.
 
         Args:
@@ -40,4 +44,6 @@ class CollectionParser(BaseParser):
         Returns:
             bool: whether or not the collection parser handles this token.
         """
-        return token.collection_address.lower() in [address.lower() for address in self._COLLECTION_ADDRESSES]
+        return token.collection_address.lower() in [
+            address.lower() for address in self._COLLECTION_ADDRESSES
+        ]  # noqa: E501

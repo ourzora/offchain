@@ -1,13 +1,15 @@
 # flake8: noqa: E501
-from unittest.mock import MagicMock, Mock
+from unittest.mock import AsyncMock, MagicMock, Mock
+
+import pytest
 
 from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 from offchain.metadata.models.metadata import (
+    Attribute,
     MediaDetails,
     Metadata,
     MetadataField,
     MetadataFieldType,
-    Attribute,
 )
 from offchain.metadata.models.token import Token
 from offchain.metadata.parsers.collection.artblocks import ArtblocksParser
@@ -76,18 +78,18 @@ class TestArtblocksParser:
         "license": "CC BY-NC 4.0",
     }
 
-    def test_artblocks_parser_should_parse_token(self):
+    def test_artblocks_parser_should_parse_token(self):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         contract_caller = ContractCaller()
-        parser = ArtblocksParser(fetcher=fetcher, contract_caller=contract_caller)
+        parser = ArtblocksParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
         assert parser.should_parse_token(token=self.token)
 
-    def test_artblocks_parser_parses_metadata(self):
+    def test_artblocks_parser_parses_metadata(self):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         contract_caller = ContractCaller()
-        fetcher.fetch_mime_type_and_size = Mock(side_effect=[("application/json", 0), ("image/png", 3295933)])
-        fetcher.fetch_content = MagicMock(return_value=self.raw_data)
-        parser = ArtblocksParser(fetcher=fetcher, contract_caller=contract_caller)
+        fetcher.fetch_mime_type_and_size = Mock(side_effect=[("application/json", 0), ("image/png", 3295933)])  # type: ignore[assignment]
+        fetcher.fetch_content = MagicMock(return_value=self.raw_data)  # type: ignore[assignment]
+        parser = ArtblocksParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
         metadata = parser.parse_metadata(token=self.token, raw_data=self.raw_data)
         assert metadata == Metadata(
             token=Token(
@@ -151,16 +153,30 @@ class TestArtblocksParser:
                 "license": "CC BY-NC 4.0",
             },
             attributes=[
-                Attribute(trait_type="Tentura", value="All Tenturas", display_type=None),
+                Attribute(
+                    trait_type="Tentura", value="All Tenturas", display_type=None
+                ),
                 Attribute(trait_type="Tentura", value="Fog: Yes", display_type=None),
                 Attribute(trait_type="Tentura", value="Mask: Edges", display_type=None),
-                Attribute(trait_type="Tentura", value="Mode: Partial", display_type=None),
+                Attribute(
+                    trait_type="Tentura", value="Mode: Partial", display_type=None
+                ),
                 Attribute(trait_type="Tentura", value="Beams: Less", display_type=None),
-                Attribute(trait_type="Tentura", value="Shape: Two lines", display_type=None),
-                Attribute(trait_type="Tentura", value="Layout: Bent", display_type=None),
-                Attribute(trait_type="Tentura", value="Palette: Dawn", display_type=None),
-                Attribute(trait_type="Tentura", value="Grayscale: None", display_type=None),
-                Attribute(trait_type="Tentura", value="Background: Lighten", display_type=None),
+                Attribute(
+                    trait_type="Tentura", value="Shape: Two lines", display_type=None
+                ),
+                Attribute(
+                    trait_type="Tentura", value="Layout: Bent", display_type=None
+                ),
+                Attribute(
+                    trait_type="Tentura", value="Palette: Dawn", display_type=None
+                ),
+                Attribute(
+                    trait_type="Tentura", value="Grayscale: None", display_type=None
+                ),
+                Attribute(
+                    trait_type="Tentura", value="Background: Lighten", display_type=None
+                ),
                 Attribute(
                     trait_type="Tentura",
                     value="Distribution: Circle",
@@ -317,3 +333,13 @@ class TestArtblocksParser:
                 ),
             ],
         )
+
+    @pytest.mark.asyncio
+    async def test_artblocks_parser_gen_parses_metadata(self):  # type: ignore[no-untyped-def]
+        fetcher = MetadataFetcher()
+        contract_caller = ContractCaller()
+        parser = ArtblocksParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
+        metadata = await parser.gen_parse_metadata(
+            token=self.token, raw_data=self.raw_data
+        )
+        assert metadata

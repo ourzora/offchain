@@ -2,7 +2,7 @@ from pydantic import validator
 import re
 from typing import Optional
 
-from offchain.base.base_model import BaseModel
+from offchain.base.base_model import BaseModel  # type: ignore[attr-defined]
 
 
 class Token(BaseModel):
@@ -23,10 +23,10 @@ class Token(BaseModel):
     uri: Optional[str] = None
 
     @validator("chain_identifier")
-    def validate_chain_identifier(cls, chain_identifier):
+    def validate_chain_identifier(cls, chain_identifier):  # type: ignore[no-untyped-def]  # noqa: E501
         if not re.match("^[A-Z]*-[A-Z]*$", chain_identifier):
             raise ValueError(
-                "Expected chain identifier to be formatted as NETWORKNAME-CHAINNAME, e.g. ETHEREUM-MAINNET"
+                "Expected chain identifier to be formatted as NETWORKNAME-CHAINNAME, e.g. ETHEREUM-MAINNET"  # noqa: E501
             )
 
         return chain_identifier

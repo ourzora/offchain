@@ -18,9 +18,9 @@ class ARWeaveAdapter(HTTPAdapter):
         key (str, optional): optional key to send with request
         secret (str, optional): optional secret to send with request
         timeout (int): request timeout in seconds. Defaults to 10 seconds.
-    """
+    """  # noqa: E501
 
-    def __init__(
+    def __init__(  # type: ignore[no-untyped-def]
         self,
         host_prefixes: Optional[list[str]] = None,
         key: Optional[str] = None,
@@ -59,7 +59,7 @@ class ARWeaveAdapter(HTTPAdapter):
             url = new_url
         return url
 
-    async def gen_send(self, url: str, sess: httpx.AsyncClient(), *args, **kwargs) -> httpx.Response:
+    async def gen_send(self, url: str, sess: httpx.AsyncClient(), *args, **kwargs) -> httpx.Response:  # type: ignore[no-untyped-def, valid-type]  # noqa: E501
         """Format and send async request to ARWeave host.
 
         Args:
@@ -69,9 +69,9 @@ class ARWeaveAdapter(HTTPAdapter):
         Returns:
             httpx.Response: response from ARWeave host.
         """
-        return await sess.get(self.parse_ar_url(url), timeout=self.timeout, follow_redirects=True)
+        return await sess.get(self.parse_ar_url(url), timeout=self.timeout, follow_redirects=True)  # type: ignore[no-any-return]  # noqa: E501
 
-    def send(self, request: PreparedRequest, *args, **kwargs) -> Response:
+    def send(self, request: PreparedRequest, *args, **kwargs) -> Response:  # type: ignore[no-untyped-def]  # noqa: E501
         """Format and send request to ARWeave host.
 
         Args:
@@ -80,6 +80,6 @@ class ARWeaveAdapter(HTTPAdapter):
         Returns:
             Response: response from ARWeave host.
         """
-        request.url = self.parse_ar_url(request.url)
+        request.url = self.parse_ar_url(request.url)  # type: ignore[arg-type]
         kwargs["timeout"] = self.timeout
         return super().send(request, *args, **kwargs)

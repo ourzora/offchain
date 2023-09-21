@@ -10,10 +10,10 @@ from urllib3.util.retry import Retry
 class BaseAdapter(RequestsBaseAdapter):
     """Base Adapter inheriting from requests BaseAdapter"""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):  # type: ignore[no-untyped-def]
         super().__init__()
 
-    async def gen_send(self, url: str, *args, **kwargs) -> httpx.Response:
+    async def gen_send(self, url: str, *args, **kwargs) -> httpx.Response:  # type: ignore[no-untyped-def]  # noqa: E501
         """Format and send async request to url host.
 
         Args:
@@ -28,18 +28,18 @@ class BaseAdapter(RequestsBaseAdapter):
 class HTTPAdapter(RequestsHTTPAdapter):
     """HTTP Adapter inheriting from requests HTTPAdapter"""
 
-    def __init__(
+    def __init__(  # type: ignore[no-untyped-def]
         self,
-        pool_connections: int = ...,
-        pool_maxsize: int = ...,
-        max_retries: Union[Retry, int, None] = ...,
-        pool_block: bool = ...,
+        pool_connections: int = ...,  # type: ignore[assignment]
+        pool_maxsize: int = ...,  # type: ignore[assignment]
+        max_retries: Union[Retry, int, None] = ...,  # type: ignore[assignment]
+        pool_block: bool = ...,  # type: ignore[assignment]
         *args,
         **kwargs
     ) -> None:
         super().__init__(pool_connections, pool_maxsize, max_retries, pool_block)
 
-    async def gen_send(self, url: str, sess: httpx.AsyncClient(), *args, **kwargs) -> httpx.Response:
+    async def gen_send(self, url: str, sess: httpx.AsyncClient(), *args, **kwargs) -> httpx.Response:  # type: ignore[no-untyped-def, valid-type]  # noqa: E501
         """Format and send async request to url host.
 
         Args:
@@ -48,7 +48,7 @@ class HTTPAdapter(RequestsHTTPAdapter):
         Returns:
             httpx.Response: response from host.
         """
-        return await sess.get(url, follow_redirects=True)
+        return await sess.get(url, follow_redirects=True)  # type: ignore[no-any-return]
 
 
 Adapter = Union[BaseAdapter, HTTPAdapter]
@@ -59,4 +59,4 @@ class AdapterConfig:
     adapter_cls: Type[Adapter]
     mount_prefixes: list[str]
     host_prefixes: Optional[list[str]] = None
-    kwargs: dict = field(default_factory=dict)
+    kwargs: dict = field(default_factory=dict)  # type: ignore[type-arg]

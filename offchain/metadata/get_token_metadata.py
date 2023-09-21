@@ -1,6 +1,6 @@
 from typing import Optional, Union
 
-from offchain.metadata.models import (
+from offchain.metadata.models import (  # type: ignore[attr-defined]
     Metadata,
     MetadataProcessingError,
     Token,

@@ -1,13 +1,15 @@
 # flake8: noqa: E501
 from unittest.mock import MagicMock
 
+import pytest
+
 from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 from offchain.metadata.models.metadata import (
+    Attribute,
     MediaDetails,
     Metadata,
     MetadataField,
     MetadataFieldType,
-    Attribute,
 )
 from offchain.metadata.models.token import Token
 from offchain.metadata.parsers.collection.hashmasks import HashmasksParser
@@ -35,18 +37,18 @@ class TestHashmasksParser:
         ],
     }
 
-    def test_hashmasks_parser_should_parse_token(self):
+    def test_hashmasks_parser_should_parse_token(self):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         contract_caller = ContractCaller()
-        parser = HashmasksParser(fetcher=fetcher, contract_caller=contract_caller)
+        parser = HashmasksParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
         assert parser.should_parse_token(token=self.token)
 
-    def test_hashmasks_parser_parses_metadata(self):
+    def test_hashmasks_parser_parses_metadata(self):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         contract_caller = ContractCaller()
-        fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", 712674))
-        fetcher.fetch_content = MagicMock(return_value=self.raw_data)
-        parser = HashmasksParser(fetcher=fetcher, contract_caller=contract_caller)
+        fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", 712674))  # type: ignore[assignment]
+        fetcher.fetch_content = MagicMock(return_value=self.raw_data)  # type: ignore[assignment]
+        parser = HashmasksParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
         metadata = parser.parse_metadata(token=self.token, raw_data=self.raw_data)
         assert metadata == Metadata(
             token=Token(
@@ -95,3 +97,13 @@ class TestHashmasksParser:
                 ),
             ],
         )
+
+    @pytest.mark.asyncio
+    async def test_hashmasks_parser_gen_parses_metadata(self):  # type: ignore[no-untyped-def]
+        fetcher = MetadataFetcher()
+        contract_caller = ContractCaller()
+        parser = HashmasksParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
+        metadata = await parser.gen_parse_metadata(
+            token=self.token, raw_data=self.raw_data
+        )
+        assert metadata
