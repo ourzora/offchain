@@ -50,7 +50,10 @@ class DecentralandParser(CollectionParser):
 
     def parse_metadata(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
         if token.uri is None or raw_data is None:
-            token.uri = f"https://api.decentraland.org/v2/contracts/{token.collection_address.lower()}/tokens/{token.token_id}"
+            token.uri = (
+                "https://api.decentraland.org/v2/contracts/"
+                f"{token.collection_address.lower()}/tokens/{token.token_id}"
+            )
             raw_data = self.fetcher.fetch_content(token.uri)  # type: ignore[assignment]
 
         metadata = DefaultCatchallParser(self.fetcher).parse_metadata(token=token, raw_data=raw_data)  # type: ignore[arg-type]  # noqa: E501
@@ -61,7 +64,10 @@ class DecentralandParser(CollectionParser):
 
     async def _gen_parse_metadata_impl(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
         if token.uri is None or raw_data is None:
-            token.uri = f"https://api.decentraland.org/v2/contracts/{token.collection_address.lower()}/tokens/{token.token_id}"
+            token.uri = (
+                "https://api.decentraland.org/v2/contracts/"
+                f"{token.collection_address.lower()}/tokens/{token.token_id}"
+            )
             raw_data = await self.fetcher.gen_fetch_content(token.uri)  # type: ignore[assignment]
 
         metadata = await DefaultCatchallParser(self.fetcher).gen_parse_metadata(token=token, raw_data=raw_data)  # type: ignore[arg-type]  # noqa: E501

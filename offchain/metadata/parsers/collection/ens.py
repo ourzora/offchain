@@ -101,7 +101,10 @@ class ENSParser(CollectionParser):
     def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
         ens_chain_name = self.make_ens_chain_name(token.chain_identifier)
 
-        token.uri = f"https://metadata.ens.domains/{ens_chain_name}/{token.collection_address.lower()}/{token.token_id}/"
+        token.uri = (
+            f"https://metadata.ens.domains/{ens_chain_name}/"
+            f"{token.collection_address.lower()}/{token.token_id}/"
+        )
         raw_data = self.fetcher.fetch_content(token.uri)  # type: ignore[assignment]
         mime_type, _ = self.fetcher.fetch_mime_type_and_size(token.uri)
 
@@ -150,7 +153,10 @@ class ENSParser(CollectionParser):
     async def _gen_parse_metadata_impl(self, token: Token, raw_data: dict, *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
         ens_chain_name = self.make_ens_chain_name(token.chain_identifier)
 
-        token.uri = f"https://metadata.ens.domains/{ens_chain_name}/{token.collection_address.lower()}/{token.token_id}/"
+        token.uri = (
+            f"https://metadata.ens.domains/{ens_chain_name}/"
+            f"{token.collection_address.lower()}/{token.token_id}/"
+        )
         raw_data, mime_type_and_size = await asyncio.gather(
             self.fetcher.gen_fetch_content(token.uri),
             self.fetcher.gen_fetch_mime_type_and_size(token.uri),
