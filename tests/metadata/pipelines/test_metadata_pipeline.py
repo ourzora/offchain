@@ -1,9 +1,12 @@
 # flake8: noqa: E501
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock
+
+import pytest
+
 from offchain.metadata.adapters.http_adapter import HTTPAdapter
 from offchain.metadata.adapters.ipfs import IPFSAdapter
+from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 from offchain.metadata.models.metadata import (
     Attribute,
     MediaDetails,
@@ -14,7 +17,6 @@ from offchain.metadata.models.metadata import (
 )
 from offchain.metadata.models.metadata_processing_error import MetadataProcessingError
 from offchain.metadata.models.token import Token
-from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 from offchain.metadata.pipelines.metadata_pipeline import (  # type: ignore[attr-defined]
     AdapterConfig,
     MetadataPipeline,
@@ -55,7 +57,6 @@ class TestMetadataPipeline:
         )
 
     def test_metadata_pipeline_fetch_token_uri(self, raw_crypto_coven_metadata):  # type: ignore[no-untyped-def]
-
         token = Token(
             chain_identifier="ETHEREUM-MAINNET",
             collection_address="0x5180db8f5c931aae63c74266b211f580155ecac8",
@@ -73,7 +74,6 @@ class TestMetadataPipeline:
         mock_fetch_token_uri.assert_called_once_with(token)
 
     def test_metadata_pipeline_fetch_token_metadata(self, raw_crypto_coven_metadata):  # type: ignore[no-untyped-def]
-
         token = Token(
             chain_identifier="ETHEREUM-MAINNET",
             collection_address="0x5180db8f5c931aae63c74266b211f580155ecac8",
@@ -271,11 +271,10 @@ class TestMetadataPipeline:
         )
 
         fetcher = MetadataFetcher()
-        fetcher.async_fetch_content = AsyncMock(return_value=raw_crypto_coven_metadata)  # type: ignore[attr-defined]
-        fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", "3095"))  # type: ignore[assignment]
 
         pipeline = MetadataPipeline(fetcher=fetcher)
-        assert await pipeline.async_run(tokens=[token]) == [
+        metadata = await pipeline.async_run(tokens=[token])
+        assert metadata == [
             Metadata(
                 token=token,
                 raw_data=raw_crypto_coven_metadata,
@@ -339,12 +338,12 @@ class TestMetadataPipeline:
                 ],
                 name="nyx",
                 description="You are a WITCH of the highest order. You are borne of chaos that gives the night shape. Your magic spawns from primordial darkness. You are called oracle by those wise enough to listen. ALL THEOLOGY STEMS FROM THE TERROR OF THE FIRMAMENT!",
-                mime_type="application/json",
+                mime_type="image/png",
                 image=MediaDetails(
-                    size=3095,
+                    size=1365782,
                     sha256=None,
                     uri="https://cryptocoven.s3.amazonaws.com/nyx.png",
-                    mime_type="application/json",
+                    mime_type="image/png",
                 ),
                 content=None,
                 additional_fields=[
@@ -374,9 +373,6 @@ class TestMetadataPipeline:
         )
 
         fetcher = MetadataFetcher()
-        fetcher.async_fetch_content = AsyncMock(return_value=raw_crypto_coven_metadata)  # type: ignore[attr-defined]
-        fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", "3095"))  # type: ignore[assignment]
-
         pipeline = MetadataPipeline(
             fetcher=fetcher,
             adapter_configs=[

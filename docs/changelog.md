@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.2.3
+
+- Use gen_parse_metadata for async pipeline
+
+
 ## v0.2.2
 
 - Go deep on making things as async as they possibly can
