@@ -274,7 +274,7 @@ class MetadataPipeline(BasePipeline):
             if not parser.should_parse_token(token=token, raw_data=raw_data):  # type: ignore[arg-type]  # noqa: E501
                 return None
             try:
-                metadata_or_error = parser.parse_metadata(
+                metadata_or_error = await parser.gen_parse_metadata(
                     token=token, raw_data=raw_data  # type: ignore[arg-type]
                 )
                 if isinstance(metadata_or_error, Metadata):
