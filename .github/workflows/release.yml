@@ -12,7 +12,7 @@ jobs:
         env:
           REF: ${{ github.ref }}
         run: |
-          echo branch_exists=$(git ls-remote --heads origin refs/heads/release/${REF:10} | wc -l) >> $GITHUB_OUTPUT
+          echo "branch_exists=$(git ls-remote --heads origin refs/heads/release/${REF:10} | wc -l)" >> $GITHUB_OUTPUT
 
   release:
     runs-on: ubuntu-20.04
