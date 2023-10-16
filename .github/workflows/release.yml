@@ -16,7 +16,7 @@ jobs:
   release:
     runs-on: ubuntu-20.04
     needs: branch_exists
-    if: ${{ needs.branch_exists.outputs.branch_exists == "0" }}
+    if: ${{ needs.branch_exists.outputs.branch_exists == 0 }}
     steps:
       - uses: actions/checkout@v2
 
