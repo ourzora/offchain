@@ -4,8 +4,19 @@ on:
     tags:
       - "v*"
 jobs:
+  branch_exists:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check if release already exists
+        env:
+          REF: ${{ github.ref }}
+        run: |
+          echo branch_exists=$(git ls-remote --heads origin refs/heads/release/${REF:10} | wc -l) >> $GITHUB_OUTPUT
+
   release:
     runs-on: ubuntu-20.04
+    needs: branch_exists
+    if: ${{ needs.branch_exists.outputs.branch_exists == "0" }}
     steps:
       - uses: actions/checkout@v2
 
