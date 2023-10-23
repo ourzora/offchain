@@ -1,4 +1,6 @@
+import httpx
 import pytest
+from pytest_httpx import HTTPXMock
 
 from offchain.metadata.adapters import IPFSAdapter  # type: ignore[attr-defined]
 
@@ -19,3 +21,35 @@ class TestIPFSAdapter:
                 adapter.make_request_url(url)
                 == "https://gateway.pinata.cloud/ipfs/QmSr3vdMuP2fSxWD7S26KzzBWcAN1eNhm4hk1qaR3x3vmj/1.json"
             )
+
+    @pytest.mark.asyncio
+    async def test_gen_head(self, httpx_mock: HTTPXMock):
+        # mocker responds to HEAD requests only
+        httpx_mock.add_response(method="HEAD")
+
+        adapter = IPFSAdapter()
+        ipfs_url = (
+            "ipfs://bafkreiboyxwytfyufln3uzyzaixslzvmrqs5ezjo2cio2fymfqf6u57u6u"  # noqa
+        )
+        async with httpx.AsyncClient() as client:
+            await adapter.gen_head(url=ipfs_url, sess=client)
+        outgoing_get_request = httpx_mock.get_request(method="GET")
+        assert not outgoing_get_request
+        outgoing_head_request = httpx_mock.get_request(method="HEAD")
+        assert outgoing_head_request
+
+    @pytest.mark.asyncio
+    async def test_gen_send(self, httpx_mock: HTTPXMock):
+        # mocker responds to GET requests only
+        httpx_mock.add_response(method="GET")
+
+        adapter = IPFSAdapter()
+        ipfs_url = (
+            "ipfs://bafkreiboyxwytfyufln3uzyzaixslzvmrqs5ezjo2cio2fymfqf6u57u6u"  # noqa
+        )
+        async with httpx.AsyncClient() as client:
+            await adapter.gen_send(url=ipfs_url, sess=client)
+        outgoing_get_request = httpx_mock.get_request(method="GET")
+        assert outgoing_get_request
+        outgoing_head_request = httpx_mock.get_request(method="HEAD")
+        assert not outgoing_head_request

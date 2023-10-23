@@ -14,7 +14,22 @@ class BaseAdapter(RequestsBaseAdapter):
         super().__init__()
 
     async def gen_send(self, url: str, *args, **kwargs) -> httpx.Response:  # type: ignore[no-untyped-def]  # noqa: E501
-        """Format and send async request to url host.
+        """
+        Format and send an async `GET` request to url host.
+        Abstract method, implemented in subclasses.
+
+        Args:
+            url (str): url to send request to
+
+        Returns:
+            httpx.Response: response from host.
+        """
+        raise NotImplementedError
+
+    async def gen_head(self, url: str, *args, **kwargs) -> httpx.Response:  # type: ignore[no-untyped-def]  # noqa: E501
+        """
+        Format and send an async `HEAD` request to url host.
+        Abstract method, implemented in subclasses.
 
         Args:
             url (str): url to send request to
@@ -40,7 +55,7 @@ class HTTPAdapter(RequestsHTTPAdapter):
         super().__init__(pool_connections, pool_maxsize, max_retries, pool_block)
 
     async def gen_send(self, url: str, sess: httpx.AsyncClient(), *args, **kwargs) -> httpx.Response:  # type: ignore[no-untyped-def, valid-type]  # noqa: E501
-        """Format and send async request to url host.
+        """Format and send an async `GET` request to url host.
 
         Args:
             url (str): url to send request to
@@ -49,6 +64,18 @@ class HTTPAdapter(RequestsHTTPAdapter):
             httpx.Response: response from host.
         """
         return await sess.get(url, follow_redirects=True)  # type: ignore[no-any-return]
+
+    async def gen_head(self, url: str, sess: httpx.AsyncClient(), *args, **kwargs) -> httpx.Response:  # type: ignore[no-untyped-def, valid-type]  # noqa: E501
+        """Format and send an async `HEAD` request to url host.
+
+        Args:
+            url (str): url to send request to
+            sess (httpx.AsyncClient()): async client
+
+        Returns:
+            httpx.Response: response from host.
+        """
+        return await sess.head(url, follow_redirects=True)  # type: ignore[no-any-return]
 
 
 Adapter = Union[BaseAdapter, HTTPAdapter]

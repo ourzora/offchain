@@ -131,3 +131,34 @@ def raw_crypto_coven_metadata():  # type: ignore[no-untyped-def]
             "hash": "nyx",
         },
     }
+
+
+@pytest.fixture
+def mock_video_rawdata():  # type: ignore[no-untyped-def]
+    return {
+        "name": "🤑👉😍👑💍",
+        "description": "Yats 🖖 are emoji usernames that become your universal Internet identity 🗿, website URL 💻, payment address 🤑, and more. By owning a Yat – let’s say 🤑👉😍👑💍 – it’s yours forever. Get inspired and join our amazingly creative Yat Community at Y.at.",
+        "image": "https://y.at/viz/money-mouth/money-mouth.point.heart-eyes.crown.ring-2ba3b7.png",
+        "thumbnail_image": "https://y.at/viz/money-mouth/money-mouth.point.heart-eyes.crown.ring-2ba3b7.png",
+        "animation_url": "https://y.at/viz/money-mouth/money-mouth.point.heart-eyes.crown.ring-2ba3b7.mp4",
+        "icon_url": "",
+        "token_id": "",
+        "owner_name": "",
+        "external_link": "https://y.at/%F0%9F%A4%91%F0%9F%91%89%F0%9F%98%8D%F0%9F%91%91%F0%9F%92%8D",
+        "attributes": [
+            {"trait_type": "Length", "value": "Five-Emoji"},
+            {"trait_type": "Rhythm Score", "value": "0-25"},
+            {"trait_type": "Generation", "value": "Gen One"},
+            {"trait_type": "Visualizer Theme", "value": "ribbons"},
+        ],
+    }
+
+
+@pytest.fixture
+def mock_image_rawdata():  # type: ignore[no-untyped-def]
+    return {
+        "description": "The tax man came, and old gregson was left with nothing. They took it all, his house, his possessions, every ounce of savings in his bank account..and most of all, his beloved farm with the many animals he cherished and adored…”. Gregson wanted to end it all, instead by some miracle he ended up on the mysterious continent of crypto befriending hammond the punk, michelangelo the ape & kafka the cat changing their lives forever. James di martino turns reality into fiction in this Orwellian journey of trust, betrayal and the limitless power of ethereum.",
+        "external_url": "",
+        "image": "https://ipfs.io/ipfs/QmQaYaf3Q2oCBaUfUvV6mBP58EjbUTbMk6dC1o4YGjeWCo",
+        "name": "CryptoFarm",
+    }

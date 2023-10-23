@@ -60,7 +60,7 @@ class ARWeaveAdapter(HTTPAdapter):
         return url
 
     async def gen_send(self, url: str, sess: httpx.AsyncClient(), *args, **kwargs) -> httpx.Response:  # type: ignore[no-untyped-def, valid-type]  # noqa: E501
-        """Format and send async request to ARWeave host.
+        """Format and send an async `GET` request to ARWeave host at parsed url.
 
         Args:
             url (str): url to send request to
@@ -72,7 +72,7 @@ class ARWeaveAdapter(HTTPAdapter):
         return await sess.get(self.parse_ar_url(url), timeout=self.timeout, follow_redirects=True)  # type: ignore[no-any-return]  # noqa: E501
 
     def send(self, request: PreparedRequest, *args, **kwargs) -> Response:  # type: ignore[no-untyped-def]  # noqa: E501
-        """Format and send request to ARWeave host.
+        """Format and send a `GET` request to ARWeave host at parsed url.
 
         Args:
             request (PreparedRequest): incoming request
@@ -83,3 +83,15 @@ class ARWeaveAdapter(HTTPAdapter):
         request.url = self.parse_ar_url(request.url)  # type: ignore[arg-type]
         kwargs["timeout"] = self.timeout
         return super().send(request, *args, **kwargs)
+
+    async def gen_head(self, url: str, sess: httpx.AsyncClient(), *args, **kwargs) -> httpx.Response:  # type: ignore[no-untyped-def, valid-type]  # noqa: E501
+        """Format and send an async `HEAD` request to ARWeave host at parsed url.
+
+        Args:
+            url (str): url to send request to
+            sess (httpx.AsyncClient()): async client
+
+        Returns:
+            httpx.Response: response from ARWeave host.
+        """
+        return await sess.head(self.parse_ar_url(url), timeout=self.timeout, follow_redirects=True)  # type: ignore[no-any-return]  # noqa: E501
