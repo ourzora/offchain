@@ -1,5 +1,7 @@
 import pytest
 
+from pytest_httpx import HTTPXMock
+
 from offchain.metadata.adapters.ipfs import IPFSAdapter
 from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 
@@ -56,3 +58,58 @@ async def test_gen_fetch_mime_type_and_size():  # type: ignore[no-untyped-def]
     )
     assert result == ("image/png", "2887641")  # type: ignore[comparison-overlap]
     print(result)
+
+
+@pytest.mark.asyncio
+async def test_gen_fetch_mime_type_and_size_http(httpx_mock: HTTPXMock):  # type: ignore[no-untyped-def]
+    expected_headers = {"content-type": "image/png", "content-length": "99639"}
+    httpx_mock.add_response(method="HEAD", headers=expected_headers)
+    fetcher = MetadataFetcher()
+    result = await fetcher.gen_fetch_mime_type_and_size(
+        "https://d4ldbtmwfs9ii.cloudfront.net/7273.png"  # noqa
+    )
+    assert result == (
+        expected_headers["content-type"],
+        expected_headers["content-length"],
+    )
+
+
+@pytest.mark.asyncio
+async def test_gen_fetch_mime_type_and_size_ipfs(httpx_mock: HTTPXMock):  # type: ignore[no-untyped-def]
+    expected_headers = {"content-type": "image/png", "content-length": "1251767"}
+    httpx_mock.add_response(method="HEAD", headers=expected_headers)
+    fetcher = MetadataFetcher()
+    result = await fetcher.gen_fetch_mime_type_and_size(
+        "ipfs://QmV4MseQF2QDDYbmxtg7eEQ9vMuYNntPQrR3arXHnK4yGX/150.png"
+    )
+    assert result == (
+        expected_headers["content-type"],
+        expected_headers["content-length"],
+    )
+
+
+@pytest.mark.asyncio
+async def test_gen_fetch_mime_type_and_size_arweave(httpx_mock: HTTPXMock):  # type: ignore[no-untyped-def]
+    expected_headers = {"content-type": "image/png", "content-length": "235779"}
+    httpx_mock.add_response(method="HEAD", headers=expected_headers)
+    fetcher = MetadataFetcher()
+    result = await fetcher.gen_fetch_mime_type_and_size(
+        "ar://veLMprs2c--Rl6nXCeakR5FG9K8y4WXt62iLxayrflo/1032.png"
+    )
+    assert result == (
+        expected_headers["content-type"],
+        expected_headers["content-length"],
+    )
+
+
+@pytest.mark.asyncio
+async def test_gen_fetch_mime_type_and_size_data(httpx_mock: HTTPXMock):  # type: ignore[no-untyped-def]
+    expected_headers = {"content-type": "image/svg+xml", "content-length": "1853"}
+    fetcher = MetadataFetcher()
+    result = await fetcher.gen_fetch_mime_type_and_size(
+        "data:image/svg+xml;base64,PHN2ZyBpZD0iaDNpNXR6IiB2aWV3Qm94PSIwIDAgNDggNDgiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHZlcnNpb249IjEuMSIgPgoKPGltYWdlIHg9IjAiIHk9IjAiIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgaW1hZ2UtcmVuZGVyaW5nPSJwaXhlbGF0ZWQiIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIiB4bGluazpocmVmPSJkYXRhOmltYWdlL3BuZztiYXNlNjQsaVZCT1J3MEtHZ29BQUFBTlNVaEVVZ0FBQUZBQUFBQlFDQU1BQUFDNXp3S2ZBQUFBWUZCTVZFVlFZWHIveUFFK1QxNy9rZ0I0YVdJUkVST3RwcHNhSGl3QUFBQVhtc3pKeGJ4MFhCUndxY2IvN2dKbGJIOWZiNGE1NWQ3L3RBRFBsdzFyWEZmOTVpMFBEQXVBa3F5bGhqTFQ4KzdLeU1jL1BUamh3ai8yeHk0VmFvcU1yc0t4MTlDSW1CMllBQUFENUVsRVFWUjRBZTJVaVpLak9CQkVzUllKdWZFMUFsbzJxSGYrL3k4M2xTQUt4Z1NodnZaKzl1QjB0WGxSTlFVVXh4dzBPZWJ3VndqZnRQYXRjNjJuOHROQ3JmczJ1RGJpUXFYMXA0VlYxWWVCd3VDSHZxbytLOVFoQk9kYmp1emNFSUwrckhCd2JoYUNyeEhDQ0w1VzZCeU1meFBoMjRwbjRmcnZHVUt0dXlYWXNnanhwVnVpZFphd1hLSjFQL2cyNG9laDBsMjVKRmRvU29NM1hnME9UU08zWHNNcUQvekZ4NFR4UkVLWENKdHM0V0NDTVVOOEJZUE1aUHhjR0ppWU00V3RPWnVoTlhpZERUTFRNSnhUb1dYQnhFS204R0VleHNURFN6dzhYaGI1bDBKMmg2M0JtNzFJUTVLSHVmRFJwVWpoZzF2ZW90bW81QXFiYkRLRm9OTnJ1bzBLeUJJU3JWNWVTdklTa2ZoSXNWTkhJVk40dTkvdm8xRGlnL0VEd2g1YnZOOXV0OUtBcmZpUkRwdXlhV0piaHBFalB3eHFqQjhRR2hLRkVwa1l1MG9wdFNWVUU4ZlQ4U1FaUWdGM1dZb1BrMkxYRjBYQnM4YVhPaDFWcEpoUXNhb3VCSm4vaDhTQXJZZ09TVExDemRObllheE9RdVNNTGZmcFBPbVF3bGVDRG9HNi9IN0JHNWxDN3BOQ2lZOFVPeVhuUlJSUGx3N1hRcFV4OGxxb2tFUjRuWVZFcVNJS2Nha0FXaHJDeUNLRWFlVGtROXdhbWVDdjNMS1p0N3dSSUdRanlRZHcrdWJJcXNnU3lzajAwWTdUeDdRV29tdU0vSXhlOElzUUNXOEl0MGFtVUsyYll0VGxqT2JJWUMza3lQWUpyZTBtdXJ6ZDd2RXl2RVdoQnJOd1JJRTlZZmNrL0hrREN5R2FJbHBYVlRVSlgrMTV4dHJ4T0grZUZ5UWhMMnh0dXFydm81Q2QxYlgzM3RweEtmWXdBd09QbHJYeFk5M2g2R09IVVFnWHNiWHRPdS8xaFVJNVAwTkkzOCtGOEFRZ3JQRjNYMWZUbHUwUE1BcW53QUkvVmtMNjBLV01EQ0ZNdnF2eHo5WTloSkYwdnFLUWlQQjVLVEx5cTZvNnVHcThmVHpPUWs1STRVSGd5SW5uTFhOa0gyMzFBVG9MMUNXTi9Cc1loUWdhVEFVZUU3TGxKTFNqejBaaHo1dDVzOE9kcFNRbW9jZWM0T0FHNSsxOFlZTjFoeFpJaDV1WERaZGlhL2JYTzNEQXpKT1FJK2NMNmJ1elE0ditJaitDRFhYd2ZubzQ3SGU0WUxwc1pDbnNUOGVKd3dGeEpSenBsTjFsTGJSUmlONEc2MXpnYmdyWjhqc3BTN3ZBKytDQ0NLWERmTFJlQ2V2Z1hBMm1od01XdmZ1UTRRMXVsMVg1RXJIOVdRY0lBWVNLdTk2OS9KTHdJSnlYMzZ3N09EY0tMVnp3dldVTDdlSTNFZ2JzcEZvSXdlNURCc0tOb2xMekl3cjlVamNKSXhTU2ZTRklGbmxFMWRRUlcwenNQMlE0OHJwS0lkTzJjUGNoQStIcTYvZ2J1YjNxbWI1SVpDeEZPSUJWaHdrdnd0MW5Bb1NwdU5laGw0RnpoWUpkQ24yMDRTQSt0U0VVWnFGVXJRaVpjRWltQ2Z0dVlKQzBnZnhxZzJMMUlSYUpHK1FJcDArUmZLOVFGZC9GRlUvWjYrWDZQaTQ0YTVtRmExRjlNZjhML3hmK0hZUi9BRVJPMzlYOE5Fb1VBQUFBQUVsRlRrU3VRbUNDIi8+Cgo8L3N2Zz4="  # noqa
+    )
+    assert result == (
+        expected_headers["content-type"],
+        expected_headers["content-length"],
+    )

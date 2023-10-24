@@ -1,4 +1,5 @@
 import base64
+from email.message import Message
 from urllib.request import urlopen
 
 import httpx
@@ -28,7 +29,7 @@ class DataURIAdapter(BaseAdapter):
         super().__init__(*args, **kwargs)  # type: ignore[no-untyped-call]
 
     async def gen_send(self, url: str, *args, **kwargs) -> httpx.Response:  # type: ignore[no-untyped-def]  # noqa: E501
-        """Handle async data uri request.
+        """Handle async data uri `GET` request.
 
         Args:
             url (str): url
@@ -44,7 +45,7 @@ class DataURIAdapter(BaseAdapter):
         return response
 
     def send(self, request: PreparedRequest, *args, **kwargs):  # type: ignore[no-untyped-def]  # noqa: E501
-        """Handle data uri request.
+        """Handle data uri `GET` request.
 
         Args:
             request (PreparedRequest): incoming request
@@ -65,6 +66,26 @@ class DataURIAdapter(BaseAdapter):
             self.response = response
         finally:
             return newResponse
+
+    async def gen_head(self, url: str, *args, **kwargs) -> httpx.Response:  # type: ignore[no-untyped-def]  # noqa: E501
+        """Handle async data uri `HEAD` request.
+
+        Args:
+            url (str): url
+
+        Returns:
+            httpx.Response: encoded data uri response.
+        """
+        response_headers = {}
+        with urlopen(url) as r:
+            message: Message = r.info()
+            response_headers = dict(message._headers)  # type: ignore[attr-defined]
+        response = httpx.Response(
+            status_code=200,
+            headers=response_headers,
+            request=httpx.Request(method="HEAD", url=url),
+        )
+        return response
 
     def close(self):  # type: ignore[no-untyped-def]
         self.response.close()

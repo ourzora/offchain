@@ -97,7 +97,7 @@ class IPFSAdapter(HTTPAdapter):
         return build_request_url(gateway=gateway, request_url=request_url)
 
     async def gen_send(self, url: str, sess: httpx.AsyncClient(), *args, **kwargs) -> httpx.Response:  # type: ignore[no-untyped-def, valid-type]  # noqa: E501
-        """Format and send async request to IPFS host.
+        """Format and send an async `GET` request to IPFS host.
 
         Args:
             url (str): url to send request to
@@ -121,3 +121,15 @@ class IPFSAdapter(HTTPAdapter):
 
         kwargs["timeout"] = self.timeout
         return super().send(request, *args, **kwargs)
+
+    async def gen_head(self, url: str, sess: httpx.AsyncClient(), *args, **kwargs) -> httpx.Response:  # type: ignore[no-untyped-def, valid-type]  # noqa: E501
+        """Format and send an async `HEAD` request to IPFS host.
+
+        Args:
+            url (str): url to send request to
+            sess (httpx.AsyncClient()): async client session
+
+        Returns:
+            httpx.Response: response from IPFS host.
+        """
+        return await sess.head(self.make_request_url(url), timeout=self.timeout, follow_redirects=True)  # type: ignore[no-any-return]  # noqa: E501

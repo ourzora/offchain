@@ -1,5 +1,6 @@
 # flake8: noqa: E501
 
+from typing import Tuple
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -21,6 +22,8 @@ from offchain.metadata.pipelines.metadata_pipeline import (  # type: ignore[attr
     AdapterConfig,
     MetadataPipeline,
 )
+from offchain.web3.contract_caller import ContractCaller
+from offchain.web3.jsonrpc import EthereumJSONRPC
 
 
 class TestMetadataPipeline:
@@ -158,6 +161,76 @@ class TestMetadataPipeline:
                 ),
             ],
         )
+
+    @pytest.mark.asyncio
+    async def test_metadata_pipeline_async_fetch_video_mime_type_and_size(
+        self, mock_video_rawdata
+    ):
+        token = Token(
+            chain_identifier="ZORA-MAINNET",
+            collection_address="0x7d256d82b32d8003d1ca1a1526ed211e6e0da9e2",
+            token_id="11539",
+            uri="https://a.y.at/nft_transfers/metadata/11539",
+        )
+
+        fetcher = MetadataFetcher()
+        fetcher.gen_fetch_content = AsyncMock(return_value=mock_video_rawdata)
+
+        def mock_video_mime_type_and_size(uri: str) -> Tuple[str, int]:
+            if uri == "https://a.y.at/nft_transfers/metadata/11539":
+                return ("application/json", 0)
+            elif (
+                uri
+                == "https://y.at/viz/money-mouth/money-mouth.point.heart-eyes.crown.ring-2ba3b7.mp4"
+            ):
+                return ("video/mp4", 5065775)
+            else:
+                return ("image/png", 207474)
+
+        fetcher.gen_fetch_mime_type_and_size = AsyncMock(
+            side_effect=mock_video_mime_type_and_size
+        )
+        pipeline = MetadataPipeline(fetcher=fetcher)
+        metadata = await pipeline.async_run(tokens=[token])
+
+        assert metadata[0].mime_type == "video/mp4"
+        assert metadata[0].content.mime_type == "video/mp4"
+        assert metadata[0].content.size == 5065775
+        assert metadata[0].image.mime_type == "image/png"
+        assert metadata[0].image.size == 207474
+
+    @pytest.mark.asyncio
+    async def test_metadata_pipeline_async_fetch_image_mime_type_and_size(
+        self, mock_image_rawdata
+    ):
+        token = Token(
+            chain_identifier="ZORA-MAINNET",
+            collection_address="0x2781b28934943f51a8a08375d6f95e0208d7150e",
+            token_id="929",
+            uri="https://ipfs.io/ipfs/QmRVtPDV4JSsPRhec2djxr2qpx6ex6xrgYTWKKfAbS3u3b",
+        )
+
+        fetcher = MetadataFetcher()
+        fetcher.gen_fetch_content = AsyncMock(return_value=mock_image_rawdata)
+
+        def mock_image_mime_type_and_size(uri: str) -> Tuple[str, int]:
+            if (
+                uri
+                == "https://ipfs.io/ipfs/QmRVtPDV4JSsPRhec2djxr2qpx6ex6xrgYTWKKfAbS3u3b"
+            ):
+                return ("application/json", 0)
+            else:
+                return ("image/png", 2887641)
+
+        fetcher.gen_fetch_mime_type_and_size = AsyncMock(
+            side_effect=mock_image_mime_type_and_size
+        )
+        pipeline = MetadataPipeline(fetcher=fetcher)
+        metadata = await pipeline.async_run(tokens=[token])
+
+        assert metadata[0].mime_type == "image/png"
+        assert metadata[0].image.mime_type == "image/png"
+        assert metadata[0].image.size == 2887641
 
     def test_metadata_pipeline_run(self, raw_crypto_coven_metadata):  # type: ignore[no-untyped-def]
         token = Token(

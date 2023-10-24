@@ -63,7 +63,7 @@ class MetadataFetcher(BaseFetcher):
     def _get(self, uri: str):  # type: ignore[no-untyped-def]
         return self.sess.get(uri, timeout=self.timeout, allow_redirects=True)
 
-    async def _gen(self, uri: str) -> httpx.Response:
+    async def _gen(self, uri: str, method: Optional[str] = "GET") -> httpx.Response:
         from offchain.metadata.pipelines.metadata_pipeline import (
             DEFAULT_ADAPTER_CONFIGS,
         )
@@ -78,12 +78,20 @@ class MetadataFetcher(BaseFetcher):
                 adapter = adapter_config.adapter_cls(
                     host_prefixes=adapter_config.host_prefixes, **adapter_config.kwargs
                 )
-                return await adapter.gen_send(
-                    url=uri, timeout=self.timeout, sess=self.async_sess
-                )
+                if method == "HEAD":
+                    return await adapter.gen_head(
+                        url=uri, timeout=self.timeout, sess=self.async_sess
+                    )
+                else:
+                    return await adapter.gen_send(
+                        url=uri, timeout=self.timeout, sess=self.async_sess
+                    )
         return await self.async_sess.get(
             uri, timeout=self.timeout, follow_redirects=True
         )
+
+    async def _gen_head(self, uri: str) -> httpx.Response:
+        return await self._gen(uri=uri, method="HEAD")
 
     def fetch_mime_type_and_size(self, uri: str) -> Tuple[str, int]:
         """Fetch the mime type and size of the content at a given uri.
@@ -123,11 +131,10 @@ class MetadataFetcher(BaseFetcher):
             tuple[str, int]: mime type and size
         """
         try:
-            # try skip head request
-            # res = await self._gen_head(uri)
-            # # For any error status, try a get
-            # if 300 <= res.status_code < 600:
-            res = await self._gen(uri)
+            res = await self._gen_head(uri)
+            # For any error status, try a get
+            if 300 <= res.status_code < 600:
+                res = await self._gen(uri)
             res.raise_for_status()
             headers = res.headers
             size = headers.get("content-length", 0)
