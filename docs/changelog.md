@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.2.5
+
+- Use http HEAD requests to fetch mime-type and size that make up a token's metadata
+- Upgrade httpx to 0.25.0
+
 ## v0.2.4
 
 - Update Github actions pipeline
