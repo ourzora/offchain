@@ -1,12 +1,17 @@
 # flake8: noqa: E501
 
+from pytest_httpx import HTTPXMock
 from typing import Tuple
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from offchain.metadata.adapters.http_adapter import HTTPAdapter
-from offchain.metadata.adapters.ipfs import IPFSAdapter
+from offchain.metadata.adapters import (
+    AdapterConfig,
+    DEFAULT_ADAPTER_CONFIGS,
+    HTTPAdapter,
+    IPFSAdapter,
+)
 from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 from offchain.metadata.models.metadata import (
     Attribute,
@@ -18,10 +23,8 @@ from offchain.metadata.models.metadata import (
 )
 from offchain.metadata.models.metadata_processing_error import MetadataProcessingError
 from offchain.metadata.models.token import Token
-from offchain.metadata.pipelines.metadata_pipeline import (  # type: ignore[attr-defined]
-    AdapterConfig,
-    MetadataPipeline,
-)
+from offchain.metadata.pipelines.metadata_pipeline import MetadataPipeline
+
 from offchain.web3.contract_caller import ContractCaller
 from offchain.web3.jsonrpc import EthereumJSONRPC
 
@@ -58,6 +61,62 @@ class TestMetadataPipeline:
             pipeline.fetcher.sess.get_adapter("ipfs://QmQZaQ8pgRAWN7TE9QZdYBd43VG7b54m42XmhBFW5ZZKMy/150.json")  # type: ignore[attr-defined]
             == ipfs_adapter
         )
+
+    @pytest.mark.asyncio
+    async def test_ipfs_adapter_uses_specified_ipfs_provider(
+        self, httpx_mock: HTTPXMock
+    ):
+        # integration test, the following setup reflects usage in prod
+        IPFS_PROVIDER = "https://ipfs.decentralized-content.com/ipfs/"
+
+        def set_async_adapters() -> list[AdapterConfig]:
+            async_adapters = []
+            for adapter in DEFAULT_ADAPTER_CONFIGS:
+                if adapter.adapter_cls is IPFSAdapter:
+                    ipfs_adapter = AdapterConfig(
+                        adapter_cls=IPFSAdapter,
+                        mount_prefixes=[
+                            "ipfs://",
+                            "https://gateway.pinata.cloud/",
+                            "https://ipfs.io/",
+                            "https://ipfs.decentralized-content.com/",
+                        ],
+                        host_prefixes=[IPFS_PROVIDER],
+                    )
+                    async_adapters.append(ipfs_adapter)
+
+                else:
+                    async_adapters.append(adapter)
+
+            return async_adapters
+
+        adapters = set_async_adapters()
+        pipeline = MetadataPipeline(adapter_configs=adapters)
+
+        httpx_mock.add_response(
+            json=[
+                {
+                    "name": "Beast #485",
+                    "image": "https://gateway.pinata.cloud/ipfs/QmcimtwbWGKXLJ3pTMRu2ncEeeuK9DUwYye6uhJhZC9C6A/beast485.png",
+                    "external_url": "https://tierzeronft.com/",
+                    "attributes": [
+                        {"trait_type": "Background", "value": "Blue"},
+                        {"trait_type": "Fur", "value": "Dark Grey"},
+                        {"trait_type": "Shoes", "value": "Feet"},
+                        {"trait_type": "Eyes", "value": "Green"},
+                        {"trait_type": "Hat", "value": "Headset"},
+                        {"trait_type": "Unit", "value": "Unit I"},
+                    ],
+                }
+            ],
+            url=f"{IPFS_PROVIDER}QmY3Lz7DfQPtPkK4n5StZcqc2zA6cmJC7wcAgzYXvGQLGm/485",
+        )
+        content = await pipeline.fetcher.gen_fetch_content(
+            "https://gateway.pinata.cloud/ipfs/QmY3Lz7DfQPtPkK4n5StZcqc2zA6cmJC7wcAgzYXvGQLGm/485"
+        )
+        assert (
+            content is not None
+        ), "Call to gateway.pinata.cloud did not get redirected to ipfs.decentralized-content.com"
 
     def test_metadata_pipeline_fetch_token_uri(self, raw_crypto_coven_metadata):  # type: ignore[no-untyped-def]
         token = Token(

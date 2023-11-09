@@ -33,7 +33,7 @@ def safe_async_runner(  # type: ignore[no-untyped-def]
                         logger.error(msg)
                         if not silent:
                             raise
-                    logger.warn(msg)
+                    logger.warning(msg)
                     await asyncio.sleep(retry_delay)
             return None
 
