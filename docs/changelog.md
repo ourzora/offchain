@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.7
+
+- Clean up an unused and obsolete `DEFAULT_ADAPTER_CONFIGS` symbol.
+
 ## v0.2.6
 
 - Ensure `MetadataFetcher`'s outgoing IPFS http/s requests get re-routed to `IPFSAdapter` under default configuration.

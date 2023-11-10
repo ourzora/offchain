@@ -3,13 +3,7 @@ from typing import Callable, Optional, Union
 
 from offchain.concurrency import batched_parmap
 from offchain.logger.logging import logger
-from offchain.metadata.adapters import (  # type: ignore[attr-defined]
-    ARWeaveAdapter,
-    DataURIAdapter,
-    HTTPAdapter,
-    IPFSAdapter,
-)
-from offchain.metadata.adapters.base_adapter import Adapter, AdapterConfig
+from offchain.metadata.adapters import Adapter, AdapterConfig, DEFAULT_ADAPTER_CONFIGS
 from offchain.metadata.fetchers.base_fetcher import BaseFetcher
 from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
 from offchain.metadata.models.metadata import Metadata
@@ -23,31 +17,6 @@ from offchain.metadata.pipelines.base_pipeline import BasePipeline
 from offchain.metadata.registries.parser_registry import ParserRegistry
 from offchain.web3.contract_caller import ContractCaller
 
-# TODO(luke): move the data repo's usage of this symbol to the new file, then remove this
-DEFAULT_ADAPTER_CONFIGS: list[AdapterConfig] = [
-    AdapterConfig(
-        adapter_cls=ARWeaveAdapter,
-        mount_prefixes=["ar://"],
-        host_prefixes=["https://arweave.net/"],
-        kwargs={"pool_connections": 100, "pool_maxsize": 1000, "max_retries": 0},
-    ),
-    AdapterConfig(adapter_cls=DataURIAdapter, mount_prefixes=["data:"]),
-    AdapterConfig(
-        adapter_cls=IPFSAdapter,
-        mount_prefixes=[
-            "ipfs://",
-            "https://gateway.pinata.cloud/",
-            "https://ipfs.io/",
-        ],
-        host_prefixes=["https://gateway.pinata.cloud/ipfs/"],
-        kwargs={"pool_connections": 100, "pool_maxsize": 1000, "max_retries": 0},
-    ),
-    AdapterConfig(
-        adapter_cls=HTTPAdapter,
-        mount_prefixes=["https://", "http://"],
-        kwargs={"pool_connections": 100, "pool_maxsize": 1000, "max_retries": 0},
-    ),
-]
 
 DEFAULT_PARSERS = (
     ParserRegistry.get_all_collection_parsers()
@@ -80,10 +49,6 @@ class MetadataPipeline(BasePipeline):
         self.contract_caller = contract_caller or ContractCaller()
         self.fetcher = fetcher or MetadataFetcher(async_adapter_configs=adapter_configs)
         if adapter_configs is None:
-            # TODO(luke): move the line below to the file's import section once this
-            #  file's DEFAULT_ADAPTER_CONFIGS is gone
-            from offchain.metadata.adapters import DEFAULT_ADAPTER_CONFIGS
-
             adapter_configs = DEFAULT_ADAPTER_CONFIGS
         for adapter_config in adapter_configs:
             self.mount_adapter(
