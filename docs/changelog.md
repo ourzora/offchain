@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.2.6
+
+- Ensure `MetadataFetcher`'s outgoing IPFS http/s requests get re-routed to `IPFSAdapter` under default configuration.
+- Move `DEFAULT_ADAPTER_CONFIGS` to `offchain.metadata.adapters` package.
+
 ## v0.2.5
 
 - Use http HEAD requests to fetch mime-type and size that make up a token's metadata

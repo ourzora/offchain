@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "offchain"
-version = "0.2.5"
+version = "0.2.6"
 description = "Open source metadata processing framework"
 authors = ["Zora eng <eng@zora.co>"]
 readme = "README.md"
