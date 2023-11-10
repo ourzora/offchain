@@ -40,7 +40,8 @@ class BaseFetcher(Protocol):
         pass
 
     def register_adapter(self, adapter: Adapter, url_prefix: str):  # type: ignore[no-untyped-def]  # noqa: E501
-        """Register an adapter to a url prefix.
+        """Register an adapter to a url prefix. Note this only affects synchronous http
+        requests (via the requests library).
 
         Args:
             adapter (Adapter): an Adapter instance to register.

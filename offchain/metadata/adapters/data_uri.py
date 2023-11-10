@@ -62,7 +62,8 @@ class DataURIAdapter(BaseAdapter):
             newResponse.status_code = 200
             newResponse.headers = response.headers
             newResponse.raw = response
-            newResponse.encoding = "utf-8"
+            newResponse._content = response.read()
+            newResponse.encoding = response.info().get_param("charset") or "utf-8"
             self.response = response
         finally:
             return newResponse
