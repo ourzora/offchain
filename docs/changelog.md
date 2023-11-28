@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.0
+
+- Upgrade web3 to 6.11.3
+
 ## v0.2.7
 
 - Clean up an unused and obsolete `DEFAULT_ADAPTER_CONFIGS` symbol.

@@ -4,7 +4,7 @@ from functools import cached_property
 from typing import Any, Literal, Optional, Union
 
 import aiohttp
-from eth_abi import decode_abi, encode_abi
+from eth_abi import decode as decode_abi, encode as encode_abi
 from eth_utils import to_hex
 from web3 import Web3
 from web3.eth import AsyncEth

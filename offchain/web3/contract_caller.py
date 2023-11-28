@@ -1,6 +1,6 @@
 from typing import Optional, Any
 
-from eth_abi import encode_abi, decode_abi  # type: ignore[attr-defined]
+from eth_abi import encode as encode_abi, decode as decode_abi  # type: ignore[attr-defined]
 from eth_utils import to_hex  # type: ignore[attr-defined]
 
 from offchain.concurrency import parmap
