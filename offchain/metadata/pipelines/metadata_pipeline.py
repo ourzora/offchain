@@ -25,6 +25,15 @@ DEFAULT_PARSERS = (
 )
 
 
+def _truncate_uri(uri: str, max_length: int = 100) -> str:
+    if len(uri) <= max_length:
+        return uri
+
+    keep_length = (max_length - 3) // 2  # 3 is for the '...'
+
+    return uri[:keep_length] + "..." + uri[-keep_length:]
+
+
 class MetadataPipeline(BasePipeline):
     """Pipeline for processing NFT metadata.
 
@@ -161,7 +170,7 @@ class MetadataPipeline(BasePipeline):
             try:
                 raw_data = self.fetcher.fetch_content(token.uri)
             except Exception as e:
-                error_message = f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) Failed to parse token uri: {token.uri}. {str(e)}"  # noqa: E501
+                error_message = f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) Failed to parse token uri: {_truncate_uri(token.uri)}. {str(e)}"  # noqa: E501
                 logger.error(error_message)
                 possible_metadatas_or_errors.append(
                     MetadataProcessingError.from_token_and_error(
@@ -216,9 +225,9 @@ class MetadataPipeline(BasePipeline):
             Union[Metadata, MetadataProcessingError]: returns either a Metadata
                 or a MetadataProcessingError if unable to parse.
         """
-        possible_metadatas_or_errors: list[
-            Union[Metadata, MetadataProcessingError]
-        ] = []
+        possible_metadatas_or_errors: list[Union[Metadata, MetadataProcessingError]] = (
+            []
+        )
 
         if not token.uri:
             return MetadataProcessingError.from_token_and_error(
@@ -230,7 +239,7 @@ class MetadataPipeline(BasePipeline):
         try:
             raw_data = await self.fetcher.gen_fetch_content(token.uri)
         except Exception as e:
-            error_message = f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) Failed to parse token uri: {token.uri}. {str(e)}"  # noqa: E501
+            error_message = f"({token.chain_identifier}-{token.collection_address}-{token.token_id}) Failed to parse token uri: {_truncate_uri(token.uri)}. {str(e)}"  # noqa: E501
             logger.error(error_message)
             possible_metadatas_or_errors.append(
                 MetadataProcessingError.from_token_and_error(
