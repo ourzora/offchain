@@ -12,24 +12,69 @@ from offchain.metadata.registries.parser_registry import ParserRegistry
 class FoundationParser(CollectionParser):
     _COLLECTION_ADDRESSES: list[str] = [CollectionAddress.FOUNDATION]
 
-    def parse_metadata(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
-        if token.uri is None or raw_data is None:
-            token.uri = f"https://api.foundation.app/opensea/{token.token_id}"
-            raw_data = self.fetcher.fetch_content(token.uri)  # type: ignore[assignment]
-        metadata = DefaultCatchallParser(self.fetcher).parse_metadata(token=token, raw_data=raw_data)  # type: ignore[arg-type]  # noqa: E501
+    def _normalize_metadata(self, metadata: Optional[Metadata]) -> Optional[Metadata]:
+        if metadata is None:
+            return None
+
         metadata.standard = None  # type: ignore[union-attr]
-        if metadata.content.uri.endswith("glb"):  # type: ignore[union-attr]
-            metadata.content.mime_type = "model/gltf-binary"  # type: ignore[union-attr]
+        if (
+            metadata
+            and metadata.image
+            and metadata.image.uri
+            and metadata.image.uri.endswith("glb")
+        ):
+            metadata.image.mime_type = "model/gltf-binary"
 
         return metadata
 
-    async def _gen_parse_metadata_impl(self, token: Token, raw_data: Optional[dict], *args, **kwargs) -> Optional[Metadata]:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
+    def parse_metadata(
+        self, token: Token, raw_data: Optional[dict], *args, **kwargs
+    ) -> Optional[Metadata]:
         if token.uri is None or raw_data is None:
-            token.uri = f"https://api.foundation.app/opensea/{token.token_id}"
-            raw_data = await self.fetcher.gen_fetch_content(token.uri)  # type: ignore[assignment]
-        metadata = await DefaultCatchallParser(self.fetcher).gen_parse_metadata(token=token, raw_data=raw_data)  # type: ignore[arg-type]  # noqa: E501
-        metadata.standard = None  # type: ignore[union-attr]
-        if metadata.content.uri.endswith("glb"):  # type: ignore[union-attr]
-            metadata.content.mime_type = "model/gltf-binary"  # type: ignore[union-attr]
+            token.uri = self.contract_caller.single_address_single_fn_many_args(
+                token.collection_address,
+                "tokenURI(uint256)",
+                ["string"],
+                [[token.token_id]],
+            )[0]
+            if token.uri is None:
+                return None
 
-        return metadata
+            content = self.fetcher.fetch_content(token.uri)
+            if content and isinstance(content, dict):
+                raw_data = content
+
+        if raw_data is None:
+            return None
+
+        metadata = DefaultCatchallParser(self.fetcher).parse_metadata(
+            token=token, raw_data=raw_data
+        )
+
+        return self._normalize_metadata(metadata)
+
+    async def _gen_parse_metadata_impl(
+        self, token: Token, raw_data: Optional[dict], *args, **kwargs
+    ) -> Optional[Metadata]:
+        if token.uri is None or raw_data is None:
+            token.uri = await self.contract_caller.rpc.async_reader.call_function(
+                token.collection_address,
+                "tokenURI(uint256)",
+                ["string"],
+                [token.token_id],
+            )
+            if token.uri is None:
+                return None
+
+            content = await self.fetcher.gen_fetch_content(token.uri)
+            if content and isinstance(content, dict):
+                raw_data = content
+
+        if raw_data is None:
+            return None
+
+        metadata = await DefaultCatchallParser(self.fetcher).gen_parse_metadata(
+            token=token, raw_data=raw_data
+        )
+
+        return self._normalize_metadata(metadata)
