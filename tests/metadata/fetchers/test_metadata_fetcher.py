@@ -54,7 +54,7 @@ class TestMetadataFetcher:
     async def test_gen_fetch_mime_type_and_size(self):  # type: ignore[no-untyped-def]
         fetcher = MetadataFetcher()
         result = await fetcher.gen_fetch_mime_type_and_size(
-            "https://ipfs.io/ipfs/QmQaYaf3Q2oCBaUfUvV6mBP58EjbUTbMk6dC1o4YGjeWCo"
+            "https://ipfs.decentralized-content.com/ipfs/QmQaYaf3Q2oCBaUfUvV6mBP58EjbUTbMk6dC1o4YGjeWCo"
         )
         assert result == ("image/png", "2887641")  # type: ignore[comparison-overlap]
         print(result)
