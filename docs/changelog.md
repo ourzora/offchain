@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.1
+
+- Trim token_uri in some log outputs, this is mainly useful for data uris that are too long and make logs unreadable
+- Fix `FoundationParser`, the API it relied on doesn't exist anymore, so we are falling back to contract calls to get the metadata
+
 ## v0.3.0
 
 - Upgrade web3 to 6.11.3
