@@ -1,6 +1,6 @@
 # Getting Started
 
-Documentation for version: **v0.3.0**
+Documentation for version: **v0.3.1**
 
 ## Overview
 

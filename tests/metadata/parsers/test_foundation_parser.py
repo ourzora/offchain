@@ -22,9 +22,7 @@ class TestFoundationParser:
     raw_data = {
         "name": "Experiment #0004",
         "description": "They rise again!",
-        "image": "https://d1hiserqh6k9o1.cloudfront.net/Ax/kk/QmWwB2LXk7VKu5KtDrtUYdwpHK1NvJ49XrQvFRJxqiAxkk/nft.png",
-        "animation_url": "ipfs://QmWwB2LXk7VKu5KtDrtUYdwpHK1NvJ49XrQvFRJxqiAxkk/nft.glb",
-        "external_url": "https://foundation.app/@pw_3Dlab/foundation/113384",
+        "image": "ipfs://QmWwB2LXk7VKu5KtDrtUYdwpHK1NvJ49XrQvFRJxqiAxkk/nft.glb",
     }
 
     def test_foundation_parser_should_parse_token(self):  # type: ignore[no-untyped-def]
@@ -37,7 +35,7 @@ class TestFoundationParser:
         fetcher = MetadataFetcher()
         contract_caller = ContractCaller()
         fetcher.fetch_mime_type_and_size = MagicMock(return_value=("application/json", 0))  # type: ignore[assignment]
-        fetcher.fetch_content = MagicMock(return_value=self.raw_data)  # type: ignore[assignment]
+        fetcher.fetch_content = MagicMock(return_value=None)  # type: ignore[assignment]
         parser = FoundationParser(fetcher=fetcher, contract_caller=contract_caller)  # type: ignore[abstract]
         metadata = parser.parse_metadata(token=self.token, raw_data=self.raw_data)
         assert metadata == Metadata(
@@ -45,14 +43,12 @@ class TestFoundationParser:
                 chain_identifier="ETHEREUM-MAINNET",
                 collection_address="0x3b3ee1931dc30c1957379fac9aba94d1c48a5405",
                 token_id=113384,
-                uri="https://api.foundation.app/opensea/113384",
+                uri="ipfs://QmRxAiR7FsT78mLcyMiE1p86a77gBQVJGWfGRADtMwqyEe/metadata.json",
             ),
             raw_data={
                 "name": "Experiment #0004",
                 "description": "They rise again!",
-                "image": "https://d1hiserqh6k9o1.cloudfront.net/Ax/kk/QmWwB2LXk7VKu5KtDrtUYdwpHK1NvJ49XrQvFRJxqiAxkk/nft.png",
-                "animation_url": "ipfs://QmWwB2LXk7VKu5KtDrtUYdwpHK1NvJ49XrQvFRJxqiAxkk/nft.glb",
-                "external_url": "https://foundation.app/@pw_3Dlab/foundation/113384",
+                "image": "ipfs://QmWwB2LXk7VKu5KtDrtUYdwpHK1NvJ49XrQvFRJxqiAxkk/nft.glb",
             },
             attributes=[],
             standard=None,
@@ -62,15 +58,10 @@ class TestFoundationParser:
             image=MediaDetails(
                 size=0,
                 sha256=None,
-                uri="https://d1hiserqh6k9o1.cloudfront.net/Ax/kk/QmWwB2LXk7VKu5KtDrtUYdwpHK1NvJ49XrQvFRJxqiAxkk/nft.png",
-                mime_type="application/json",
-            ),
-            content=MediaDetails(
-                size=0,
-                sha256=None,
                 uri="ipfs://QmWwB2LXk7VKu5KtDrtUYdwpHK1NvJ49XrQvFRJxqiAxkk/nft.glb",
                 mime_type="model/gltf-binary",
             ),
+            content=None,
             additional_fields=[],
         )
 
