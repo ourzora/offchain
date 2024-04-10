@@ -3,6 +3,7 @@ from email.message import Message
 from urllib.request import urlopen
 
 import httpx
+import json
 from requests import PreparedRequest, Response
 
 from offchain.metadata.adapters.base_adapter import BaseAdapter
@@ -16,6 +17,10 @@ def decode_data_url(data_url):  # type: ignore[no-untyped-def]
     if ";base64" in data_parts[0]:
         decoded_data = base64.b64decode(data)
         decoded_text = decoded_data.decode("utf-8")
+        return decoded_text
+    elif "json;utf8" in data_parts[0]:
+        decoded_data = urlopen(data_url).read()
+        decoded_text = json.dumps(json.loads(decoded_data))
         return decoded_text
 
     return None

@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.2
+
+- Fix an issue in `DataURIAdapter` where plain-text json data uri would get ignored
+
 ## v0.3.1
 
 - Trim token_uri in some log outputs, this is mainly useful for data uris that are too long and make logs unreadable
