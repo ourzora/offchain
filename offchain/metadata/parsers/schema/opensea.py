@@ -1,3 +1,4 @@
+import base64
 from typing import Optional
 
 from offchain.metadata.models.metadata import (
@@ -90,6 +91,9 @@ class OpenseaParser(SchemaParser):
         image = None
         image_uri = raw_data.get("image") or raw_data.get("image_data")
         if image_uri:
+            if image_uri.startswith("<svg"):
+                image_uri_encoded = base64.b64encode(image_uri.encode("utf-8")).decode("utf-8")
+                image_uri = f"data:image/svg+xml;base64,{image_uri_encoded}"
             image_mime, image_size = self.fetcher.fetch_mime_type_and_size(image_uri)
             image = MediaDetails(size=image_size, uri=image_uri, mime_type=image_mime)
 
@@ -140,6 +144,9 @@ class OpenseaParser(SchemaParser):
         image = None
         image_uri = raw_data.get("image") or raw_data.get("image_data")
         if image_uri:
+            if image_uri.startswith("<svg"):
+                image_uri_encoded = base64.b64encode(image_uri.encode("utf-8")).decode("utf-8")
+                image_uri = f"data:image/svg+xml;base64,{image_uri_encoded}"
             image_mime, image_size = await self.fetcher.gen_fetch_mime_type_and_size(
                 image_uri
             )
