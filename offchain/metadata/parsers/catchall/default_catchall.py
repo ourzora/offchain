@@ -242,4 +242,7 @@ class DefaultCatchallParser(CatchallParser):
         Returns:
             bool: whether or not the collection parser handles this token.
         """
-        return bool(token.uri and raw_data)
+
+        if raw_data is not None and not isinstance(raw_data, dict):
+            logger.info("DefaultCatchallParser skips token {token} due to invalid raw data")
+        return bool(token.uri and raw_data is not None and isinstance(raw_data, dict))

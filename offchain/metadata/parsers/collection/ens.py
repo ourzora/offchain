@@ -58,7 +58,7 @@ class ENSParser(CollectionParser):
             )
         return additional_fields
 
-    def parse_attributes(self, raw_data: dict) -> Optional[list[Attribute]]:  # type: ignore[type-arg]  # noqa: E501
+    def parse_attributes(self, raw_data: dict) -> list[Attribute]:  # type: ignore[type-arg]  # noqa: E501
         attributes = raw_data.get("attributes")
         if not attributes or not isinstance(attributes, list):
             return  # type: ignore[return-value]

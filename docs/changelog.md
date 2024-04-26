@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.3
+
+- Fix an issue in `OpenseaParser` where the plain-text svg wouldn't be recognized as valid image uri
+- Add check in `DefaultCatchallParser` to require that `raw_data` be a `dict`
+
 ## v0.3.2
 
 - Fix an issue in `DataURIAdapter` where plain-text json data uri would get ignored

@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from offchain.metadata.fetchers.metadata_fetcher import MetadataFetcher
-from offchain.metadata.models.metadata import Metadata, MetadataStandard
+from offchain.metadata.models.metadata import Metadata
 from offchain.metadata.models.token import Token
 from offchain.metadata.parsers.catchall.default_catchall import DefaultCatchallParser
 
@@ -14,7 +14,7 @@ class TestDefaultCatchallParser:
     token = Token(
         chain_identifier="ETHEREUM-MAINNET",
         collection_address="0x74cb086a1611cc9ca672f458b7742dd4159ac9db",
-        token_id="80071",
+        token_id=80071,
         uri="https://api.dego.finance/gego-token-v2/80071",
     )
     raw_data = {

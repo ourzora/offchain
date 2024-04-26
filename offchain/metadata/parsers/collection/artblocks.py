@@ -224,7 +224,7 @@ class ArtblocksParser(CollectionParser):
 
         return additional_fields
 
-    def parse_traits(self, raw_data: dict) -> Optional[list[Attribute]]:  # type: ignore[type-arg]  # noqa: E501
+    def parse_traits(self, raw_data: dict) -> list[Attribute]:  # type: ignore[type-arg]  # noqa: E501
         traits = raw_data.get("traits")
         if not traits or not isinstance(traits, list):
             return  # type: ignore[return-value]
