@@ -1,7 +1,6 @@
 import asyncio
 from dataclasses import dataclass
 from typing import Optional
-from urllib.parse import quote
 
 from offchain.constants.addresses import CollectionAddress
 from offchain.metadata.constants.nouns import ACCESSORY, BACKGROUND, BODY, GLASSES, HEAD
@@ -28,11 +27,32 @@ class Seeds:
         head_index: int,
         glasses_index: int,
     ):
-        background = BACKGROUND[background_index]
-        body = BODY[body_index]
-        accessory = ACCESSORY[accessory_index]
-        head = HEAD[head_index]
-        glasses = GLASSES[glasses_index]
+        # indexes here come from contract calls and can be out of bounds
+        background = (
+            BACKGROUND[background_index]
+            if 0 <= background_index < len(BACKGROUND)
+            else f"unknown({background_index})"
+        )
+        body = (
+            BODY[body_index]
+            if 0 <= body_index < len(BODY)
+            else f"unknown({body_index})"
+        )
+        accessory = (
+            ACCESSORY[accessory_index]
+            if 0 <= accessory_index < len(ACCESSORY)
+            else f"unknown({accessory_index})"
+        )
+        head = (
+            HEAD[head_index]
+            if 0 <= head_index < len(HEAD)
+            else f"unknown({head_index})"
+        )
+        glasses = (
+            GLASSES[glasses_index]
+            if 0 <= glasses_index < len(GLASSES)
+            else f"unknown({glasses_index})"
+        )
 
         return Seeds(background, body, accessory, head, glasses)
 
@@ -46,18 +66,20 @@ class NounsParser(CollectionParser):
 
     def get_image(self, raw_data: dict) -> Optional[MediaDetails]:  # type: ignore[type-arg]  # noqa: E501
         raw_image_uri = raw_data.get("image")
-        image_uri = quote(self.fetcher.fetch_content(raw_image_uri))  # type: ignore[arg-type]  # noqa: E501
+        mime_type, size = self.fetcher.fetch_mime_type_and_size(raw_image_uri)  # type: ignore[arg-type]
+        image_uri = raw_image_uri
 
         return MediaDetails(
-            uri=image_uri, size=None, sha256=None, mime_type="image/svg+xml"
+            uri=image_uri, size=size, sha256=None, mime_type="image/svg+xml"
         )  # noqa: E501
 
     async def gen_image(self, raw_data: dict) -> Optional[MediaDetails]:  # type: ignore[type-arg]  # noqa: E501
         raw_image_uri = raw_data.get("image")
-        image_uri = quote(await self.fetcher.gen_fetch_content(raw_image_uri))  # type: ignore[arg-type]  # noqa: E501
+        mime_type, size = await self.fetcher.gen_fetch_mime_type_and_size(raw_image_uri)  # type: ignore[arg-type]
+        image_uri = raw_image_uri
 
         return MediaDetails(
-            uri=image_uri, size=None, sha256=None, mime_type="image/svg+xml"
+            uri=image_uri, size=size, sha256=None, mime_type="image/svg+xml"
         )  # noqa: E501
 
     def seeds(self, token: Token) -> Optional[Seeds]:
@@ -165,9 +187,11 @@ class NounsParser(CollectionParser):
         ]
 
     def parse_metadata(self, token: Token, raw_data: dict, *args, **kwargs) -> Metadata:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
-        token.uri = self.get_uri(token)
+        if token.uri is None:
+            token.uri = self.get_uri(token)
 
-        raw_data = self.fetcher.fetch_content(token.uri)  # type: ignore[arg-type, assignment]  # noqa: E501
+        if not isinstance(raw_data, dict):
+            raw_data = self.fetcher.fetch_content(token.uri)  # type: ignore[arg-type, assignment]  # noqa: E501
         mime_type, _ = self.fetcher.fetch_mime_type_and_size(token.uri)  # type: ignore[arg-type]  # noqa: E501
 
         return Metadata(
@@ -181,14 +205,18 @@ class NounsParser(CollectionParser):
         )
 
     async def _gen_parse_metadata_impl(self, token: Token, raw_data: dict, *args, **kwargs) -> Metadata:  # type: ignore[no-untyped-def, type-arg]  # noqa: E501
-        token.uri = await self.gen_uri(token)
+        if token.uri is None:
+            token.uri = await self.gen_uri(token)
 
-        raw_data, mime_type_and_size, attributes = await asyncio.gather(
-            self.fetcher.gen_fetch_content(token.uri),  # type: ignore[arg-type, assignment]  # noqa: E501
+        if not isinstance(raw_data, dict):
+            raw_data = await self.fetcher.gen_fetch_content(token.uri)
+
+        mime_type_and_size, attributes, image = await asyncio.gather(
             self.fetcher.gen_fetch_mime_type_and_size(token.uri),  # type: ignore[arg-type]  # noqa: E501
             self.gen_seed_attributes(token),
+            self.gen_image(raw_data),
         )
-        image = await self.gen_image(raw_data)
+
         mime_type, _ = mime_type_and_size
 
         return Metadata(
