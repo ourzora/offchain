@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.4
+
+- Fix Nouns parser to make sure image uri is properly base64-encoded svg
+
 ## v0.3.3
 
 - Fix an issue in `OpenseaParser` where the plain-text svg wouldn't be recognized as valid image uri
