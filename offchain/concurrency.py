@@ -42,7 +42,7 @@ def parmap(fn: Callable, args: list) -> list:  # type: ignore[type-arg]
     return list(parallelize_with_threads(*map(lambda i: lambda: fn(i), args)))  # type: ignore[arg-type]  # noqa: E501
 
 
-def batched_parmap(fn: Callable[[T], U], args: list[T], batch_size: int = 10) -> list:  # noqa: E501
+def batched_parmap(fn: Callable[[T], U], args: list[T], batch_size: int = 10) -> list[U]:  # noqa: E501
     results = []
     for i in range(0, len(args), batch_size):
         batch_end = i + batch_size
