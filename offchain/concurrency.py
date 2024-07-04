@@ -25,7 +25,7 @@ def parallelize_with_threads(*args: Sequence[Callable]) -> Sequence[Any]:  # typ
     return res
 
 
-def parmap(fn: Callable, args: list) -> list:
+def parmap(fn: Callable, args: list) -> list:  # type: ignore[type-arg]
     """Run a map in parallel safely
 
     Args:
