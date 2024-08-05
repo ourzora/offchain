@@ -28,7 +28,17 @@ class TestMetadataFetcher:
 
     @pytest.mark.asyncio
     async def test_gen_fetch_ipfs_adapter(self):  # type: ignore[no-untyped-def]
-        fetcher = MetadataFetcher()
+        fetcher = MetadataFetcher(
+            async_adapter_configs=[
+                AdapterConfig(
+                    adapter_cls=IPFSAdapter,
+                    mount_prefixes=[
+                        "ipfs://",
+                    ],
+                    host_prefixes=["https://ipfs.decentralized-content.com/ipfs/"],
+                ),
+            ]
+        )
         content = await fetcher.gen_fetch_content(
             "ipfs://bafkreiboyxwytfyufln3uzyzaixslzvmrqs5ezjo2cio2fymfqf6u57u6u"  # noqa
         )
