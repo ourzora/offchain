@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.5
+
+- Allow data uri containing a json to omit "utf-8" encoding
+
 ## v0.3.4
 
 - Fix Nouns parser to make sure image uri is properly base64-encoded svg

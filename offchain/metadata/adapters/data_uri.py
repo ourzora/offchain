@@ -18,7 +18,7 @@ def decode_data_url(data_url):  # type: ignore[no-untyped-def]
         decoded_data = base64.b64decode(data)
         decoded_text = decoded_data.decode("utf-8")
         return decoded_text
-    elif "json;utf8" in data_parts[0]:
+    elif "json" in data_parts[0]:
         decoded_data = urlopen(data_url).read()
         decoded_text = json.dumps(json.loads(decoded_data))
         return decoded_text
